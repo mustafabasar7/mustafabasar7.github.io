@@ -14,10 +14,13 @@ const WORKER_POSITIONS = [
   new THREE.Vector3(0, -2.0, 0.8),
   new THREE.Vector3(2.6, -1.7, 0.2),
 ];
-const SUPERVISOR_ANCHOR = new THREE.Vector3(0, 1.2, 0);
+const SUPERVISOR_ANCHOR = new THREE.Vector3(0, 0.4, 0);
 const ROLES = ["Security", "Document Analyst", "Code"];
 // Role-specific "action" each worker performs when the supervisor activates it.
-const ROLE_ACTIONS = ["Punch", "ThumbsUp", "Jump"];
+// Security (Death), Document Analyst (Dance), Code (ThumbsUp).
+const ROLE_ACTIONS = ["Death", "Dance", "ThumbsUp"];
+// The supervisor reacts as it dispatches each worker, cycling its own gestures.
+const SUPERVISOR_GESTURES = ["Wave", "ThumbsUp", "Jump"];
 
 const RobotScene = () => {
   const mountRef = useRef<HTMLDivElement | null>(null);
@@ -33,8 +36,8 @@ const RobotScene = () => {
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(30, w / h, 0.1, 100);
-    camera.position.set(0, 0.2, 13);
-    camera.lookAt(0, -0.2, 0);
+    camera.position.set(0, -0.6, 13);
+    camera.lookAt(0, -0.9, 0);
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: false, powerPreference: "high-performance" });
     renderer.setSize(w, h);
@@ -131,8 +134,8 @@ const RobotScene = () => {
 
         if (active !== lastActive) {
           team.workers.forEach((wk, i) => wk.play(i === active ? ROLE_ACTIONS[i] : "Idle"));
-          // supervisor reacts too — a quick gesture as it dispatches
-          team.supervisor.play(active % 2 === 0 ? "ThumbsUp" : "Wave");
+          // supervisor reacts too — a gesture as it dispatches
+          team.supervisor.play(SUPERVISOR_GESTURES[active]);
           lastActive = active;
         }
       }
