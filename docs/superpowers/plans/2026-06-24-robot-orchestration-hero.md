@@ -712,7 +712,8 @@ git commit -m "feat(hero): default to robot orchestration hero (character kept a
 - Edges + task pulses → Task 5. ✓
 - Lightly interactive (gaze, hover-role, scroll) → Task 6. ✓
 - Perf patterns (pixel ratio ≤1, FXAA, off-screen gating, shadows off) → Task 4. ✓
-- One-flag fallback, character untouched → Tasks 1 & 7. ✓
+- One-flag fallback, character untouched → Tasks 1 & 7. 
+✓
 - Mobile unchanged (AgentGraph) → not touched by any task (App only swaps the desktop hero import). ✓
 - context7 mandatory for Three.js APIs → noted in Global Constraints + per-task callouts. ✓
 

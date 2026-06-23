@@ -4,7 +4,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import "./App.css";
 
-const CharacterModel = lazy(() => import("./components/Character"));
+const CharacterModel = lazy(() => import("./components/Hero"));
 const MainContainer = lazy(() => import("./components/MainContainer"));
 const MyWorks = lazy(() => import("./pages/MyWorks"));
 import { LoadingProvider } from "./context/LoadingProvider";
