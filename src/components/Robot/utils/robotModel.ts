@@ -1,64 +1,94 @@
 import * as THREE from "three";
-import { mergeBufferGeometries } from "three-stdlib";
-import { WORKER_COUNT } from "./orchestration";
+import { GLTFLoader, DRACOLoader, SkeletonUtils } from "three-stdlib";
 
-// One low-poly "robot": a rounded body box, a head box, two emissive eyes.
-export function buildRobotGeometry(): THREE.BufferGeometry {
-  const parts: THREE.BufferGeometry[] = [];
-
-  const body = new THREE.BoxGeometry(0.7, 0.8, 0.5);
-  body.translate(0, 0.0, 0);
-  parts.push(body);
-
-  const head = new THREE.BoxGeometry(0.5, 0.45, 0.45);
-  head.translate(0, 0.62, 0);
-  parts.push(head);
-
-  const eyeGeo = (x: number) => {
-    const e = new THREE.BoxGeometry(0.1, 0.1, 0.05);
-    e.translate(x, 0.64, 0.24);
-    return e;
-  };
-  parts.push(eyeGeo(-0.12), eyeGeo(0.12));
-
-  const merged = mergeBufferGeometries(parts, false);
-  if (!merged) {
-    throw new Error("Failed to merge robot geometries");
-  }
-  merged.computeVertexNormals();
-  return merged;
+export interface RobotInstance {
+  root: THREE.Object3D;
+  mixer: THREE.AnimationMixer;
+  play: (name: string) => void;
 }
 
-export const robotMaterial = new THREE.MeshStandardMaterial({
-  color: new THREE.Color("#2a2150"),
-  emissive: new THREE.Color("#c2a4ff"),
-  emissiveIntensity: 0.15,
-  metalness: 0.3,
-  roughness: 0.6,
-});
-
-export function buildSupervisor(): THREE.Mesh {
-  const geo = buildRobotGeometry();
-  const mat = robotMaterial.clone();
-  mat.emissiveIntensity = 0.4;
-  const mesh = new THREE.Mesh(geo, mat);
-  mesh.scale.setScalar(1.4);
-  mesh.frustumCulled = true;
-  return mesh;
+interface LoadedRobot {
+  scene: THREE.Object3D;
+  animations: THREE.AnimationClip[];
 }
 
-export function buildWorkers(positions: THREE.Vector3[]): THREE.InstancedMesh {
-  if (positions.length !== WORKER_COUNT) {
-    throw new Error(`expected ${WORKER_COUNT} worker positions`);
-  }
-  const geo = buildRobotGeometry();
-  const inst = new THREE.InstancedMesh(geo, robotMaterial.clone(), WORKER_COUNT);
-  const m = new THREE.Matrix4();
-  positions.forEach((p, i) => {
-    m.makeTranslation(p.x, p.y, p.z);
-    inst.setMatrixAt(i, m);
+let cache: Promise<LoadedRobot> | null = null;
+
+function loadRobot(): Promise<LoadedRobot> {
+  if (cache) return cache;
+  cache = new Promise<LoadedRobot>((resolve, reject) => {
+    const loader = new GLTFLoader();
+    const draco = new DRACOLoader();
+    draco.setDecoderPath("/draco/");
+    loader.setDRACOLoader(draco);
+    loader.load(
+      "/models/robot.glb",
+      (gltf) => resolve({ scene: gltf.scene, animations: gltf.animations }),
+      undefined,
+      reject
+    );
   });
-  inst.instanceMatrix.needsUpdate = true;
-  inst.frustumCulled = true;
-  return inst;
+  return cache;
+}
+
+// Tint the robot's materials toward the site's purple palette.
+function tint(obj: THREE.Object3D, accent: number) {
+  obj.traverse((child) => {
+    const mesh = child as THREE.Mesh;
+    if (mesh.isMesh && mesh.material && !Array.isArray(mesh.material)) {
+      const mat = (mesh.material as THREE.MeshStandardMaterial).clone();
+      if (mat.color) mat.color.lerp(new THREE.Color(accent), 0.35);
+      if ("emissive" in mat) {
+        mat.emissive = new THREE.Color(accent);
+        mat.emissiveIntensity = 0.18;
+      }
+      mesh.material = mat;
+      mesh.frustumCulled = true;
+    }
+  });
+}
+
+function makeInstance(
+  loaded: LoadedRobot,
+  accent: number
+): RobotInstance {
+  const root = SkeletonUtils.clone(loaded.scene);
+  tint(root, accent);
+  const mixer = new THREE.AnimationMixer(root);
+  const actions: Record<string, THREE.AnimationAction> = {};
+  loaded.animations.forEach((clip) => {
+    actions[clip.name] = mixer.clipAction(clip);
+  });
+  let current: THREE.AnimationAction | null = null;
+  const play = (name: string) => {
+    const next = actions[name];
+    if (!next || next === current) return;
+    next.reset().fadeIn(0.3).play();
+    if (current) current.fadeOut(0.3);
+    current = next;
+  };
+  return { root, mixer, play };
+}
+
+export interface RobotTeam {
+  supervisor: RobotInstance;
+  workers: RobotInstance[];
+}
+
+export async function buildRobotTeam(workerPositions: THREE.Vector3[]): Promise<RobotTeam> {
+  const loaded = await loadRobot();
+
+  const supervisor = makeInstance(loaded, 0xc2a4ff);
+  supervisor.root.scale.setScalar(0.9);
+  supervisor.play("Idle");
+
+  const workers = workerPositions.map((p) => {
+    const w = makeInstance(loaded, 0x8d7bd6);
+    w.root.position.copy(p);
+    w.root.scale.setScalar(0.62);
+    w.play("Idle");
+    return w;
+  });
+
+  return { supervisor, workers };
 }
