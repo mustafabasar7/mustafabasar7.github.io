@@ -4,7 +4,7 @@ import { GLTFLoader, DRACOLoader, SkeletonUtils } from "three-stdlib";
 export interface RobotInstance {
   root: THREE.Object3D;
   mixer: THREE.AnimationMixer;
-  play: (name: string) => void;
+  play: (name: string, opts?: { once?: boolean }) => void;
 }
 
 interface LoadedRobot {
@@ -40,8 +40,10 @@ function tint(obj: THREE.Object3D, accent: number) {
       if (mat.color) mat.color.lerp(new THREE.Color(accent), 0.35);
       if ("emissive" in mat) {
         mat.emissive = new THREE.Color(accent);
-        mat.emissiveIntensity = 0.18;
+        mat.emissiveIntensity = 0.45;
       }
+      if ("metalness" in mat) mat.metalness = 0.6;
+      if ("roughness" in mat) mat.roughness = 0.35;
       mesh.material = mat;
       mesh.frustumCulled = true;
     }
@@ -60,10 +62,18 @@ function makeInstance(
     actions[clip.name] = mixer.clipAction(clip);
   });
   let current: THREE.AnimationAction | null = null;
-  const play = (name: string) => {
+  const play = (name: string, opts?: { once?: boolean }) => {
     const next = actions[name];
     if (!next || next === current) return;
-    next.reset().fadeIn(0.3).play();
+    next.reset();
+    if (opts?.once) {
+      next.setLoop(THREE.LoopOnce, 1);
+      next.clampWhenFinished = true; // hold the final pose (e.g. stay down after Death)
+    } else {
+      next.setLoop(THREE.LoopRepeat, Infinity);
+      next.clampWhenFinished = false;
+    }
+    next.fadeIn(0.3).play();
     if (current) current.fadeOut(0.3);
     current = next;
   };
@@ -79,13 +89,13 @@ export async function buildRobotTeam(workerPositions: THREE.Vector3[]): Promise<
   const loaded = await loadRobot();
 
   const supervisor = makeInstance(loaded, 0xc2a4ff);
-  supervisor.root.scale.setScalar(0.9);
+  supervisor.root.scale.setScalar(0.74);
   supervisor.play("Idle");
 
   const workers = workerPositions.map((p) => {
     const w = makeInstance(loaded, 0x8d7bd6);
     w.root.position.copy(p);
-    w.root.scale.setScalar(0.62);
+    w.root.scale.setScalar(0.6);
     w.play("Idle");
     return w;
   });

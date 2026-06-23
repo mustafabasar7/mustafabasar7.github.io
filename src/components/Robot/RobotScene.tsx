@@ -5,24 +5,34 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { buildRobotTeam, RobotInstance } from "./utils/robotModel";
 import { setRobotLighting } from "./utils/robotLighting";
-import { activeWorker, pulsePhase } from "./utils/orchestration";
+import { WORKER_COUNT } from "./utils/orchestration";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const WORKER_POSITIONS = [
-  new THREE.Vector3(-2.6, -1.7, 0.2),
-  new THREE.Vector3(0, -2.0, 0.8),
-  new THREE.Vector3(2.6, -1.7, 0.2),
+  new THREE.Vector3(-2.7, -1.8, 0.2),
+  new THREE.Vector3(0, -2.1, 0.9),
+  new THREE.Vector3(2.7, -1.8, 0.2),
 ];
-const SUPERVISOR_ANCHOR = new THREE.Vector3(0, 0.4, 0);
-const ROLES = ["Security", "Document Analyst", "Code"];
-// Role-specific "action" each worker performs when the supervisor activates it.
-// Security (Death), Document Analyst (Dance), Code (ThumbsUp).
-const ROLE_ACTIONS = ["Death", "Dance", "ThumbsUp"];
-// The supervisor reacts as it dispatches each worker, cycling its own gestures.
-const SUPERVISOR_GESTURES = ["Wave", "ThumbsUp", "Jump"];
+const SUPERVISOR_ANCHOR = new THREE.Vector3(0, 0.1, 0);
+export const ROLES = ["Security", "Document Analyst", "Tester"];
+// Role-specific "action" each worker performs when activated.
+// Security (Death — neutralizes & stays down), Document Analyst (Dance), Tester (Running — runs the suite).
+const ROLE_ACTIONS = ["Death", "Dance", "Running"];
+const ROLE_ONCE = [true, false, false]; // Death plays once and holds the pose
+// The supervisor is the only one who "likes" (ThumbsUp) — it approves the work.
+const SUPERVISOR_GESTURE = "ThumbsUp";
 
-const RobotScene = () => {
+export interface RobotController {
+  dispatch: (workerIndex: number, task?: string) => void;
+}
+
+interface Props {
+  onReady?: (c: RobotController) => void;
+  onWorkerClick?: (index: number) => void;
+}
+
+const RobotScene = ({ onReady, onWorkerClick }: Props) => {
   const mountRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -35,16 +45,16 @@ const RobotScene = () => {
     let disposed = false;
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(30, w / h, 0.1, 100);
-    camera.position.set(0, -0.6, 13);
-    camera.lookAt(0, -0.9, 0);
+    const camera = new THREE.PerspectiveCamera(32, w / h, 0.1, 100);
+    camera.position.set(0, 1.4, 15);
+    camera.lookAt(0, 1.0, 0);
 
     const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: false, powerPreference: "high-performance" });
     renderer.setSize(w, h);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.setClearColor(0x000000, 0);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.1;
+    renderer.toneMappingExposure = 1.15;
     mount.appendChild(renderer.domElement);
 
     const composer = new EffectComposer(renderer);
@@ -63,7 +73,7 @@ const RobotScene = () => {
     setRobotLighting(scene);
 
     // edges supervisor -> each worker
-    const edgeMat = new THREE.LineBasicMaterial({ color: 0x8d7bd6, transparent: true, opacity: 0.45 });
+    const edgeMat = new THREE.LineBasicMaterial({ color: 0x9d7bff, transparent: true, opacity: 0.5 });
     WORKER_POSITIONS.forEach((p) => {
       const g = new THREE.BufferGeometry().setFromPoints([SUPERVISOR_ANCHOR, p]);
       scene.add(new THREE.Line(g, edgeMat));
@@ -71,12 +81,13 @@ const RobotScene = () => {
 
     // task pulse
     const pulse = new THREE.Mesh(
-      new THREE.SphereGeometry(0.1, 14, 14),
+      new THREE.SphereGeometry(0.12, 16, 16),
       new THREE.MeshBasicMaterial({ color: 0xe6c3ff })
     );
+    pulse.visible = false;
     scene.add(pulse);
 
-    // interaction state
+    // gaze
     const mouse = { x: 0, y: 0 };
     const onMouseMove = (e: MouseEvent) => {
       mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
@@ -84,32 +95,75 @@ const RobotScene = () => {
     };
     document.addEventListener("mousemove", onMouseMove);
 
+    // hover role label
     const label = document.createElement("div");
     label.className = "robot-role-label";
     label.style.cssText =
       "position:absolute;pointer-events:none;padding:4px 10px;border-radius:14px;" +
-      "background:rgba(31,27,56,.88);color:#e6dcff;font:600 12px/1 'Segoe UI',sans-serif;" +
+      "background:rgba(31,27,56,.9);color:#e6dcff;font:600 12px/1 'Segoe UI',sans-serif;" +
       "letter-spacing:.05em;opacity:0;transition:opacity .15s;transform:translate(-50%,-130%);z-index:5;";
     mount.appendChild(label);
 
+    // gentle scroll parallax (kept subtle so robots stay fully framed)
     const st = gsap.fromTo(
       camera.position,
-      { z: 15, y: 0.8 },
+      { y: 1.9 },
       {
-        z: 12,
-        y: -0.2,
+        y: 1.0,
         ease: "none",
-        scrollTrigger: { trigger: ".robot-section", start: "top bottom", end: "center center", scrub: 0.5 },
+        scrollTrigger: { trigger: ".robot-section", start: "top bottom", end: "center center", scrub: 0.6 },
       }
     );
 
     let team: { supervisor: RobotInstance; workers: RobotInstance[] } | null = null;
-    let lastActive = -1;
     const raycaster = new THREE.Raycaster();
     const ndc = new THREE.Vector2();
     let onHover: ((e: MouseEvent) => void) | null = null;
+    let onClick: ((e: MouseEvent) => void) | null = null;
+
+    // Raycast helper: which worker (0..n) is under the pointer, or -1.
+    const pickWorker = (e: MouseEvent, roots: THREE.Object3D[]): number => {
+      const r = mount.getBoundingClientRect();
+      ndc.x = ((e.clientX - r.left) / r.width) * 2 - 1;
+      ndc.y = -((e.clientY - r.top) / r.height) * 2 + 1;
+      raycaster.setFromCamera(ndc, camera);
+      const hits = raycaster.intersectObjects(roots, true);
+      if (!hits.length) return -1;
+      let obj: THREE.Object3D | null = hits[0].object;
+      while (obj) {
+        const idx = roots.indexOf(obj);
+        if (idx !== -1) return idx;
+        obj = obj.parent;
+      }
+      return -1;
+    };
+
+    // --- orchestration target state (drives both auto-demo and manual dispatch) ---
+    let target = 0;
+    let dispatchAt = 0;
+    let autoAt = 2.5;
+    let manualPauseUntil = 0;
+
+    const setTarget = (i: number, manual: boolean, t: number) => {
+      target = i;
+      dispatchAt = t;
+      pulse.visible = true;
+      if (manual) manualPauseUntil = t + 7;
+      if (!team) return;
+      team.workers.forEach((wk, idx) => {
+        if (idx === i) wk.play(ROLE_ACTIONS[i], { once: ROLE_ONCE[i] });
+        else wk.play("Idle");
+      });
+      team.supervisor.play(SUPERVISOR_GESTURE);
+    };
 
     const clock = new THREE.Clock();
+    const controller: RobotController = {
+      dispatch: (i: number) => {
+        if (i < 0 || i >= WORKER_COUNT) return;
+        setTarget(i, true, clock.getElapsedTime());
+      },
+    };
     let rafId = 0;
     let running = false;
     const animate = () => {
@@ -121,23 +175,25 @@ const RobotScene = () => {
         team.supervisor.mixer.update(dt);
         team.workers.forEach((wk) => wk.mixer.update(dt));
 
-        team.supervisor.root.position.y = SUPERVISOR_ANCHOR.y + Math.sin(t * 1.4) * 0.06;
+        team.supervisor.root.position.y = SUPERVISOR_ANCHOR.y + Math.sin(t * 1.4) * 0.05;
         team.supervisor.root.rotation.y = THREE.MathUtils.lerp(
           team.supervisor.root.rotation.y,
-          mouse.x * 0.6,
-          0.08
+          mouse.x * 0.5,
+          0.07
         );
 
-        const active = activeWorker(t);
-        const phase = pulsePhase(t);
-        pulse.position.lerpVectors(SUPERVISOR_ANCHOR, WORKER_POSITIONS[active], phase);
-
-        if (active !== lastActive) {
-          team.workers.forEach((wk, i) => wk.play(i === active ? ROLE_ACTIONS[i] : "Idle"));
-          // supervisor reacts too — a gesture as it dispatches
-          team.supervisor.play(SUPERVISOR_GESTURES[active]);
-          lastActive = active;
+        // ambient auto-demo unless the user recently took control
+        if (t > manualPauseUntil && t > autoAt) {
+          autoAt = t + 2.6;
+          setTarget((target + 1) % WORKER_COUNT, false, t);
         }
+
+        // pulse travels supervisor -> target over ~0.8s, then rests at the worker
+        const since = t - dispatchAt;
+        const ph = Math.min(1, since / 0.8);
+        pulse.position.lerpVectors(SUPERVISOR_ANCHOR, WORKER_POSITIONS[target], ph);
+        const s = 1 + Math.sin(t * 8) * 0.15 * (1 - ph);
+        pulse.scale.setScalar(s);
       }
 
       composer.render();
@@ -160,39 +216,42 @@ const RobotScene = () => {
     window.addEventListener("resize", onResize);
     start();
 
-    // Load robots, then complete the loading screen.
     buildRobotTeam(WORKER_POSITIONS)
       .then((built) => {
         if (disposed) return;
         team = built;
         scene.add(built.supervisor.root);
         built.workers.forEach((wk) => scene.add(wk.root));
+        built.workers.forEach((wk) => wk.play("Idle"));
+        built.supervisor.play("Idle");
+        setTarget(0, false, clock.getElapsedTime());
+        onReady?.(controller);
 
         const workerRoots = built.workers.map((wk) => wk.root);
         onHover = (e: MouseEvent) => {
-          const r = mount.getBoundingClientRect();
-          ndc.x = ((e.clientX - r.left) / r.width) * 2 - 1;
-          ndc.y = -((e.clientY - r.top) / r.height) * 2 + 1;
-          raycaster.setFromCamera(ndc, camera);
-          const hits = raycaster.intersectObjects(workerRoots, true);
-          if (hits.length) {
-            let obj: THREE.Object3D | null = hits[0].object;
-            let idx = -1;
-            while (obj && idx === -1) {
-              idx = workerRoots.indexOf(obj);
-              obj = obj.parent;
-            }
-            if (idx !== -1) {
-              label.textContent = ROLES[idx];
-              label.style.left = `${e.clientX - r.left}px`;
-              label.style.top = `${e.clientY - r.top}px`;
-              label.style.opacity = "1";
-              return;
-            }
+          const idx = pickWorker(e, workerRoots);
+          if (idx !== -1) {
+            const r = mount.getBoundingClientRect();
+            label.textContent = `${ROLES[idx]} — click to assign`;
+            label.style.left = `${e.clientX - r.left}px`;
+            label.style.top = `${e.clientY - r.top}px`;
+            label.style.opacity = "1";
+            renderer.domElement.style.cursor = "pointer";
+          } else {
+            label.style.opacity = "0";
+            renderer.domElement.style.cursor = "default";
           }
-          label.style.opacity = "0";
         };
         mount.addEventListener("mousemove", onHover);
+
+        onClick = (e: MouseEvent) => {
+          const idx = pickWorker(e, workerRoots);
+          if (idx !== -1) {
+            setTarget(idx, true, clock.getElapsedTime());
+            onWorkerClick?.(idx);
+          }
+        };
+        renderer.domElement.addEventListener("click", onClick);
       })
       .catch(() => {});
 
@@ -203,6 +262,7 @@ const RobotScene = () => {
       document.removeEventListener("visibilitychange", sync);
       document.removeEventListener("mousemove", onMouseMove);
       if (onHover) mount.removeEventListener("mousemove", onHover);
+      if (onClick) renderer.domElement.removeEventListener("click", onClick);
       window.removeEventListener("resize", onResize);
       st.scrollTrigger?.kill();
       st.kill();
@@ -212,7 +272,7 @@ const RobotScene = () => {
       if (renderer.domElement.parentNode === mount) mount.removeChild(renderer.domElement);
       scene.clear();
     };
-  }, []);
+  }, [onReady, onWorkerClick]);
 
   return <div className="robot-canvas" ref={mountRef} />;
 };
