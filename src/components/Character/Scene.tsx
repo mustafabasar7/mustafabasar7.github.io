@@ -11,7 +11,7 @@ import {
   handleTouchMove,
 } from "./utils/mouseUtils";
 import setAnimations from "./utils/animationUtils";
-import { setProgress } from "../Loading";
+import { EffectComposer, RenderPass, ShaderPass, FXAAShader } from "three-stdlib";
 
 const Scene = () => {
   const canvasDiv = useRef<HTMLDivElement | null>(null);
@@ -29,11 +29,12 @@ const Scene = () => {
 
       const renderer = new THREE.WebGLRenderer({
         alpha: true,
-        antialias: window.devicePixelRatio < 2,
+        antialias: false,
         powerPreference: "high-performance",
       });
       renderer.setSize(container.width, container.height);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1));
+      renderer.setClearColor(0x000000, 0);
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1;
       canvasDiv.current.appendChild(renderer.domElement);
@@ -44,6 +45,23 @@ const Scene = () => {
       camera.zoom = 1.1;
       camera.updateProjectionMatrix();
 
+      // FXAA post-process antialiasing — lighter than MSAA, preserves transparency.
+      const composer = new EffectComposer(renderer);
+      composer.setPixelRatio(renderer.getPixelRatio());
+      composer.addPass(new RenderPass(scene, camera));
+      const fxaaPass = new ShaderPass(FXAAShader);
+      const updateFxaa = () => {
+        const r = canvasDiv.current!.getBoundingClientRect();
+        const pr = renderer.getPixelRatio();
+        composer.setSize(r.width, r.height);
+        fxaaPass.material.uniforms["resolution"].value.set(
+          1 / (r.width * pr),
+          1 / (r.height * pr)
+        );
+      };
+      updateFxaa();
+      composer.addPass(fxaaPass);
+
       let headBone: THREE.Object3D | null = null;
       let screenLight: any | null = null;
       let mixer: THREE.AnimationMixer;
@@ -51,11 +69,11 @@ const Scene = () => {
       const clock = new THREE.Clock();
 
       const light = setLighting(scene);
-      let progress = setProgress((value) => setLoading(value));
       const { loadCharacter } = setCharacter(renderer, scene, camera);
 
-      loadCharacter().then((gltf) => {
-        if (gltf) {
+      let cancelled = false;
+      loadCharacter((value) => setLoading(value)).then((gltf) => {
+        if (!cancelled && gltf) {
           const animations = setAnimations(gltf);
           hoverDivRef.current && animations.hover(gltf, hoverDivRef.current);
           mixer = animations.mixer;
@@ -64,15 +82,13 @@ const Scene = () => {
           scene.add(character);
           headBone = character.getObjectByName("spine006") || null;
           screenLight = character.getObjectByName("screenlight") || null;
-          progress.loaded().then(() => {
-            setTimeout(() => {
-              light.turnOnLights();
-              animations.startIntro();
-            }, 2500);
+          setLoading(100);
+          light.turnOnLights();
+          animations.startIntro();
+          window.addEventListener("resize", () => {
+            handleResize(renderer, camera, canvasDiv, character);
+            updateFxaa();
           });
-          window.addEventListener("resize", () =>
-            handleResize(renderer, camera, canvasDiv, character)
-          );
         }
       });
 
@@ -107,8 +123,10 @@ const Scene = () => {
         landingDiv.addEventListener("touchstart", onTouchStart);
         landingDiv.addEventListener("touchend", onTouchEnd);
       }
+      let rafId = 0;
+      let running = false;
       const animate = () => {
-        requestAnimationFrame(animate);
+        rafId = requestAnimationFrame(animate);
         if (headBone) {
           handleHeadRotation(
             headBone,
@@ -124,12 +142,44 @@ const Scene = () => {
         if (mixer) {
           mixer.update(delta);
         }
-        renderer.render(scene, camera);
+        composer.render();
       };
-      animate();
+
+      // Only render while the canvas is on-screen and the tab is visible.
+      let inView = true;
+      const start = () => {
+        if (running) return;
+        running = true;
+        clock.getDelta(); // discard the paused interval so the mixer doesn't jump
+        animate();
+      };
+      const stop = () => {
+        running = false;
+        cancelAnimationFrame(rafId);
+      };
+      const syncLoop = () => {
+        if (inView && document.visibilityState === "visible") start();
+        else stop();
+      };
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          inView = entry.isIntersecting;
+          syncLoop();
+        },
+        { threshold: 0 }
+      );
+      observer.observe(canvasDiv.current);
+      document.addEventListener("visibilitychange", syncLoop);
+      start();
+
       return () => {
+        cancelled = true;
         clearTimeout(debounce);
+        stop();
+        observer.disconnect();
+        document.removeEventListener("visibilitychange", syncLoop);
         scene.clear();
+        composer.dispose();
         renderer.dispose();
         window.removeEventListener("resize", () =>
           handleResize(renderer, camera, canvasDiv, character!)

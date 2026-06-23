@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <linearGradient id="bg4" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#241a0f"/><stop offset="1" stop-color="#2b2113"/>
+    </linearGradient>
+    <radialGradient id="glow4" cx="0.5" cy="0.35" r="0.6">
+      <stop offset="0" stop-color="#f5b65a" stop-opacity="0.16"/><stop offset="1" stop-color="#f5b65a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg4)"/>
+  <rect width="1200" height="675" fill="url(#glow4)"/>
+  <g stroke="#f5b65a" stroke-width="2.5" opacity="0.5">
+    <line x1="600" y1="210" x2="470" y2="320"/><line x1="600" y1="210" x2="730" y2="320"/>
+    <line x1="470" y1="320" x2="400" y2="430"/><line x1="470" y1="320" x2="540" y2="430"/>
+    <line x1="730" y1="320" x2="660" y2="430"/><line x1="730" y1="320" x2="800" y2="430"/>
+  </g>
+  <g fill="#2b2113" stroke="#f5b65a" stroke-width="2.5">
+    <circle cx="600" cy="210" r="34"/>
+    <circle cx="470" cy="320" r="26" stroke="#ffce86"/><circle cx="730" cy="320" r="26" stroke="#ffce86"/>
+    <circle cx="400" cy="430" r="20" stroke="#ffce86"/><circle cx="540" cy="430" r="20" stroke="#ffce86"/>
+    <circle cx="660" cy="430" r="20" stroke="#ffce86"/><circle cx="800" cy="430" r="20" stroke="#ffce86"/>
+  </g>
+  <text x="600" y="216" fill="#ffe3b8" font-size="16" font-weight="700" text-anchor="middle">root</text>
+  <text x="80" y="560" fill="#ffffff" font-size="46" font-weight="800">Hierarchical Swarm Coordination</text>
+  <rect x="80" y="92" width="290" height="40" rx="20" fill="#f5b65a" opacity="0.15"/>
+  <text x="100" y="119" fill="#ffd99e" font-size="20" font-weight="600">Multi-Agent Systems</text>
+  <text x="80" y="600" fill="#ab9a7e" font-size="24">Coordination across large decentralized agent ecosystems</text>
+</svg>

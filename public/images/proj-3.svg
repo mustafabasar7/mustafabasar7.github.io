@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <linearGradient id="bg3" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f2018"/><stop offset="1" stop-color="#13291d"/>
+    </linearGradient>
+    <radialGradient id="glow3" cx="0.5" cy="0.4" r="0.6">
+      <stop offset="0" stop-color="#5ee6a8" stop-opacity="0.16"/><stop offset="1" stop-color="#5ee6a8" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg3)"/>
+  <rect width="1200" height="675" fill="url(#glow3)"/>
+  <g stroke="#5ee6a8" stroke-width="2.5" opacity="0.5" fill="none">
+    <path d="M560 250 L700 250"/><path d="M700 250 L700 330"/><path d="M560 330 L700 330"/>
+  </g>
+  <g>
+    <ellipse cx="470" cy="250" rx="70" ry="22" fill="#16331f" stroke="#5ee6a8" stroke-width="3"/>
+    <path d="M400 250 v90 a70 22 0 0 0 140 0 v-90" fill="#16331f" stroke="#5ee6a8" stroke-width="3"/>
+    <ellipse cx="470" cy="340" rx="70" ry="22" fill="#1b3a26" stroke="#5ee6a8" stroke-width="2"/>
+    <text x="470" y="300" fill="#bff5da" font-size="18" font-weight="700" text-anchor="middle">memory</text>
+    <circle cx="700" cy="250" r="28" fill="#13291d" stroke="#86eebf" stroke-width="2.5"/>
+    <circle cx="700" cy="330" r="28" fill="#13291d" stroke="#86eebf" stroke-width="2.5"/>
+    <text x="700" y="256" fill="#a7eed0" font-size="14" text-anchor="middle">t1</text>
+    <text x="700" y="336" fill="#a7eed0" font-size="14" text-anchor="middle">t2</text>
+  </g>
+  <text x="80" y="560" fill="#ffffff" font-size="46" font-weight="800">Persistent Memory &amp; Agentic State</text>
+  <rect x="80" y="92" width="210" height="40" rx="20" fill="#5ee6a8" opacity="0.15"/>
+  <text x="100" y="119" fill="#bff5da" font-size="20" font-weight="600">Agentic AI</text>
+  <text x="80" y="600" fill="#8aa897" font-size="24">Durable state across long-horizon task execution</text>
+</svg>

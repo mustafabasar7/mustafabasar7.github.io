@@ -1,0 +1,95 @@
+.agent-graph {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 1.5rem;
+  pointer-events: none;
+}
+
+.agent-graph svg {
+  width: min(78vw, 340px);
+  height: auto;
+  overflow: visible;
+}
+
+/* edges */
+.ag-edges path {
+  fill: none;
+  stroke: #8d7bd6;
+  stroke-width: 2;
+  stroke-linecap: round;
+  opacity: 0.5;
+}
+.ag-edges .ag-cycle {
+  stroke: #c2a4ff;
+  stroke-dasharray: 4 6;
+  opacity: 0.4;
+}
+
+/* flowing pulses */
+.ag-pulse {
+  fill: #e6c3ff;
+  filter: drop-shadow(0 0 5px #c2a4ff);
+}
+
+/* nodes */
+.ag-node circle {
+  fill: #1f1b38;
+  stroke: #9d7bff;
+  stroke-width: 2.5;
+  animation: agNodeGlow 4s ease-in-out infinite;
+}
+.ag-node.sup circle {
+  stroke: #c2a4ff;
+  stroke-width: 3;
+}
+.ag-node text {
+  fill: #d9caff;
+  font-size: 12px;
+  font-weight: 600;
+  text-anchor: middle;
+  font-family: "Segoe UI", Arial, sans-serif;
+  letter-spacing: 0.02em;
+}
+.ag-node.sup text {
+  fill: #f0e9ff;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* staggered glow wave: START -> SUP -> workers -> END */
+.ag-node.n1 circle { animation-delay: 0s; }
+.ag-node.n2 circle { animation-delay: 0.45s; }
+.ag-node.n3 circle { animation-delay: 0.9s; }
+.ag-node.n4 circle { animation-delay: 1.05s; }
+.ag-node.n5 circle { animation-delay: 1.2s; }
+.ag-node.n6 circle { animation-delay: 1.7s; }
+
+@keyframes agNodeGlow {
+  0%, 65%, 100% {
+    stroke-opacity: 0.55;
+    filter: none;
+  }
+  12%, 28% {
+    stroke-opacity: 1;
+    filter: drop-shadow(0 0 6px #c2a4ff);
+  }
+}
+
+.ag-caption {
+  margin-top: 0.6rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #9d8fd0;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+/* Show only where the 3D character is hidden (mobile + tablet). */
+@media only screen and (min-width: 1025px) {
+  .agent-graph {
+    display: none;
+  }
+}

@@ -27,3 +27,12 @@ dist-ssr
 backup/
 .env
 redoxchess-engine/
+.vercel
+
+# Session tooling / scratch
+.claude/
+.agents/
+.playwright-mcp/
+skills-lock.json
+/fxaa-check.jpeg
+/myworks-covers.jpeg
