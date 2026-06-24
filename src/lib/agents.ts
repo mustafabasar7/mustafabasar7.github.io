@@ -147,8 +147,8 @@ export const PROJECTS: ProjectMeta[] = [
     defaultTask: "Route a mixed request: summarize a PDF, then check it for policy violations.",
     fallback:
       "I'm the dynamic router. Instead of a fixed toolchain, an LLM inspects the current state and user intent and routes each step to the right capability, then invokes agents in parallel — about 5 model calls and ~9K tokens, more efficient than sequential handoffs. For your task: I'd recognize two intents, route the PDF to the summarizer and the result to the policy checker, run what I can in parallel, and return one merged answer — real-time routing driven by latent context, not a hardcoded pipeline.",
-    modelUrl: "/models/lib/Fox.glb",
-    clip: "Run",
+    modelUrl: "/models/lib/CesiumMilkTruck.glb",
+    modelScale: 1.1,
     terminal: [
       "$ langgraph run router.py",
       "→ inspect state + user intent",
@@ -180,8 +180,8 @@ export const PROJECTS: ProjectMeta[] = [
     defaultTask: "Resume a 3-day ingestion workflow exactly where it was interrupted.",
     fallback:
       "I'm the persistence layer. The graph is compiled with a checkpointer and run under a thread_id, so state is saved at every step and a long-running task can pause and resume cleanly while retaining memory. For your task: the 3-day ingestion run is checkpointed continuously; after an interruption I reload the saved state for its thread_id and continue from the exact step it stopped on — no re-processing, no lost context. This is how Mustafa keeps long-horizon agents durable.",
-    modelUrl: "/models/lib/BrainStem.glb",
-    modelScale: 1.6,
+    modelUrl: "/models/robot.glb",
+    clip: "Sitting",
     terminal: [
       "$ checkpointer = SqliteSaver(...)",
       "$ graph.invoke(state, thread_id='job-42')",

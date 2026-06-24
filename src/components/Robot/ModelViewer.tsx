@@ -40,8 +40,7 @@ function pickClip(clips: THREE.AnimationClip[], name?: string): THREE.AnimationC
   return clips[0];
 }
 
-// A generic GLB viewer. Auto-fits the camera to the model's bounding box (so any
-// model — large or small — is framed correctly), sits it slightly low, plays its
+// A generic GLB viewer. Fits the subject in the box and centers it, plays its
 // ready-made animation clip, and gently auto-rotates with mouse parallax.
 const ModelViewer = ({ url, scale = 1, clip, flock }: Props) => {
   const mountRef = useRef<HTMLDivElement | null>(null);
@@ -78,12 +77,12 @@ const ModelViewer = ({ url, scale = 1, clip, flock }: Props) => {
     const mixers: THREE.AnimationMixer[] = [];
     const flyers: { obj: THREE.Object3D; radius: number; speed: number; phase: number; y: number }[] = [];
 
-    // Frame the camera to a bounding sphere, sitting the subject slightly low.
-    const frame = (radius: number) => {
+    // Frame the camera to a bounding sphere, subject centered in the viewport.
+    const frame = (radius: number, margin = 1.2) => {
       const fov = (camera.fov * Math.PI) / 180;
-      const dist = (radius / Math.sin(fov / 2)) * 1.15;
-      camera.position.set(0, radius * 0.15, dist);
-      camera.lookAt(0, radius * 0.32, 0); // look a touch high → subject sits lower in frame
+      const dist = (radius / Math.sin(fov / 2)) * margin;
+      camera.position.set(0, 0, dist);
+      camera.lookAt(0, 0, 0);
     };
 
     let rafId = 0;
@@ -97,14 +96,13 @@ const ModelViewer = ({ url, scale = 1, clip, flock }: Props) => {
       if (flyers.length) {
         flyers.forEach((f) => {
           const a = t * f.speed + f.phase;
-          f.obj.position.set(Math.cos(a) * f.radius, f.y + Math.sin(t * 1.3 + f.phase) * 0.3, Math.sin(a) * f.radius);
+          f.obj.position.set(Math.cos(a) * f.radius, f.y + Math.sin(t * 1.3 + f.phase) * 0.25, Math.sin(a) * f.radius);
           f.obj.rotation.y = -a + Math.PI / 2;
         });
         pivot.rotation.y = THREE.MathUtils.lerp(pivot.rotation.y, mouse.x * 0.4, 0.05);
       } else {
         pivot.rotation.y += 0.004;
-        pivot.rotation.y = THREE.MathUtils.lerp(pivot.rotation.y, pivot.rotation.y + mouse.x * 0.3, 0.04);
-        pivot.rotation.x = THREE.MathUtils.lerp(pivot.rotation.x, mouse.y * 0.12, 0.04);
+        pivot.rotation.x = THREE.MathUtils.lerp(pivot.rotation.x, mouse.y * 0.1, 0.04);
       }
       renderer.render(scene, camera);
     };
@@ -124,7 +122,7 @@ const ModelViewer = ({ url, scale = 1, clip, flock }: Props) => {
     start();
 
     if (flock && flock.length) {
-      // Orbiting flock — a concrete swarm.
+      // Orbiting flock — a concrete swarm, framed tight so the birds read large.
       const perKind = 4;
       Promise.all(flock.map((u) => load(u)))
         .then((kinds) => {
@@ -133,14 +131,14 @@ const ModelViewer = ({ url, scale = 1, clip, flock }: Props) => {
           kinds.forEach((k, ki) => {
             const box = new THREE.Box3().setFromObject(k.scene);
             const size = box.getSize(new THREE.Vector3()).length() || 1;
-            const norm = 2.2 / size; // normalize each species to a comparable size
+            const norm = (2.6 / size) * scale; // bigger birds than before
             for (let i = 0; i < perKind; i++) {
               const inst = SkeletonUtils.clone(k.scene);
-              inst.scale.setScalar(norm * scale * 0.5);
-              const ring = 2.4 + ki * 1.1;
+              inst.scale.setScalar(norm);
+              const ring = 1.8 + ki * 0.9;
               maxR = Math.max(maxR, ring);
               const phase = (i / perKind) * Math.PI * 2 + ki;
-              flyers.push({ obj: inst, radius: ring, speed: 0.5 + ki * 0.15, phase, y: (ki - 1) * 0.8 });
+              flyers.push({ obj: inst, radius: ring, speed: 0.5 + ki * 0.15, phase, y: (ki - 1) * 0.7 });
               pivot.add(inst);
               if (k.animations.length) {
                 const mixer = new THREE.AnimationMixer(inst);
@@ -149,7 +147,7 @@ const ModelViewer = ({ url, scale = 1, clip, flock }: Props) => {
               }
             }
           });
-          frame(maxR + 2.5);
+          frame(maxR + 0.6, 1.0); // zoomed in
         })
         .catch(() => {});
     } else {
@@ -157,18 +155,20 @@ const ModelViewer = ({ url, scale = 1, clip, flock }: Props) => {
         .then(({ scene: model, animations }) => {
           if (disposed) return;
           const root = SkeletonUtils.clone(model);
-          // center + normalize size
-          const box = new THREE.Box3().setFromObject(root);
-          const size = box.getSize(new THREE.Vector3());
-          const center = box.getCenter(new THREE.Vector3());
-          const maxDim = Math.max(size.x, size.y, size.z) || 1;
-          const norm = (2.6 / maxDim) * scale;
-          root.position.sub(center);
-          root.scale.setScalar(norm);
           pivot.add(root);
 
-          const radius = (maxDim * norm) / 2;
-          frame(radius);
+          // 1) normalize size, then 2) recenter on the *scaled* bounds so the
+          //    subject is dead-center (no heads cut at the top).
+          const pre = new THREE.Box3().setFromObject(root);
+          const maxDim = Math.max(...pre.getSize(new THREE.Vector3()).toArray()) || 1;
+          root.scale.setScalar((2.6 / maxDim) * scale);
+
+          const post = new THREE.Box3().setFromObject(root);
+          const center = post.getCenter(new THREE.Vector3());
+          root.position.sub(center);
+
+          const sphere = post.getBoundingSphere(new THREE.Sphere());
+          frame(sphere.radius, 1.25);
 
           const chosen = pickClip(animations, clip);
           if (chosen) {

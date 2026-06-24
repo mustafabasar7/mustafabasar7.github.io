@@ -1,12 +1,15 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { PROJECTS, streamAgent, type RunStatus, type Telemetry } from "../lib/agents";
+import { PROJECTS } from "../lib/agents";
 import { config } from "../config";
 import "./ProjectDetail.css";
 
 const ModelViewer = lazy(() => import("../components/Robot/ModelViewer"));
 
-const fmt = (n?: number) => (typeof n === "number" ? n.toLocaleString("en-US") : "—");
+// Deliberately slow so a visitor can follow each stage — people focus slowly.
+const STEP_MS = 1200;
+const WORD_MS = 55;
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 // Render a document line, highlighting any «...» spans.
 const DocLine = ({ line }: { line: string }) => {
@@ -30,49 +33,68 @@ const ProjectDetail = () => {
   const project = index >= 0 ? PROJECTS[index] : null;
   const cfg = project ? config.projects.find((p) => p.id === project.configId) : null;
 
-  const [text, setText] = useState("");
-  const [streaming, setStreaming] = useState(false);
-  const [status, setStatus] = useState<RunStatus>("live");
-  const [telemetry, setTelemetry] = useState<Telemetry | null>(null);
   const [termCount, setTermCount] = useState(0);
-  const abortRef = useRef<AbortController | null>(null);
-  const termTimer = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [docCount, setDocCount] = useState(0);
+  const [text, setText] = useState("");
+  const [phase, setPhase] = useState<"steps" | "typing" | "done">("steps");
+  const [cached, setCached] = useState(false);
+  const [running, setRunning] = useState(false);
+  const runRef = useRef(0);
+  const playedOnce = useRef(false);
 
-  const runDemo = useCallback(() => {
-    if (!project) return;
-    abortRef.current?.abort();
-    if (termTimer.current) clearInterval(termTimer.current);
-    const ac = new AbortController();
-    abortRef.current = ac;
+  const play = useCallback(
+    async (instant: boolean) => {
+      if (!project) return;
+      const myRun = ++runRef.current;
+      const alive = () => runRef.current === myRun;
+      setRunning(true);
+      setCached(instant);
+      setText("");
+      setTermCount(0);
+      setDocCount(0);
+      setPhase("steps");
 
-    setText("");
-    setStreaming(true);
-    setStatus("live");
-    setTelemetry(null);
-    setTermCount(1);
-    let n = 1;
-    termTimer.current = setInterval(() => {
-      n = Math.min(n + 1, project.terminal.length);
-      setTermCount(n);
-      if (n >= project.terminal.length && termTimer.current) clearInterval(termTimer.current);
-    }, 550);
-
-    streamAgent("project", index, "", (chunk) => setText((prev) => prev + chunk), ac.signal).then(
-      (res) => {
-        setStreaming(false);
-        setStatus(res.status);
-        setTelemetry(res.telemetry);
+      if (instant) {
         setTermCount(project.terminal.length);
-        if (termTimer.current) clearInterval(termTimer.current);
+        setDocCount(project.document.lines.length);
+        setText(project.fallback);
+        setPhase("done");
+        setRunning(false);
+        return;
       }
-    );
-  }, [project, index]);
+
+      // Stage 1 — terminal steps, one slow line at a time.
+      for (let i = 0; i < project.terminal.length; i++) {
+        if (!alive()) return;
+        setTermCount(i + 1);
+        setDocCount(Math.min(i + 1, project.document.lines.length));
+        await sleep(STEP_MS);
+      }
+      if (!alive()) return;
+      setDocCount(project.document.lines.length);
+
+      // Stage 2 — the agent's answer types out slowly.
+      setPhase("typing");
+      let acc = "";
+      for (const w of project.fallback.match(/\s*\S+/g) ?? []) {
+        if (!alive()) return;
+        acc += w;
+        setText(acc);
+        await sleep(WORD_MS);
+      }
+      if (!alive()) return;
+      setPhase("done");
+      setRunning(false);
+      playedOnce.current = true;
+    },
+    [project]
+  );
 
   useEffect(() => {
-    runDemo();
+    playedOnce.current = false;
+    play(false);
     return () => {
-      abortRef.current?.abort();
-      if (termTimer.current) clearInterval(termTimer.current);
+      runRef.current++;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug]);
@@ -88,11 +110,14 @@ const ProjectDetail = () => {
     );
   }
 
+  const chatBadge = cached ? "⚡ cached · instant" : running ? "● simulating…" : "✓ run complete";
+  const chatBadgeClass = cached ? "pd-badge-cached" : running ? "pd-badge-sim" : "pd-badge-live";
+
   return (
     <div className="pd-page">
       <div className="pd-topbar">
         <Link to="/myworks" className="pd-back" data-cursor="disable">← All Works</Link>
-        <span className="pd-tag">Interactive · live AI + 3D</span>
+        <span className="pd-tag">Interactive · simulated run + 3D</span>
       </div>
 
       <div className="pd-head">
@@ -108,7 +133,6 @@ const ProjectDetail = () => {
       </div>
 
       <div className="pd-grid">
-        {/* 3D — genuinely real (three.js) */}
         <div className="pd-stage">
           <div className="pd-panel-bar">
             <span className="pd-panel-name">3D scene</span>
@@ -120,17 +144,19 @@ const ProjectDetail = () => {
         </div>
 
         <div className="pd-workspace">
-          {/* Terminal — representational */}
+          {/* Terminal — representational, revealed step by step */}
           <div className="pd-panel pd-terminal">
             <div className="pd-panel-bar">
               <span className="pd-panel-name">terminal</span>
-              <span className="pd-badge pd-badge-sim">simulated</span>
+              <span className="pd-badge pd-badge-sim">
+                {phase === "steps" && running ? `step ${termCount} / ${project.terminal.length}` : "simulated"}
+              </span>
             </div>
             <div className="pd-term-body">
               {project.terminal.slice(0, termCount).map((line, i) => (
                 <div className="pd-term-line" key={i}>
                   {line}
-                  {streaming && i === termCount - 1 && <span className="pd-caret" />}
+                  {running && phase === "steps" && i === termCount - 1 && <span className="pd-caret" />}
                 </div>
               ))}
             </div>
@@ -143,44 +169,34 @@ const ProjectDetail = () => {
               <span className="pd-badge pd-badge-sim">simulated</span>
             </div>
             <div className="pd-doc-body">
-              {project.document.lines.map((line, i) => (
+              {project.document.lines.slice(0, docCount).map((line, i) => (
                 <DocLine line={line} key={i} />
               ))}
             </div>
           </div>
 
-          {/* Chat — the genuinely live, unfakeable part */}
+          {/* Agent answer — typed out slowly */}
           <div className="pd-panel pd-chat">
             <div className="pd-panel-bar">
               <span className="pd-panel-name">LangGraph action</span>
-              <span className={`pd-badge pd-badge-${status}`}>
-                {streaming ? "● LIVE · DeepSeek" : status === "cached" ? "⚡ cached" : status === "demo" ? "◷ demo" : "● LIVE · DeepSeek"}
-              </span>
+              <span className={`pd-badge ${chatBadgeClass}`}>{chatBadge}</span>
             </div>
             <div className="pd-chat-body">
               {text}
-              {streaming && <span className="pd-caret" />}
+              {running && phase === "typing" && <span className="pd-caret" />}
             </div>
-            {telemetry && (
-              <div className="pd-telemetry">
-                {status === "cached" ? (
-                  <span>⚡ served from cache · <b>0 new tokens</b> · {telemetry.ms}ms (instant)</span>
-                ) : (
-                  <span>
-                    DeepSeek usage · prompt <b>{fmt(telemetry.promptTokens)}</b> tok
-                    {typeof telemetry.cacheHitTokens === "number" && telemetry.cacheHitTokens > 0 && (
-                      <> · cache hit <b>{fmt(telemetry.cacheHitTokens)}</b> tok</>
-                    )}
-                    {" · "}out <b>{fmt(telemetry.completionTokens)}</b> tok · {telemetry.ms}ms
-                  </span>
-                )}
-              </div>
-            )}
             <div className="pd-chat-foot">
-              <button className="pd-run" onClick={runDemo} disabled={streaming} data-cursor="disable">
-                {streaming ? "Running…" : "Run again ↻"}
+              <button
+                className="pd-run"
+                onClick={() => play(playedOnce.current)}
+                disabled={running}
+                data-cursor="disable"
+              >
+                {running ? "Running…" : playedOnce.current ? "Run again ↻ (cached)" : "Run again ↻"}
               </button>
-              <span className="pd-hint">Run twice — the 2nd is served from cache (0 new tokens). Token counts come straight from DeepSeek.</span>
+              <span className="pd-hint">
+                A step-by-step simulation of the agent run. Run again → served instantly from cache.
+              </span>
             </div>
           </div>
         </div>
