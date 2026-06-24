@@ -135,6 +135,7 @@ export default async function handler(req: Request): Promise<Response> {
       body: JSON.stringify({
         model: "deepseek-chat",
         stream: true,
+        stream_options: { include_usage: true },
         temperature: 0.5,
         max_tokens: 260,
         messages: [
@@ -151,13 +152,30 @@ export default async function handler(req: Request): Promise<Response> {
     return new Response("upstream error", { status: 502 });
   }
 
-  // Re-stream DeepSeek's SSE as plain text tokens.
+  // Re-stream DeepSeek's SSE as plain text tokens, then append real usage
+  // telemetry after a record-separator sentinel (\x1e) so the client can prove
+  // the token counts come from DeepSeek, not from us.
+  const SEP = "\x1e";
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
       const reader = upstream.body!.getReader();
       const decoder = new TextDecoder();
       const encoder = new TextEncoder();
       let buffer = "";
+      let usage: Record<string, number> | null = null;
+
+      const finish = () => {
+        const telemetry = usage
+          ? {
+              promptTokens: usage.prompt_tokens,
+              completionTokens: usage.completion_tokens,
+              cacheHitTokens: usage.prompt_cache_hit_tokens,
+            }
+          : {};
+        controller.enqueue(encoder.encode(SEP + JSON.stringify(telemetry)));
+        controller.close();
+      };
+
       try {
         for (;;) {
           const { done, value } = await reader.read();
@@ -170,13 +188,14 @@ export default async function handler(req: Request): Promise<Response> {
             if (!trimmed.startsWith("data:")) continue;
             const data = trimmed.slice(5).trim();
             if (data === "[DONE]") {
-              controller.close();
+              finish();
               return;
             }
             try {
               const json = JSON.parse(data);
               const delta = json?.choices?.[0]?.delta?.content;
               if (delta) controller.enqueue(encoder.encode(delta));
+              if (json?.usage) usage = json.usage;
             } catch {
               // ignore keep-alive lines / partial JSON
             }
@@ -185,7 +204,7 @@ export default async function handler(req: Request): Promise<Response> {
       } catch {
         // network hiccup — close with whatever streamed so far
       }
-      controller.close();
+      finish();
     },
   });
 

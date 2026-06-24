@@ -75,9 +75,9 @@ const RobotSection = () => {
           prev.map((m) => (m.id === id ? { ...m, text: m.text + chunk } : m))
         ),
       ac.signal
-    ).then((status) =>
+    ).then((res) =>
       setMessages((prev) =>
-        prev.map((m) => (m.id === id ? { ...m, streaming: false, status } : m))
+        prev.map((m) => (m.id === id ? { ...m, streaming: false, status: res.status } : m))
       )
     );
   }, []);

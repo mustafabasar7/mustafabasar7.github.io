@@ -78,6 +78,26 @@ export interface ProjectMeta {
   defaultTask: string;
   /** Doc-grounded demonstration used when no live backend is available. */
   fallback: string;
+  /** Ready-made GLB shown on the detail page (swap the URL to change the model). */
+  modelUrl: string;
+  /** Optional uniform scale override for the model. */
+  modelScale?: number;
+  /** Preferred animation clip name; falls back to the model's first clip. */
+  clip?: string;
+  /** If set, render a moving flock of these model URLs (swarm visual). */
+  flock?: string[];
+  /** Simulated terminal lines for the left panel (representational). */
+  terminal: string[];
+  /** Simulated document lines; entries wrapped in «» render as highlighted hits. */
+  document: { title: string; lines: string[] };
+}
+
+/** Real, provider-reported telemetry surfaced under the live chat. */
+export interface Telemetry {
+  promptTokens?: number;
+  completionTokens?: number;
+  cacheHitTokens?: number;
+  ms: number;
 }
 
 // One per /myworks project card — grounded in real LangGraph behaviour.
@@ -94,6 +114,26 @@ export const PROJECTS: ProjectMeta[] = [
     defaultTask: "Decompose 'publish a vetted breaking-news article' across the agent team.",
     fallback:
       "I'm the orchestration layer. A central supervisor coordinates specialized agents, delegating through tool-based handoff — a handoff tool returns a Command that routes to the target agent with a task description, and Send dispatches multiple workers in parallel. For your task: the supervisor splits 'publish a vetted breaking-news article' into research, drafting, fact-check and compliance, hands each to the right worker, runs the independent ones in parallel, then merges results — the supervisor pattern Mustafa ships for multi-step agent workflows.",
+    modelUrl: "/models/lib/Soldier.glb",
+    clip: "Walk",
+    terminal: [
+      "$ langgraph run supervisor.py",
+      "→ decompose goal into 4 subtasks",
+      "→ handoff: research_agent",
+      "→ handoff: draft_agent   (Send · parallel)",
+      "→ handoff: factcheck_agent",
+      "✓ results merged · 1 graph run",
+    ],
+    document: {
+      title: "task_spec.md",
+      lines: [
+        "Goal: publish a vetted breaking-news article",
+        "1. «research» sources and verify claims",
+        "2. «draft» the article copy",
+        "3. «fact-check» every claim",
+        "4. «compliance» review before publish",
+      ],
+    },
   },
   {
     slug: "tool-routing",
@@ -107,6 +147,26 @@ export const PROJECTS: ProjectMeta[] = [
     defaultTask: "Route a mixed request: summarize a PDF, then check it for policy violations.",
     fallback:
       "I'm the dynamic router. Instead of a fixed toolchain, an LLM inspects the current state and user intent and routes each step to the right capability, then invokes agents in parallel — about 5 model calls and ~9K tokens, more efficient than sequential handoffs. For your task: I'd recognize two intents, route the PDF to the summarizer and the result to the policy checker, run what I can in parallel, and return one merged answer — real-time routing driven by latent context, not a hardcoded pipeline.",
+    modelUrl: "/models/lib/Fox.glb",
+    clip: "Run",
+    terminal: [
+      "$ langgraph run router.py",
+      "→ inspect state + user intent",
+      "→ route → summarizer_tool",
+      "→ route → policy_checker_tool",
+      "→ parallel tool calls",
+      "✓ 5 calls · ~9K tokens",
+    ],
+    document: {
+      title: "request.json",
+      lines: [
+        "{",
+        "  intent_1: '«summarize» the PDF',",
+        "  intent_2: '«check» policy compliance'",
+        "}",
+        "→ routed, not hardcoded",
+      ],
+    },
   },
   {
     slug: "persistent-state",
@@ -120,6 +180,25 @@ export const PROJECTS: ProjectMeta[] = [
     defaultTask: "Resume a 3-day ingestion workflow exactly where it was interrupted.",
     fallback:
       "I'm the persistence layer. The graph is compiled with a checkpointer and run under a thread_id, so state is saved at every step and a long-running task can pause and resume cleanly while retaining memory. For your task: the 3-day ingestion run is checkpointed continuously; after an interruption I reload the saved state for its thread_id and continue from the exact step it stopped on — no re-processing, no lost context. This is how Mustafa keeps long-horizon agents durable.",
+    modelUrl: "/models/lib/BrainStem.glb",
+    modelScale: 1.6,
+    terminal: [
+      "$ checkpointer = SqliteSaver(...)",
+      "$ graph.invoke(state, thread_id='job-42')",
+      "… step 18/40 · interrupted",
+      "$ graph.invoke(None, thread_id='job-42')",
+      "→ restored from checkpoint",
+      "✓ resumed at step 18",
+    ],
+    document: {
+      title: "checkpoint.db",
+      lines: [
+        "thread_id: job-42",
+        "step: «18 / 40»",
+        "memory: 12 docs · 3 entities",
+        "status: «resumable»",
+      ],
+    },
   },
   {
     slug: "swarm",
@@ -133,6 +212,25 @@ export const PROJECTS: ProjectMeta[] = [
     defaultTask: "Coordinate 20 agents indexing 50 media brands without collisions.",
     fallback:
       "I'm the swarm coordinator. Specialized agents dynamically hand off control to one another and resume conversations through handoff tools; combined with multi-level supervisor hierarchies, this structures how a large, decentralized swarm divides and synchronizes work. For your task: I'd shard the 50 media brands across 20 agents under sub-supervisors, let agents hand off edge cases to specialists, and synchronize state so nobody double-indexes — coordination models for decentralized agent ecosystems.",
+    modelUrl: "/models/lib/Parrot.glb",
+    flock: ["/models/lib/Parrot.glb", "/models/lib/Flamingo.glb", "/models/lib/Stork.glb"],
+    terminal: [
+      "$ langgraph-swarm up --agents 20",
+      "→ shard 50 brands → 20 agents",
+      "→ handoff: agent_07 → specialist",
+      "→ sub-supervisor sync",
+      "✓ 0 collisions",
+    ],
+    document: {
+      title: "shard_map.yaml",
+      lines: [
+        "brands: «50»",
+        "agents: «20»",
+        "strategy: hierarchical",
+        "handoff: dynamic",
+        "collisions: «0»",
+      ],
+    },
   },
   {
     slug: "hitl-safety",
@@ -146,6 +244,25 @@ export const PROJECTS: ProjectMeta[] = [
     defaultTask: "Gate an automated mass-unpublish action behind human approval.",
     fallback:
       "I'm the HITL safety protocol. Before a sensitive action runs, interrupt() pauses the graph and surfaces a payload for approval; the run only continues when you resume with Command(resume=...), routing to proceed or cancel — preserving human agency and auditability. For your task: the automated mass-unpublish hits my gate, freezes, and waits for a human to approve or reject with the full context shown — safety-focused interruption patterns that keep a person in control of irreversible steps.",
+    // Placeholder human until Mustafa's own exported GLB is dropped in.
+    modelUrl: "/models/lib/CesiumMan.glb",
+    modelScale: 1.4,
+    terminal: [
+      "$ graph reaches mass_unpublish",
+      "⛔ interrupt() — paused",
+      "→ awaiting human approval",
+      "$ Command(resume='approve')",
+      "✓ proceed · audit logged",
+    ],
+    document: {
+      title: "action_review.txt",
+      lines: [
+        "action: «mass_unpublish»",
+        "items: «128,400»",
+        "impact: removes from public view",
+        "decision: «awaiting human»",
+      ],
+    },
   },
 ];
 
@@ -172,14 +289,23 @@ export function routeTask(text: string): number {
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+// Sentinel byte separating the streamed text from the trailing telemetry JSON.
+const SEP = "\x1e";
+
+export interface RunResult {
+  status: RunStatus;
+  telemetry: Telemetry;
+}
+
 // In-memory cache so an identical re-run replays instantly (prompt-caching demo).
-const responseCache = new Map<string, string>();
+const responseCache = new Map<string, { text: string; telemetry: Telemetry }>();
 
 /**
  * Stream an agent/project response one chunk at a time.
  *
  * - Identical re-runs replay from cache instantly and resolve to "cached".
- * - A successful live call resolves to "live" (and is cached).
+ * - A successful live call resolves to "live" and surfaces DeepSeek's real
+ *   token/cache usage (which cannot be faked).
  * - No backend → doc-grounded fallback, typed out, resolves to "demo".
  */
 export async function streamAgent(
@@ -188,19 +314,23 @@ export async function streamAgent(
   task: string,
   onToken: (chunk: string) => void,
   signal?: AbortSignal,
-): Promise<RunStatus> {
+): Promise<RunResult> {
   const meta = set === "project" ? PROJECTS[role] : AGENTS[role];
   const resolved = (task || "").trim() || meta?.defaultTask || "";
   const key = `${set}:${role}:${resolved}`;
+  const t0 = performance.now();
 
   const cached = responseCache.get(key);
   if (cached) {
-    for (const piece of cached.match(/\s*\S+/g) ?? []) {
-      if (signal?.aborted) return "cached";
+    for (const piece of cached.text.match(/\s*\S+/g) ?? []) {
+      if (signal?.aborted) break;
       onToken(piece);
       await sleep(9);
     }
-    return "cached";
+    return {
+      status: "cached",
+      telemetry: { ...cached.telemetry, ms: Math.round(performance.now() - t0) },
+    };
   }
 
   try {
@@ -213,25 +343,40 @@ export async function streamAgent(
     if (!res.ok || !res.body) throw new Error("no live backend");
     const reader = res.body.getReader();
     const decoder = new TextDecoder();
-    let full = "";
+    let raw = "";
+    let emitted = 0;
     for (;;) {
       const { done, value } = await reader.read();
       if (done) break;
-      const chunk = decoder.decode(value, { stream: true });
-      if (chunk) {
-        full += chunk;
-        onToken(chunk);
+      raw += decoder.decode(value, { stream: true });
+      const sep = raw.indexOf(SEP);
+      const textEnd = sep === -1 ? raw.length : sep;
+      if (textEnd > emitted) {
+        onToken(raw.slice(emitted, textEnd));
+        emitted = textEnd;
       }
     }
-    if (full.trim()) responseCache.set(key, full);
-    return "live";
+
+    const sep = raw.indexOf(SEP);
+    const text = sep === -1 ? raw : raw.slice(0, sep);
+    let usage: Partial<Telemetry> = {};
+    if (sep !== -1) {
+      try {
+        usage = JSON.parse(raw.slice(sep + 1));
+      } catch {
+        /* ignore malformed telemetry */
+      }
+    }
+    const telemetry: Telemetry = { ...usage, ms: Math.round(performance.now() - t0) };
+    if (text.trim()) responseCache.set(key, { text, telemetry });
+    return { status: "live", telemetry };
   } catch {
     const text = meta?.fallback ?? "";
     for (const piece of text.match(/\s*\S+/g) ?? []) {
-      if (signal?.aborted) return "demo";
+      if (signal?.aborted) break;
       onToken(piece);
       await sleep(22);
     }
-    return "demo";
+    return { status: "demo", telemetry: { ms: Math.round(performance.now() - t0) } };
   }
 }
