@@ -143,18 +143,27 @@ const RobotScene = ({ onReady, onWorkerClick }: Props) => {
     let dispatchAt = 0;
     let autoAt = 2.5;
     let manualPauseUntil = 0;
+    // The supervisor only "likes" after a worker we clicked finishes its task.
+    const LIKE_DELAY = 2.4; // let the worker's action play out first
+    const LIKE_HOLD = 1.8; // how long to hold the ThumbsUp before idling
+    let likeAt = 0; // when to play the supervisor's ThumbsUp (0 = none pending)
+    let supervisorIdleAt = 0; // when to return the supervisor to Idle
 
     const setTarget = (i: number, manual: boolean, t: number) => {
       target = i;
       dispatchAt = t;
       pulse.visible = true;
-      if (manual) manualPauseUntil = t + 7;
+      if (manual) {
+        manualPauseUntil = t + 7;
+        // approve only the worker the user assigned, once it has finished acting
+        likeAt = t + LIKE_DELAY;
+        supervisorIdleAt = 0;
+      }
       if (!team) return;
       team.workers.forEach((wk, idx) => {
         if (idx === i) wk.play(ROLE_ACTIONS[i], { once: ROLE_ONCE[i] });
         else wk.play("Idle");
       });
-      team.supervisor.play(SUPERVISOR_GESTURE);
     };
 
     const clock = new THREE.Clock();
@@ -181,6 +190,17 @@ const RobotScene = ({ onReady, onWorkerClick }: Props) => {
           mouse.x * 0.5,
           0.07
         );
+
+        // supervisor approves with a ThumbsUp once the clicked worker finishes
+        if (likeAt && t >= likeAt) {
+          team.supervisor.play(SUPERVISOR_GESTURE, { once: true });
+          likeAt = 0;
+          supervisorIdleAt = t + LIKE_HOLD;
+        }
+        if (supervisorIdleAt && t >= supervisorIdleAt) {
+          team.supervisor.play("Idle");
+          supervisorIdleAt = 0;
+        }
 
         // ambient auto-demo unless the user recently took control
         if (t > manualPauseUntil && t > autoAt) {
