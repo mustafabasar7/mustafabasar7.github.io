@@ -126,6 +126,30 @@
   line-height: 1.5;
 }
 
+.myworks-card-link {
+  display: block;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.myworks-card-cta {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #1a1430;
+  background: linear-gradient(95deg, #c2a4ff, #ff9fd0);
+  border-radius: 999px;
+  box-shadow: 0 6px 20px rgba(194, 164, 255, 0.3);
+  transition: transform 0.2s ease;
+}
+
+.myworks-card-link:hover .myworks-card-cta {
+  transform: scale(1.04);
+}
+
 /* Responsive */
 @media only screen and (max-width: 768px) {
   .myworks-page {

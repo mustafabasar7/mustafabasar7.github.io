@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import "./RobotSection.css";
 import type { RobotController } from "./RobotScene";
-import { AGENTS, routeTask, streamAgent } from "../../lib/agents";
+import { AGENTS, streamAgent, type RunStatus } from "../../lib/agents";
 
 const RobotScene = lazy(() => import("./RobotScene"));
 
@@ -11,8 +11,14 @@ interface Msg {
   task: string;
   text: string;
   streaming: boolean;
-  live: boolean;
+  status: RunStatus;
 }
+
+const STATUS_LABEL: Record<RunStatus, string> = {
+  live: "● live · DeepSeek",
+  cached: "⚡ cached · 0 new tokens",
+  demo: "◷ demo",
+};
 
 // A titled, interactive mid-page section showcasing multi-agent orchestration.
 // Each agent, when dispatched, explains live (DeepSeek-backed, doc-grounded) how
@@ -22,7 +28,6 @@ const RobotSection = () => {
   const ref = useRef<HTMLDivElement | null>(null);
   const [visible, setVisible] = useState(false);
   const controllerRef = useRef<RobotController | null>(null);
-  const [task, setTask] = useState("");
   const [messages, setMessages] = useState<Msg[]>([]);
   const chatRef = useRef<HTMLDivElement | null>(null);
   const idRef = useRef(0);
@@ -49,36 +54,36 @@ const RobotSection = () => {
   }, []);
 
   // Dispatch an agent: animate the robot, then stream its live explanation.
-  const runAgent = useCallback((i: number, taskText: string) => {
+  const runAgent = useCallback((i: number) => {
     controllerRef.current?.dispatch(i);
     abortRef.current?.abort();
     const ac = new AbortController();
     abortRef.current = ac;
 
     const id = idRef.current++;
-    const resolvedTask = taskText.trim() || AGENTS[i].defaultTask;
     setMessages((prev) => [
       ...prev,
-      { id, agent: i, task: resolvedTask, text: "", streaming: true, live: true },
+      { id, agent: i, task: AGENTS[i].defaultTask, text: "", streaming: true, status: "live" },
     ]);
 
     streamAgent(
+      "agent",
       i,
-      taskText,
+      "",
       (chunk) =>
         setMessages((prev) =>
           prev.map((m) => (m.id === id ? { ...m, text: m.text + chunk } : m))
         ),
       ac.signal
-    ).then((live) =>
+    ).then((status) =>
       setMessages((prev) =>
-        prev.map((m) => (m.id === id ? { ...m, streaming: false, live } : m))
+        prev.map((m) => (m.id === id ? { ...m, streaming: false, status } : m))
       )
     );
   }, []);
 
-  // Clicking a robot in the 3D scene dispatches that agent with its default task.
-  const onWorkerClick = useCallback((i: number) => runAgent(i, ""), [runAgent]);
+  // Clicking a robot in the 3D scene dispatches that agent.
+  const onWorkerClick = useCallback((i: number) => runAgent(i), [runAgent]);
 
   // keep the transcript scrolled to the latest token
   useEffect(() => {
@@ -86,14 +91,6 @@ const RobotSection = () => {
   }, [messages]);
 
   useEffect(() => () => abortRef.current?.abort(), []);
-
-  const onSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const text = task.trim();
-    if (!text) return;
-    runAgent(routeTask(text), text);
-    setTask("");
-  };
 
   if (!isDesktop) return null;
 
@@ -104,8 +101,8 @@ const RobotSection = () => {
           How I <span>orchestrate</span>
         </h2>
         <p>
-          A supervisor delegating to specialized agents. Click a robot — or type a task — and
-          the agent explains, live, how it actually works.
+          A supervisor delegating to specialized agents. Click a robot — or a chip — and the
+          agent explains, live, how it works. Run the same one twice to see it served from cache.
         </p>
       </div>
 
@@ -118,20 +115,9 @@ const RobotSection = () => {
       </div>
 
       <div className="robot-controls">
-        <form className="robot-task-form" onSubmit={onSubmit}>
-          <input
-            type="text"
-            value={task}
-            onChange={(e) => setTask(e.target.value)}
-            placeholder="Give the team a task…  e.g. ‘summarize these contracts’ or ‘cut our token cost’"
-            data-cursor="disable"
-            aria-label="Assign a task"
-          />
-          <button type="submit" data-cursor="disable">Dispatch →</button>
-        </form>
         <div className="robot-chips">
           {AGENTS.map((a, i) => (
-            <button key={a.short} className="robot-chip" onClick={() => runAgent(i, "")} data-cursor="disable">
+            <button key={a.short} className="robot-chip" onClick={() => runAgent(i)} data-cursor="disable">
               {a.short}
             </button>
           ))}
@@ -146,7 +132,9 @@ const RobotSection = () => {
               <div className="robot-msg" key={m.id}>
                 <div className="robot-msg-head">
                   <span className="robot-msg-name">{AGENTS[m.agent].name}</span>
-                  <span className="robot-msg-task">› {m.task}</span>
+                  <span className={`robot-status robot-status-${m.status}`}>
+                    {m.streaming ? "● live · DeepSeek" : STATUS_LABEL[m.status]}
+                  </span>
                 </div>
                 <div className="robot-msg-metrics">
                   {AGENTS[m.agent].metrics.map((metric, k) => (

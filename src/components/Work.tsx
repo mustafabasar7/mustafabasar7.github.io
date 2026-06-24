@@ -61,9 +61,19 @@ const Work = () => {
   return (
     <div className="work-section" id="work">
       <div className="work-container section-container">
-        <h2>
-          My <span>Work</span>
-        </h2>
+        <div className="work-heading-row">
+          <h2>
+            My <span>Work</span>
+          </h2>
+          <Link to="/myworks" className="work-interactive-cta" data-cursor="disable">
+            <span className="work-cta-pulse" />
+            <span className="work-cta-text">
+              <strong>▶ Try it live</strong>
+              <em>Real AI agents + 3D · click to interact</em>
+            </span>
+            <span className="work-cta-arrow">→</span>
+          </Link>
+        </div>
         <div className="work-flex">
           {config.projects.slice(0, 5).map((project, index) => (
             <div className="work-box" key={project.id}>

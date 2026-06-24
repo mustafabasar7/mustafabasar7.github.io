@@ -179,6 +179,30 @@
   font-style: italic;
 }
 
+.robot-status {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 0.12rem 0.5rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.robot-status-live {
+  color: #7ef0c0;
+  background: rgba(60, 220, 150, 0.12);
+}
+
+.robot-status-cached {
+  color: #ffd27a;
+  background: rgba(255, 200, 90, 0.12);
+}
+
+.robot-status-demo {
+  color: #b9a8e6;
+  background: rgba(157, 123, 255, 0.12);
+}
+
 .robot-msg-metrics {
   display: flex;
   flex-wrap: wrap;

@@ -85,6 +85,16 @@ export interface RobotTeam {
   workers: RobotInstance[];
 }
 
+// A single centered robot used on the project detail pages, where it plays the
+// model's ready-made animation clips to visualize a LangGraph action.
+export async function buildSoloRobot(accent = 0xc2a4ff): Promise<RobotInstance> {
+  const loaded = await loadRobot();
+  const inst = makeInstance(loaded, accent);
+  inst.root.scale.setScalar(0.95);
+  inst.play("Idle");
+  return inst;
+}
+
 export async function buildRobotTeam(workerPositions: THREE.Vector3[]): Promise<RobotTeam> {
   const loaded = await loadRobot();
 

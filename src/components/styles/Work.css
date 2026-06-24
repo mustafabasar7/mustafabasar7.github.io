@@ -4,6 +4,83 @@
   font-weight: 500;
 }
 
+.work-heading-row {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+/* Big, attention-grabbing "this is interactive" CTA next to My Work */
+.work-interactive-cta {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 70px;
+  padding: 16px 26px;
+  border-radius: 999px;
+  text-decoration: none;
+  color: #1a1430;
+  background: linear-gradient(95deg, #c2a4ff 0%, #ff9fd0 100%);
+  box-shadow: 0 10px 40px rgba(194, 164, 255, 0.45);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  animation: ctaBob 2.6s ease-in-out infinite;
+}
+
+.work-interactive-cta:hover {
+  transform: scale(1.06) translateY(-2px);
+  box-shadow: 0 16px 55px rgba(255, 159, 208, 0.55);
+}
+
+.work-cta-pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  box-shadow: 0 0 0 0 rgba(194, 164, 255, 0.7);
+  animation: ctaPulse 1.8s ease-out infinite;
+}
+
+.work-cta-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.work-cta-text strong {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.work-cta-text em {
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.work-cta-arrow {
+  font-size: 26px;
+  font-weight: 800;
+  transition: transform 0.2s ease;
+}
+
+.work-interactive-cta:hover .work-cta-arrow {
+  transform: translateX(5px);
+}
+
+@keyframes ctaPulse {
+  0% { box-shadow: 0 0 0 0 rgba(194, 164, 255, 0.7); }
+  100% { box-shadow: 0 0 0 22px rgba(194, 164, 255, 0); }
+}
+
+@keyframes ctaBob {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -5px; }
+}
+
 .work-section h2>span {
   color: var(--accentColor);
 }
