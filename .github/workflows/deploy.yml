@@ -20,6 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          lfs: true # GLB models are LFS-tracked; fetch real binaries, not pointers
       - uses: actions/setup-node@v4
         with:
           node-version: 20
