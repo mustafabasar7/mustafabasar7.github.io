@@ -1,35 +1,32 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import "./RobotSection.css";
 import type { RobotController } from "./RobotScene";
-import { ROLES } from "./RobotScene";
+import { AGENTS, routeTask, streamAgent } from "../../lib/agents";
 
 const RobotScene = lazy(() => import("./RobotScene"));
 
-// Route a free-text task to the most relevant worker by simple keyword match.
-const ROLE_KEYWORDS: string[][] = [
-  ["secure", "security", "auth", "threat", "attack", "vuln", "protect"],
-  ["doc", "document", "read", "summar", "analyz", "analyse", "extract", "pdf"],
-  ["test", "qa", "verify", "check", "bug", "lint", "code", "build"],
-];
-
-function routeTask(text: string): number {
-  const t = text.toLowerCase();
-  for (let i = 0; i < ROLE_KEYWORDS.length; i++) {
-    if (ROLE_KEYWORDS[i].some((k) => t.includes(k))) return i;
-  }
-  return Math.floor(Math.random() * ROLES.length);
+interface Msg {
+  id: number;
+  agent: number;
+  task: string;
+  text: string;
+  streaming: boolean;
+  live: boolean;
 }
 
 // A titled, interactive mid-page section showcasing multi-agent orchestration.
-// Desktop-only (the 3D scene is heavy); mobile sees nothing here.
+// Each agent, when dispatched, explains live (DeepSeek-backed, doc-grounded) how
+// Mustafa actually built that capability. Desktop-only — the 3D scene is heavy.
 const RobotSection = () => {
   const [isDesktop] = useState(() => window.innerWidth > 1024);
   const ref = useRef<HTMLDivElement | null>(null);
   const [visible, setVisible] = useState(false);
   const controllerRef = useRef<RobotController | null>(null);
   const [task, setTask] = useState("");
-  const [chat, setChat] = useState<string[]>([]);
+  const [messages, setMessages] = useState<Msg[]>([]);
   const chatRef = useRef<HTMLDivElement | null>(null);
+  const idRef = useRef(0);
+  const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     if (!isDesktop || !ref.current) return;
@@ -51,32 +48,50 @@ const RobotSection = () => {
     controllerRef.current = c;
   }, []);
 
-  // Default task phrasing per role when no text is typed.
-  const DEFAULT_TASKS = ["lock down the perimeter", "analyze the documents", "run the test suite"];
+  // Dispatch an agent: animate the robot, then stream its live explanation.
+  const runAgent = useCallback((i: number, taskText: string) => {
+    controllerRef.current?.dispatch(i);
+    abortRef.current?.abort();
+    const ac = new AbortController();
+    abortRef.current = ac;
 
-  const logTask = useCallback((i: number, taskText: string) => {
-    const msg = `Supervisor → ${ROLES[i]}: ${taskText || DEFAULT_TASKS[i]}`;
-    setChat((prev) => [...prev, msg]);
+    const id = idRef.current++;
+    const resolvedTask = taskText.trim() || AGENTS[i].defaultTask;
+    setMessages((prev) => [
+      ...prev,
+      { id, agent: i, task: resolvedTask, text: "", streaming: true, live: true },
+    ]);
+
+    streamAgent(
+      i,
+      taskText,
+      (chunk) =>
+        setMessages((prev) =>
+          prev.map((m) => (m.id === id ? { ...m, text: m.text + chunk } : m))
+        ),
+      ac.signal
+    ).then((live) =>
+      setMessages((prev) =>
+        prev.map((m) => (m.id === id ? { ...m, streaming: false, live } : m))
+      )
+    );
   }, []);
 
-  // Clicking a robot in the scene already triggers its action; just log it.
-  const onWorkerClick = useCallback((i: number) => logTask(i, ""), [logTask]);
+  // Clicking a robot in the 3D scene dispatches that agent with its default task.
+  const onWorkerClick = useCallback((i: number) => runAgent(i, ""), [runAgent]);
 
-  const dispatch = (i: number, taskText: string) => {
-    controllerRef.current?.dispatch(i);
-    logTask(i, taskText);
-  };
-
-  // keep the chat scrolled to the latest message
+  // keep the transcript scrolled to the latest token
   useEffect(() => {
     if (chatRef.current) chatRef.current.scrollTop = chatRef.current.scrollHeight;
-  }, [chat]);
+  }, [messages]);
+
+  useEffect(() => () => abortRef.current?.abort(), []);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const text = task.trim();
     if (!text) return;
-    dispatch(routeTask(text), text);
+    runAgent(routeTask(text), text);
     setTask("");
   };
 
@@ -88,7 +103,10 @@ const RobotSection = () => {
         <h2>
           How I <span>orchestrate</span>
         </h2>
-        <p>A supervisor agent delegating to specialized workers. Click a robot — or type a task — to dispatch it.</p>
+        <p>
+          A supervisor delegating to specialized agents. Click a robot — or type a task — and
+          the agent explains, live, how it actually works.
+        </p>
       </div>
 
       <div className="robot-section-stage">
@@ -105,26 +123,46 @@ const RobotSection = () => {
             type="text"
             value={task}
             onChange={(e) => setTask(e.target.value)}
-            placeholder="Give the team a task…  e.g. ‘scan the API for vulnerabilities’"
+            placeholder="Give the team a task…  e.g. ‘summarize these contracts’ or ‘cut our token cost’"
             data-cursor="disable"
             aria-label="Assign a task"
           />
           <button type="submit" data-cursor="disable">Dispatch →</button>
         </form>
         <div className="robot-chips">
-          {ROLES.map((role, i) => (
-            <button key={role} className="robot-chip" onClick={() => dispatch(i, "")} data-cursor="disable">
-              {role}
+          {AGENTS.map((a, i) => (
+            <button key={a.short} className="robot-chip" onClick={() => runAgent(i, "")} data-cursor="disable">
+              {a.short}
             </button>
           ))}
         </div>
         <div className="robot-chat" ref={chatRef}>
-          {chat.length === 0 ? (
-            <div className="robot-chat-empty">Dispatch a task — the conversation log builds here.</div>
+          {messages.length === 0 ? (
+            <div className="robot-chat-empty">
+              Dispatch an agent — it explains, live, how that capability is built.
+            </div>
           ) : (
-            chat.map((line, i) => (
-              <div className="robot-chat-line" key={i}>
-                <span className="robot-chat-arrow">▸</span> {line}
+            messages.map((m) => (
+              <div className="robot-msg" key={m.id}>
+                <div className="robot-msg-head">
+                  <span className="robot-msg-name">{AGENTS[m.agent].name}</span>
+                  <span className="robot-msg-task">› {m.task}</span>
+                </div>
+                <div className="robot-msg-metrics">
+                  {AGENTS[m.agent].metrics.map((metric, k) => (
+                    <span
+                      className="robot-metric"
+                      key={metric}
+                      style={{ animationDelay: `${k * 0.12}s` }}
+                    >
+                      {metric}
+                    </span>
+                  ))}
+                </div>
+                <div className="robot-msg-body">
+                  {m.text}
+                  {m.streaming && <span className="robot-caret" />}
+                </div>
               </div>
             ))
           )}

@@ -132,12 +132,12 @@
 
 .robot-chat {
   width: 100%;
-  max-height: 140px;
+  max-height: 230px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
-  padding: 0.9rem 1.1rem;
+  gap: 0.9rem;
+  padding: 1rem 1.1rem;
   border-radius: 14px;
   border: 1px solid rgba(157, 123, 255, 0.22);
   background: rgba(20, 17, 40, 0.5);
@@ -151,18 +151,81 @@
   text-align: center;
 }
 
-.robot-chat-line {
-  font-size: 0.85rem;
-  color: #cabbf2;
-  font-family: "Segoe UI", sans-serif;
-  letter-spacing: 0.01em;
-  line-height: 1.4;
+.robot-msg {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  text-align: left;
   animation: robotChatIn 0.25s ease;
 }
 
-.robot-chat-arrow {
-  color: #c2a4ff;
-  margin-right: 0.3rem;
+.robot-msg-head {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.robot-msg-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #d6c2ff;
+  letter-spacing: 0.02em;
+}
+
+.robot-msg-task {
+  font-size: 0.74rem;
+  color: #7d72a8;
+  font-style: italic;
+}
+
+.robot-msg-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.robot-metric {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #b9e8d2;
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid rgba(120, 220, 170, 0.28);
+  background: rgba(60, 200, 140, 0.08);
+  white-space: nowrap;
+  opacity: 0;
+  animation: robotMetricIn 0.35s ease forwards;
+}
+
+@keyframes robotMetricIn {
+  from { opacity: 0; transform: translateY(3px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.robot-msg-body {
+  font-size: 0.86rem;
+  color: #cabbf2;
+  font-family: "Segoe UI", sans-serif;
+  letter-spacing: 0.01em;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.robot-caret {
+  display: inline-block;
+  width: 7px;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  background: #c2a4ff;
+  animation: robotCaret 0.9s steps(1) infinite;
+}
+
+@keyframes robotCaret {
+  0%, 50% { opacity: 1; }
+  50.01%, 100% { opacity: 0; }
 }
 
 @keyframes robotChatIn {
