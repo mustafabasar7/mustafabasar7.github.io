@@ -1,15 +1,14 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { PROJECTS } from "../lib/agents";
+import { PROJECTS, streamAgent, type RunStatus, type Telemetry } from "../lib/agents";
 import { config } from "../config";
 import "./ProjectDetail.css";
 
 const ModelViewer = lazy(() => import("../components/Robot/ModelViewer"));
 
-// Deliberately slow so a visitor can follow each stage — people focus slowly.
+// Base pace of the terminal sim — divided by the chosen speed.
 const STEP_MS = 1200;
-const WORD_MS = 55;
-const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+const SPEEDS = [0.5, 1, 2];
 
 // Render a document line, highlighting any «...» spans.
 const DocLine = ({ line }: { line: string }) => {
@@ -33,71 +32,78 @@ const ProjectDetail = () => {
   const project = index >= 0 ? PROJECTS[index] : null;
   const cfg = project ? config.projects.find((p) => p.id === project.configId) : null;
 
-  const [termCount, setTermCount] = useState(0);
-  const [docCount, setDocCount] = useState(0);
+  // --- terminal sim (scrubber-controlled) ---
+  const [step, setStep] = useState(0);
+  const [playing, setPlaying] = useState(true);
+  const [speed, setSpeed] = useState(1);
+
+  // --- agent answer (live / cached / demo) ---
   const [text, setText] = useState("");
-  const [phase, setPhase] = useState<"steps" | "typing" | "done">("steps");
-  const [cached, setCached] = useState(false);
-  const [running, setRunning] = useState(false);
-  const runRef = useRef(0);
-  const playedOnce = useRef(false);
+  const [task, setTask] = useState("");
+  const [streaming, setStreaming] = useState(false);
+  const [status, setStatus] = useState<RunStatus | null>(null);
+  const [telemetry, setTelemetry] = useState<Telemetry | null>(null);
+  const acRef = useRef<AbortController | null>(null);
 
-  const play = useCallback(
-    async (instant: boolean) => {
-      if (!project) return;
-      const myRun = ++runRef.current;
-      const alive = () => runRef.current === myRun;
-      setRunning(true);
-      setCached(instant);
+  const stepCount = project?.terminal.length ?? 0;
+  const atEnd = step >= stepCount;
+
+  const runAgent = useCallback(
+    async (taskText: string) => {
+      if (index < 0) return;
+      acRef.current?.abort();
+      const ac = new AbortController();
+      acRef.current = ac;
+      setStreaming(true);
+      setStatus(null);
+      setTelemetry(null);
       setText("");
-      setTermCount(0);
-      setDocCount(0);
-      setPhase("steps");
+      // Replay the terminal alongside so the whole panel comes alive.
+      setStep(0);
+      setPlaying(true);
 
-      if (instant) {
-        setTermCount(project.terminal.length);
-        setDocCount(project.document.lines.length);
-        setText(project.fallback);
-        setPhase("done");
-        setRunning(false);
-        return;
-      }
-
-      // Stage 1 — terminal steps, one slow line at a time.
-      for (let i = 0; i < project.terminal.length; i++) {
-        if (!alive()) return;
-        setTermCount(i + 1);
-        setDocCount(Math.min(i + 1, project.document.lines.length));
-        await sleep(STEP_MS);
-      }
-      if (!alive()) return;
-      setDocCount(project.document.lines.length);
-
-      // Stage 2 — the agent's answer types out slowly.
-      setPhase("typing");
       let acc = "";
-      for (const w of project.fallback.match(/\s*\S+/g) ?? []) {
-        if (!alive()) return;
-        acc += w;
-        setText(acc);
-        await sleep(WORD_MS);
-      }
-      if (!alive()) return;
-      setPhase("done");
-      setRunning(false);
-      playedOnce.current = true;
+      const res = await streamAgent(
+        "project",
+        index,
+        taskText,
+        (chunk) => {
+          if (ac.signal.aborted) return;
+          acc += chunk;
+          setText(acc);
+        },
+        ac.signal
+      );
+      if (ac.signal.aborted) return;
+      setStatus(res.status);
+      setTelemetry(res.telemetry);
+      setStreaming(false);
     },
-    [project]
+    [index]
   );
 
+  // The home page locks `body { overflow: hidden }` for its own scroller; this
+  // is a normal long page, so re-enable native scrolling while it's mounted.
   useEffect(() => {
-    playedOnce.current = false;
-    play(false);
-    return () => {
-      runRef.current++;
-    };
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "auto";
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+
+  // Auto-run with the default task whenever the project changes.
+  useEffect(() => {
+    setTask("");
+    runAgent("");
+    return () => acRef.current?.abort();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug]);
+
+  // Drive the terminal sim one step at a time, honoring pause + speed.
+  useEffect(() => {
+    if (!playing || atEnd) return;
+    const id = setTimeout(() => setStep((s) => Math.min(s + 1, stepCount)), STEP_MS / speed);
+    return () => clearTimeout(id);
+  }, [playing, step, speed, atEnd, stepCount]);
 
   if (!project) {
     return (
@@ -110,14 +116,43 @@ const ProjectDetail = () => {
     );
   }
 
-  const chatBadge = cached ? "⚡ cached · instant" : running ? "● simulating…" : "✓ run complete";
-  const chatBadgeClass = cached ? "pd-badge-cached" : running ? "pd-badge-sim" : "pd-badge-live";
+  const docCount = atEnd ? project.document.lines.length : Math.min(step, project.document.lines.length);
+  const submit = () => runAgent(task.trim());
+
+  const badge = streaming
+    ? "● running…"
+    : status === "live"
+    ? "✓ live · DeepSeek"
+    : status === "cached"
+    ? "⚡ cached · instant"
+    : status === "demo"
+    ? "demo · offline"
+    : "ready";
+  const badgeClass = streaming
+    ? "pd-badge-sim"
+    : status === "live"
+    ? "pd-badge-live"
+    : status === "cached"
+    ? "pd-badge-cached"
+    : "pd-badge-demo";
+
+  const toggle = () => {
+    if (atEnd) {
+      setStep(0);
+      setPlaying(true);
+    } else {
+      setPlaying((p) => !p);
+    }
+  };
+  const stepBack = () => { setPlaying(false); setStep((s) => Math.max(0, s - 1)); };
+  const stepFwd = () => { setPlaying(false); setStep((s) => Math.min(stepCount, s + 1)); };
+  const cycleSpeed = () => setSpeed((sp) => SPEEDS[(SPEEDS.indexOf(sp) + 1) % SPEEDS.length]);
 
   return (
     <div className="pd-page">
       <div className="pd-topbar">
         <Link to="/myworks" className="pd-back" data-cursor="disable">← All Works</Link>
-        <span className="pd-tag">Interactive · simulated run + 3D</span>
+        <span className="pd-tag">Interactive · live agent + playable 3D</span>
       </div>
 
       <div className="pd-head">
@@ -136,29 +171,47 @@ const ProjectDetail = () => {
         <div className="pd-stage">
           <div className="pd-panel-bar">
             <span className="pd-panel-name">3D scene</span>
-            <span className="pd-badge pd-badge-real">● live 3D</span>
+            <span className="pd-badge pd-badge-real">● drag · click to play</span>
           </div>
           <Suspense fallback={<div className="pd-stage-load">loading 3D…</div>}>
-            <ModelViewer url={project.modelUrl} scale={project.modelScale} clip={project.clip} flock={project.flock} />
+            <ModelViewer
+              url={project.modelUrl}
+              scale={project.modelScale}
+              clip={project.clip}
+              flock={project.flock}
+              ground={project.ground}
+              rotX={project.rotX}
+            />
           </Suspense>
         </div>
 
         <div className="pd-workspace">
-          {/* Terminal — representational, revealed step by step */}
+          {/* Terminal — representational, scrubber-controlled */}
           <div className="pd-panel pd-terminal">
             <div className="pd-panel-bar">
               <span className="pd-panel-name">terminal</span>
               <span className="pd-badge pd-badge-sim">
-                {phase === "steps" && running ? `step ${termCount} / ${project.terminal.length}` : "simulated"}
+                {atEnd ? "complete" : `step ${step} / ${stepCount}`}
               </span>
             </div>
             <div className="pd-term-body">
-              {project.terminal.slice(0, termCount).map((line, i) => (
+              {project.terminal.slice(0, step).map((line, i) => (
                 <div className="pd-term-line" key={i}>
                   {line}
-                  {running && phase === "steps" && i === termCount - 1 && <span className="pd-caret" />}
+                  {playing && !atEnd && i === step - 1 && <span className="pd-caret" />}
                 </div>
               ))}
+            </div>
+            <div className="pd-scrub">
+              <button className="pd-scrub-btn" onClick={stepBack} disabled={step === 0} data-cursor="disable" aria-label="step back">◀</button>
+              <button className="pd-scrub-btn" onClick={toggle} data-cursor="disable" aria-label="play/pause">
+                {atEnd ? "↻" : playing ? "❚❚" : "▶"}
+              </button>
+              <button className="pd-scrub-btn" onClick={stepFwd} disabled={atEnd} data-cursor="disable" aria-label="step forward">▶</button>
+              <div className="pd-scrub-track">
+                <div className="pd-scrub-fill" style={{ width: `${stepCount ? (step / stepCount) * 100 : 0}%` }} />
+              </div>
+              <button className="pd-scrub-speed" onClick={cycleSpeed} data-cursor="disable">{speed}×</button>
             </div>
           </div>
 
@@ -175,29 +228,62 @@ const ProjectDetail = () => {
             </div>
           </div>
 
-          {/* Agent answer — typed out slowly */}
+          {/* Agent answer — live / cached / demo */}
           <div className="pd-panel pd-chat">
             <div className="pd-panel-bar">
               <span className="pd-panel-name">LangGraph action</span>
-              <span className={`pd-badge ${chatBadgeClass}`}>{chatBadge}</span>
+              <span className={`pd-badge ${badgeClass}`}>{badge}</span>
             </div>
             <div className="pd-chat-body">
               {text}
-              {running && phase === "typing" && <span className="pd-caret" />}
+              {streaming && <span className="pd-caret" />}
             </div>
+
+            {telemetry && status && (
+              <div className="pd-telemetry">
+                {telemetry.promptTokens != null && <><b>{telemetry.promptTokens}</b> prompt · </>}
+                {telemetry.completionTokens != null && <><b>{telemetry.completionTokens}</b> completion · </>}
+                {telemetry.cacheHitTokens ? <>⚡<b>{telemetry.cacheHitTokens}</b> cached · </> : null}
+                <b>{telemetry.ms}</b> ms · {status}
+              </div>
+            )}
+
+            {project.suggestions && project.suggestions.length > 0 && (
+              <div className="pd-suggest">
+                {project.suggestions.map((s) => (
+                  <button
+                    key={s}
+                    className="pd-chip"
+                    onClick={() => { setTask(s); runAgent(s); }}
+                    disabled={streaming}
+                    data-cursor="disable"
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            )}
+
             <div className="pd-chat-foot">
-              <button
-                className="pd-run"
-                onClick={() => play(playedOnce.current)}
-                disabled={running}
+              <textarea
+                className="pd-input"
+                value={task}
+                onChange={(e) => setTask(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); submit(); }
+                }}
+                placeholder={`Ask this agent anything — e.g. "${project.defaultTask}"`}
+                rows={2}
                 data-cursor="disable"
-              >
-                {running ? "Running…" : playedOnce.current ? "Run again ↻ (cached)" : "Run again ↻"}
+              />
+              <button className="pd-run" onClick={submit} disabled={streaming} data-cursor="disable">
+                {streaming ? "Running…" : "Run ▶"}
               </button>
-              <span className="pd-hint">
-                A step-by-step simulation of the agent run. Run again → served instantly from cache.
-              </span>
             </div>
+            <p className="pd-hint">
+              Type a task and run it — a live DeepSeek-backed LangGraph agent answers, with real
+              token usage below. Re-run the same task → served instantly from cache.
+            </p>
           </div>
         </div>
       </div>
