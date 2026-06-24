@@ -3,7 +3,8 @@
   max-width: var(--cMaxWidth);
   width: var(--cWidth);
   bottom: 0;
-  z-index: 99;
+  /* Keep the social rail above every section (Contact/Work/hero), just under the navbar */
+  z-index: 9990;
   left: 50%;
   transform: translateX(-50%);
 }

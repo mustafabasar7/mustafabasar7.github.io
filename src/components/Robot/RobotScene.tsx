@@ -144,7 +144,7 @@ const RobotScene = ({ onReady, onWorkerClick }: Props) => {
     let autoAt = 2.5;
     let manualPauseUntil = 0;
     // The supervisor only "likes" after a worker we clicked finishes its task.
-    const LIKE_DELAY = 2.4; // let the worker's action play out first
+    const LIKE_DELAY = 1.4; // a bit past the middle of the worker's action — not too early, not at the very end
     const LIKE_HOLD = 1.8; // how long to hold the ThumbsUp before idling
     let likeAt = 0; // when to play the supervisor's ThumbsUp (0 = none pending)
     let supervisorIdleAt = 0; // when to return the supervisor to Idle
