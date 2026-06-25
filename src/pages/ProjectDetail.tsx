@@ -1,10 +1,9 @@
-import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { PROJECTS, streamAgent, type RunStatus, type Telemetry } from "../lib/agents";
 import { config } from "../config";
+import ProjectGraph from "../components/Robot/ProjectGraph";
 import "./ProjectDetail.css";
-
-const ModelViewer = lazy(() => import("../components/Robot/ModelViewer"));
 
 // Base pace of the terminal sim — divided by the chosen speed.
 const STEP_MS = 1200;
@@ -34,7 +33,7 @@ const ProjectDetail = () => {
 
   // --- terminal sim (scrubber-controlled) ---
   const [step, setStep] = useState(0);
-  const [playing, setPlaying] = useState(true);
+  const [playing, setPlaying] = useState(false); // was true — page is calm until a task runs
   const [speed, setSpeed] = useState(1);
 
   // --- agent answer (live / cached / demo) ---
@@ -90,12 +89,18 @@ const ProjectDetail = () => {
     return () => { document.body.style.overflow = prev; };
   }, []);
 
-  // Auto-run with the default task whenever the project changes.
+  // Reset to a calm, empty state when the project changes — nothing runs until
+  // the visitor clicks a chip or hits Run.
   useEffect(() => {
+    acRef.current?.abort();
     setTask("");
-    runAgent("");
+    setText("");
+    setStatus(null);
+    setTelemetry(null);
+    setStreaming(false);
+    setStep(0);
+    setPlaying(false);
     return () => acRef.current?.abort();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug]);
 
   // Drive the terminal sim one step at a time, honoring pause + speed.
@@ -167,71 +172,22 @@ const ProjectDetail = () => {
         </div>
       </div>
 
+      <ol className="pd-flow" aria-label="agent pipeline">
+        {project.flow.map((label, i) => (
+          <li className="pd-flow-step" key={i}>
+            <span className="pd-flow-num">{i + 1}</span>
+            <span className="pd-flow-label">{label}</span>
+          </li>
+        ))}
+      </ol>
+
       <div className="pd-grid">
-        <div className="pd-stage">
-          <div className="pd-panel-bar">
-            <span className="pd-panel-name">3D scene</span>
-            <span className="pd-badge pd-badge-real">● drag · click to play</span>
-          </div>
-          <Suspense fallback={<div className="pd-stage-load">loading 3D…</div>}>
-            <ModelViewer
-              url={project.modelUrl}
-              scale={project.modelScale}
-              clip={project.clip}
-              flock={project.flock}
-              ground={project.ground}
-              rotX={project.rotX}
-            />
-          </Suspense>
-        </div>
-
-        <div className="pd-workspace">
-          {/* Terminal — representational, scrubber-controlled */}
-          <div className="pd-panel pd-terminal">
-            <div className="pd-panel-bar">
-              <span className="pd-panel-name">terminal</span>
-              <span className="pd-badge pd-badge-sim">
-                {atEnd ? "complete" : `step ${step} / ${stepCount}`}
-              </span>
-            </div>
-            <div className="pd-term-body">
-              {project.terminal.slice(0, step).map((line, i) => (
-                <div className="pd-term-line" key={i}>
-                  {line}
-                  {playing && !atEnd && i === step - 1 && <span className="pd-caret" />}
-                </div>
-              ))}
-            </div>
-            <div className="pd-scrub">
-              <button className="pd-scrub-btn" onClick={stepBack} disabled={step === 0} data-cursor="disable" aria-label="step back">◀</button>
-              <button className="pd-scrub-btn" onClick={toggle} data-cursor="disable" aria-label="play/pause">
-                {atEnd ? "↻" : playing ? "❚❚" : "▶"}
-              </button>
-              <button className="pd-scrub-btn" onClick={stepFwd} disabled={atEnd} data-cursor="disable" aria-label="step forward">▶</button>
-              <div className="pd-scrub-track">
-                <div className="pd-scrub-fill" style={{ width: `${stepCount ? (step / stepCount) * 100 : 0}%` }} />
-              </div>
-              <button className="pd-scrub-speed" onClick={cycleSpeed} data-cursor="disable">{speed}×</button>
-            </div>
-          </div>
-
-          {/* Document — representational */}
-          <div className="pd-panel pd-document">
-            <div className="pd-panel-bar">
-              <span className="pd-panel-name">{project.document.title}</span>
-              <span className="pd-badge pd-badge-sim">simulated</span>
-            </div>
-            <div className="pd-doc-body">
-              {project.document.lines.slice(0, docCount).map((line, i) => (
-                <DocLine line={line} key={i} />
-              ))}
-            </div>
-          </div>
-
-          {/* Agent answer — live / cached / demo */}
-          <div className="pd-panel pd-chat">
+        {/* HERO ROW: live chat (dominant) + 3D scene (supporting) */}
+        <div className="pd-hero">
+          <div className="pd-panel pd-chat pd-hero-chat">
             <div className="pd-panel-bar">
               <span className="pd-panel-name">LangGraph action</span>
+              <span className="pd-panel-sub">{project.subtitles.chat}</span>
               <span className={`pd-badge ${badgeClass}`}>{badge}</span>
             </div>
             <div className="pd-chat-body">
@@ -249,7 +205,7 @@ const ProjectDetail = () => {
             )}
 
             {project.suggestions && project.suggestions.length > 0 && (
-              <div className="pd-suggest">
+              <div className={`pd-suggest${!text && !streaming ? " is-inviting" : ""}`}>
                 {project.suggestions.map((s) => (
                   <button
                     key={s}
@@ -284,6 +240,59 @@ const ProjectDetail = () => {
               Type a task and run it — a live DeepSeek-backed LangGraph agent answers, with real
               token usage below. Re-run the same task → served instantly from cache.
             </p>
+          </div>
+          <div className="pd-stage pd-hero-stage">
+            <div className="pd-panel-bar">
+              <span className="pd-panel-name">agent graph</span>
+              <span className="pd-panel-sub">{project.subtitles.scene}</span>
+              <span className="pd-badge pd-badge-real">● live flow</span>
+            </div>
+            <ProjectGraph variant={project.slug} running={streaming || playing} />
+          </div>
+        </div>
+
+        {/* EVIDENCE STRIP: representational terminal + document */}
+        <div className="pd-evidence">
+          <div className="pd-panel pd-terminal">
+            <div className="pd-panel-bar">
+              <span className="pd-panel-name">terminal</span>
+              <span className="pd-panel-sub">{project.subtitles.terminal}</span>
+              <span className="pd-badge pd-badge-sim">
+                {atEnd ? "example flow · done" : `example flow · ${step}/${stepCount}`}
+              </span>
+            </div>
+            <div className="pd-term-body">
+              {project.terminal.slice(0, step).map((line, i) => (
+                <div className="pd-term-line" key={i}>
+                  {line}
+                  {playing && !atEnd && i === step - 1 && <span className="pd-caret" />}
+                </div>
+              ))}
+            </div>
+            <div className="pd-scrub">
+              <button className="pd-scrub-btn" onClick={stepBack} disabled={step === 0} data-cursor="disable" aria-label="step back">◀</button>
+              <button className="pd-scrub-btn" onClick={toggle} data-cursor="disable" aria-label="play/pause">
+                {atEnd ? "↻" : playing ? "❚❚" : "▶"}
+              </button>
+              <button className="pd-scrub-btn" onClick={stepFwd} disabled={atEnd} data-cursor="disable" aria-label="step forward">▶</button>
+              <div className="pd-scrub-track">
+                <div className="pd-scrub-fill" style={{ width: `${stepCount ? (step / stepCount) * 100 : 0}%` }} />
+              </div>
+              <button className="pd-scrub-speed" onClick={cycleSpeed} data-cursor="disable">{speed}×</button>
+            </div>
+          </div>
+
+          <div className="pd-panel pd-document">
+            <div className="pd-panel-bar">
+              <span className="pd-panel-name">{project.document.title}</span>
+              <span className="pd-panel-sub">{project.subtitles.spec}</span>
+              <span className="pd-badge pd-badge-sim">example flow</span>
+            </div>
+            <div className="pd-doc-body">
+              {project.document.lines.slice(0, docCount).map((line, i) => (
+                <DocLine line={line} key={i} />
+              ))}
+            </div>
           </div>
         </div>
       </div>
