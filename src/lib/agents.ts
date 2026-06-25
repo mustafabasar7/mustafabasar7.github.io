@@ -96,6 +96,10 @@ export interface ProjectMeta {
   terminal: string[];
   /** Simulated document lines; entries wrapped in «» render as highlighted hits. */
   document: { title: string; lines: string[] };
+  /** Four-step pipeline shown in the flow ribbon: ①spec ②terminal ③chat ④scene. */
+  flow: [string, string, string, string];
+  /** One-line plain-language subtitle under each panel title. */
+  subtitles: { spec: string; terminal: string; chat: string; scene: string };
 }
 
 /** Real, provider-reported telemetry surfaced under the live chat. */
@@ -147,6 +151,13 @@ export const PROJECTS: ProjectMeta[] = [
         "4. «compliance» review before publish",
       ],
     },
+    flow: ["spec'i okur", "ekibe dağıtır", "sana cevap verir", "sonucu sahnede gösterir"],
+    subtitles: {
+      spec: "Ajanın uyması gereken gereksinimler",
+      terminal: "Süpervizör işi adım adım dağıtırken",
+      chat: "Senin sorduğun şeye gerçek yanıt",
+      scene: "Ekibi yöneten şef — rolü canlandırıyor",
+    },
   },
   {
     slug: "tool-routing",
@@ -184,6 +195,13 @@ export const PROJECTS: ProjectMeta[] = [
         "→ routed, not hardcoded",
       ],
     },
+    flow: ["niyeti okur", "doğru araca yönlendirir", "sana cevap verir", "sonucu sahnede gösterir"],
+    subtitles: {
+      spec: "Gelen isteğin niyet kırılımı",
+      terminal: "Her adımı doğru araca yönlendirirken",
+      chat: "Senin sorduğun şeye gerçek yanıt",
+      scene: "İsteği doğru araca sevk eden figür",
+    },
   },
   {
     slug: "persistent-state",
@@ -220,6 +238,13 @@ export const PROJECTS: ProjectMeta[] = [
         "status: «resumable»",
       ],
     },
+    flow: ["durumu yükler", "adımları işler", "sana cevap verir", "sonucu sahnede gösterir"],
+    subtitles: {
+      spec: "Kaydedilen kontrol noktası (checkpoint)",
+      terminal: "Kaldığı yerden devam ederken",
+      chat: "Senin sorduğun şeye gerçek yanıt",
+      scene: "Duraklayıp kaldığı yerden dönen figür",
+    },
   },
   {
     slug: "swarm",
@@ -255,6 +280,13 @@ export const PROJECTS: ProjectMeta[] = [
         "handoff: dynamic",
         "collisions: «0»",
       ],
+    },
+    flow: ["sürüyü kurar", "işi böler", "sana cevap verir", "sonucu sahnede gösterir"],
+    subtitles: {
+      spec: "Sürünün iş bölümü haritası",
+      terminal: "Ajanlar çakışmadan koordine olurken",
+      chat: "Senin sorduğun şeye gerçek yanıt",
+      scene: "Uyumlu çalışan küçük ekip",
     },
   },
   {
@@ -293,6 +325,13 @@ export const PROJECTS: ProjectMeta[] = [
         "impact: removes from public view",
         "decision: «awaiting human»",
       ],
+    },
+    flow: ["riskli adıma gelir", "insan onayını bekler", "sana cevap verir", "sonucu sahnede gösterir"],
+    subtitles: {
+      spec: "İnsan onayı bekleyen aksiyon",
+      terminal: "interrupt() ile durup beklerken",
+      chat: "Senin sorduğun şeye gerçek yanıt",
+      scene: "Onay veren insan — döngüdeki kişi",
     },
   },
 ];
