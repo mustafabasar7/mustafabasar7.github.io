@@ -34,7 +34,7 @@ const ProjectDetail = () => {
 
   // --- terminal sim (scrubber-controlled) ---
   const [step, setStep] = useState(0);
-  const [playing, setPlaying] = useState(true);
+  const [playing, setPlaying] = useState(false); // was true — page is calm until a task runs
   const [speed, setSpeed] = useState(1);
 
   // --- agent answer (live / cached / demo) ---
@@ -90,12 +90,18 @@ const ProjectDetail = () => {
     return () => { document.body.style.overflow = prev; };
   }, []);
 
-  // Auto-run with the default task whenever the project changes.
+  // Reset to a calm, empty state when the project changes — nothing runs until
+  // the visitor clicks a chip or hits Run.
   useEffect(() => {
+    acRef.current?.abort();
     setTask("");
-    runAgent("");
+    setText("");
+    setStatus(null);
+    setTelemetry(null);
+    setStreaming(false);
+    setStep(0);
+    setPlaying(false);
     return () => acRef.current?.abort();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug]);
 
   // Drive the terminal sim one step at a time, honoring pause + speed.
