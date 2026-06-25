@@ -66,18 +66,6 @@
   box-shadow: 0 20px 40px rgba(194, 164, 255, 0.15);
 }
 
-.myworks-card-number {
-  position: absolute;
-  top: 15px;
-  left: 15px;
-  font-size: 14px;
-  color: var(--accentColor);
-  font-weight: 600;
-  background: rgba(0, 0, 0, 0.5);
-  padding: 5px 12px;
-  border-radius: 20px;
-  z-index: 1;
-}
 
 .myworks-card-image {
   width: 100%;

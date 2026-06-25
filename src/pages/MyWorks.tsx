@@ -8,7 +8,7 @@ type Project = (typeof config.projects)[number];
 
 // A live "peek" over the card image: on hover, the agent's first command types
 // itself out and the metric chips animate in — a taste of the detail page.
-const WorkCard = ({ project, demo, index }: { project: Project; demo?: ProjectMeta; index: number }) => {
+const WorkCard = ({ project, demo }: { project: Project; demo?: ProjectMeta }) => {
   const [hover, setHover] = useState(false);
   const [typed, setTyped] = useState("");
   const line = demo?.terminal[1] ?? demo?.terminal[0] ?? "";
@@ -26,7 +26,6 @@ const WorkCard = ({ project, demo, index }: { project: Project; demo?: ProjectMe
 
   const inner = (
     <>
-      <div className="myworks-card-number">0{index + 1}</div>
       <div className="myworks-card-image">
         <img src={project.image} alt={project.title} />
         {demo && (
@@ -103,7 +102,7 @@ const MyWorks = () => {
 
       <div className="myworks-grid">
         {config.projects.map((project, index) => (
-          <WorkCard key={project.id} project={project} demo={PROJECTS[index]} index={index} />
+          <WorkCard key={project.id} project={project} demo={PROJECTS[index]} />
         ))}
       </div>
     </div>
