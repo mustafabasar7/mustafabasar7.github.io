@@ -379,3 +379,12 @@
 @media (max-width: 900px) {
   .pd-hero, .pd-evidence { grid-template-columns: 1fr; }
 }
+
+/* Inline link inside the chat hint (e.g. pointer to the live Vercel build). */
+.pd-link {
+  color: #b9a3ff;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.2s ease;
+}
+.pd-link:hover { color: #d9caff; }
