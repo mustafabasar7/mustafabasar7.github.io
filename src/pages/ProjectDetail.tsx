@@ -173,12 +173,22 @@ const ProjectDetail = () => {
         </div>
       </div>
 
+      <ol className="pd-flow" aria-label="agent pipeline">
+        {project.flow.map((label, i) => (
+          <li className="pd-flow-step" key={i}>
+            <span className="pd-flow-num">{i + 1}</span>
+            <span className="pd-flow-label">{label}</span>
+          </li>
+        ))}
+      </ol>
+
       <div className="pd-grid">
         {/* HERO ROW: live chat (dominant) + 3D scene (supporting) */}
         <div className="pd-hero">
           <div className="pd-panel pd-chat pd-hero-chat">
             <div className="pd-panel-bar">
               <span className="pd-panel-name">LangGraph action</span>
+              <span className="pd-panel-sub">{project.subtitles.chat}</span>
               <span className={`pd-badge ${badgeClass}`}>{badge}</span>
             </div>
             <div className="pd-chat-body">
@@ -235,6 +245,7 @@ const ProjectDetail = () => {
           <div className="pd-stage pd-hero-stage">
             <div className="pd-panel-bar">
               <span className="pd-panel-name">3D scene</span>
+              <span className="pd-panel-sub">{project.subtitles.scene}</span>
               <span className="pd-badge pd-badge-real">● drag · click to play</span>
             </div>
             <Suspense fallback={<div className="pd-stage-load">loading 3D…</div>}>
@@ -255,8 +266,9 @@ const ProjectDetail = () => {
           <div className="pd-panel pd-terminal">
             <div className="pd-panel-bar">
               <span className="pd-panel-name">terminal</span>
+              <span className="pd-panel-sub">{project.subtitles.terminal}</span>
               <span className="pd-badge pd-badge-sim">
-                {atEnd ? "complete" : `step ${step} / ${stepCount}`}
+                {atEnd ? "örnek akış · tamam" : `örnek akış · ${step}/${stepCount}`}
               </span>
             </div>
             <div className="pd-term-body">
@@ -283,7 +295,8 @@ const ProjectDetail = () => {
           <div className="pd-panel pd-document">
             <div className="pd-panel-bar">
               <span className="pd-panel-name">{project.document.title}</span>
-              <span className="pd-badge pd-badge-sim">simulated</span>
+              <span className="pd-panel-sub">{project.subtitles.spec}</span>
+              <span className="pd-badge pd-badge-sim">örnek akış</span>
             </div>
             <div className="pd-doc-body">
               {project.document.lines.slice(0, docCount).map((line, i) => (

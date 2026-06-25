@@ -33,7 +33,20 @@
   border-radius: 999px;
 }
 
-.pd-head { margin-bottom: 1.3rem; }
+.pd-head { margin-bottom: 0.6rem; }
+
+.pd-flow {
+  display: flex; flex-wrap: wrap; gap: 0.5rem 1rem;
+  list-style: none; margin: 0.75rem 0 0; padding: 0;
+  font-size: 0.85rem; color: var(--pd-muted, #9aa);
+}
+.pd-flow-step { display: inline-flex; align-items: center; gap: 0.45rem; }
+.pd-flow-num {
+  display: inline-grid; place-items: center;
+  width: 1.4em; height: 1.4em; border-radius: 50%;
+  background: rgba(255,255,255,0.08); font-weight: 700; font-size: 0.8em;
+}
+.pd-panel-sub { font-size: 0.78rem; opacity: 0.7; margin-left: 0.6rem; }
 
 .pd-category {
   color: #b07bff;
