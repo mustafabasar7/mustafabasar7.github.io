@@ -77,3 +77,18 @@ Sourcing: download GLBs from Quaternius/poly.pizza into `public/models/lib/` (Gi
 ## Out of Scope (separate sub-projects)
 
 Home-page sections — Hero/Landing, About, WhatIDo, Career, RobotSection, Work, TechStack, CallToAction, Contact — and the `/myworks` list page. These get their own spec → plan cycles after this one ships.
+
+## Revision (2026-06-26) — 3D character → per-project agent graph
+
+After implementing the animated human cast, every character (King, Worker, SWAT,
+astronaut…) still read as **irrelevant** to AI agents — the recurring complaint
+across the whole project. Root cause: a character beside the demo is decorative;
+nothing about a human depicts multi-agent orchestration. Decision: **drop the 3D
+character entirely** and replace the stage panel with a per-project LangGraph-style
+topology (pure SVG/CSS, built on the existing `AgentGraph`). Five distinct shapes —
+supervisor fan-out, tool router, checkpoint loop, swarm hierarchy, HITL gate — so
+the visual *is* the system and "what's this got to do with it?" becomes impossible.
+Lightly reactive (intensifies while a task streams). `ModelViewer` + all
+`public/models/lib/*.glb` removed (only the detail page used them). All detail-page
+UI copy unified to **English** to match the rest of the site. Implemented in commit
+6b855ee; supersedes the "animated human cast" section above.
