@@ -1,0 +1,85 @@
+.project-graph {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.project-graph svg {
+  width: min(100%, 360px);
+  height: auto;
+  overflow: visible;
+}
+
+/* edges */
+.pg-edges path {
+  fill: none;
+  stroke: #8d7bd6;
+  stroke-width: 2;
+  stroke-linecap: round;
+  opacity: 0.5;
+  transition: opacity 0.4s ease, stroke 0.4s ease;
+}
+.pg-edges .pg-cycle {
+  stroke: #c2a4ff;
+  stroke-dasharray: 4 6;
+  opacity: 0.4;
+}
+
+/* flowing pulses */
+.pg-pulse {
+  fill: #e6c3ff;
+  filter: drop-shadow(0 0 5px #c2a4ff);
+  opacity: 0.85;
+}
+
+/* nodes */
+.pg-node circle {
+  fill: #1f1b38;
+  stroke: #9d7bff;
+  stroke-width: 2.5;
+  animation: pgNodeGlow 4s ease-in-out infinite;
+  transition: stroke 0.4s ease;
+}
+.pg-node.key circle { stroke: #c2a4ff; stroke-width: 3; }
+.pg-node.gate circle { stroke: #ff9d7b; stroke-width: 3; fill: #2a1d20; }
+.pg-node.ok circle { stroke: #7be0a0; }
+.pg-node.bad circle { stroke: #e07b8a; }
+.pg-node text {
+  fill: #c9b9f5;
+  font-size: 11px;
+  font-weight: 600;
+  text-anchor: middle;
+  font-family: "Segoe UI", Arial, sans-serif;
+  letter-spacing: 0.01em;
+}
+.pg-node.key text { fill: #f0e9ff; font-weight: 700; }
+.pg-node.gate text { fill: #ffd9c8; font-weight: 700; }
+.pg-node.sm text { font-size: 10px; }
+
+@keyframes pgNodeGlow {
+  0%, 65%, 100% { stroke-opacity: 0.55; filter: none; }
+  12%, 28% { stroke-opacity: 1; filter: drop-shadow(0 0 6px #c2a4ff); }
+}
+
+/* reactive: a task is streaming / terminal is playing — the whole graph wakes up */
+.project-graph.is-running .pg-edges path { opacity: 0.85; }
+.project-graph.is-running .pg-pulse { opacity: 1; filter: drop-shadow(0 0 7px #d9b3ff); }
+.project-graph.is-running .pg-node circle { animation-duration: 1.8s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pg-node circle { animation: none; stroke-opacity: 0.8; }
+  .pg-pulse { display: none; }
+}
+
+.pg-caption {
+  margin-top: 0.6rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #9d8fd0;
+  font-family: "Segoe UI", Arial, sans-serif;
+}

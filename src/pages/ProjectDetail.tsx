@@ -1,10 +1,9 @@
-import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { PROJECTS, streamAgent, type RunStatus, type Telemetry } from "../lib/agents";
 import { config } from "../config";
+import ProjectGraph from "../components/Robot/ProjectGraph";
 import "./ProjectDetail.css";
-
-const ModelViewer = lazy(() => import("../components/Robot/ModelViewer"));
 
 // Base pace of the terminal sim — divided by the chosen speed.
 const STEP_MS = 1200;
@@ -244,20 +243,11 @@ const ProjectDetail = () => {
           </div>
           <div className="pd-stage pd-hero-stage">
             <div className="pd-panel-bar">
-              <span className="pd-panel-name">3D scene</span>
+              <span className="pd-panel-name">agent graph</span>
               <span className="pd-panel-sub">{project.subtitles.scene}</span>
-              <span className="pd-badge pd-badge-real">● drag · click to play</span>
+              <span className="pd-badge pd-badge-real">● live flow</span>
             </div>
-            <Suspense fallback={<div className="pd-stage-load">loading 3D…</div>}>
-              <ModelViewer
-                url={project.modelUrl}
-                scale={project.modelScale}
-                clip={project.clip}
-                flock={project.flock}
-                ground={project.ground}
-                rotX={project.rotX}
-              />
-            </Suspense>
+            <ProjectGraph variant={project.slug} running={streaming || playing} />
           </div>
         </div>
 
@@ -268,7 +258,7 @@ const ProjectDetail = () => {
               <span className="pd-panel-name">terminal</span>
               <span className="pd-panel-sub">{project.subtitles.terminal}</span>
               <span className="pd-badge pd-badge-sim">
-                {atEnd ? "örnek akış · tamam" : `örnek akış · ${step}/${stepCount}`}
+                {atEnd ? "example flow · done" : `example flow · ${step}/${stepCount}`}
               </span>
             </div>
             <div className="pd-term-body">
@@ -296,7 +286,7 @@ const ProjectDetail = () => {
             <div className="pd-panel-bar">
               <span className="pd-panel-name">{project.document.title}</span>
               <span className="pd-panel-sub">{project.subtitles.spec}</span>
-              <span className="pd-badge pd-badge-sim">örnek akış</span>
+              <span className="pd-badge pd-badge-sim">example flow</span>
             </div>
             <div className="pd-doc-body">
               {project.document.lines.slice(0, docCount).map((line, i) => (

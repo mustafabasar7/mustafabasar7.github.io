@@ -78,18 +78,6 @@ export interface ProjectMeta {
   defaultTask: string;
   /** Doc-grounded demonstration used when no live backend is available. */
   fallback: string;
-  /** Ready-made GLB shown on the detail page (swap the URL to change the model). */
-  modelUrl: string;
-  /** Optional uniform scale override for the model. */
-  modelScale?: number;
-  /** Preferred animation clip name; falls back to the model's first clip. */
-  clip?: string;
-  /** Upright correction (radians) for models exported Z-up instead of Y-up. */
-  rotX?: number;
-  /** If set, render a moving flock of these model URLs (swarm visual). */
-  flock?: string[];
-  /** Flock variant: keep the flock on the ground (a pack) instead of flying. */
-  ground?: boolean;
   /** One-click example tasks shown as chips under the live chat. */
   suggestions?: string[];
   /** Simulated terminal lines for the left panel (representational). */
@@ -124,10 +112,6 @@ export const PROJECTS: ProjectMeta[] = [
     defaultTask: "Decompose 'publish a vetted breaking-news article' across the agent team.",
     fallback:
       "I'm the orchestration layer. A central supervisor coordinates specialized agents, delegating through tool-based handoff — a handoff tool returns a Command that routes to the target agent with a task description, and Send dispatches multiple workers in parallel. For your task: the supervisor splits 'publish a vetted breaking-news article' into research, drafting, fact-check and compliance, hands each to the right worker, runs the independent ones in parallel, then merges results — the supervisor pattern Mustafa ships for multi-step agent workflows.",
-    // The conductor — a single figure leading the agent team.
-    modelUrl: "/models/lib/Conductor.glb",
-    clip: "CharacterArmature|Interact",
-    modelScale: 1.4,
     suggestions: [
       "Plan a product launch across research, copy, and legal.",
       "Split 'migrate 2TB of media' into parallel worker jobs.",
@@ -150,12 +134,12 @@ export const PROJECTS: ProjectMeta[] = [
         "4. «compliance» review before publish",
       ],
     },
-    flow: ["spec'i okur", "ekibe dağıtır", "sana cevap verir", "sonucu sahnede gösterir"],
+    flow: ["reads the spec", "delegates to the team", "answers you", "renders the result"],
     subtitles: {
-      spec: "Ajanın uyması gereken gereksinimler",
-      terminal: "Süpervizör işi adım adım dağıtırken",
-      chat: "Senin sorduğun şeye gerçek yanıt",
-      scene: "Ekibi yöneten şef — rolü canlandırıyor",
+      spec: "The requirements the agent must satisfy",
+      terminal: "The supervisor delegating, step by step",
+      chat: "A real answer to what you asked",
+      scene: "Supervisor fans work out to the workers",
     },
   },
   {
@@ -170,9 +154,6 @@ export const PROJECTS: ProjectMeta[] = [
     defaultTask: "Route a mixed request: summarize a PDF, then check it for policy violations.",
     fallback:
       "I'm the dynamic router. Instead of a fixed toolchain, an LLM inspects the current state and user intent and routes each step to the right capability, then invokes agents in parallel — about 5 model calls and ~9K tokens, more efficient than sequential handoffs. For your task: I'd recognize two intents, route the PDF to the summarizer and the result to the policy checker, run what I can in parallel, and return one merged answer — real-time routing driven by latent context, not a hardcoded pipeline.",
-    modelUrl: "/models/lib/Dispatcher.glb",
-    clip: "CharacterArmature|Interact",
-    modelScale: 1.4,
     suggestions: [
       "Summarize a contract, then flag any policy violations.",
       "Translate this email and check it for sensitive data.",
@@ -195,12 +176,12 @@ export const PROJECTS: ProjectMeta[] = [
         "→ routed, not hardcoded",
       ],
     },
-    flow: ["niyeti okur", "doğru araca yönlendirir", "sana cevap verir", "sonucu sahnede gösterir"],
+    flow: ["reads the intent", "routes to the right tool", "answers you", "renders the result"],
     subtitles: {
-      spec: "Gelen isteğin niyet kırılımı",
-      terminal: "Her adımı doğru araca yönlendirirken",
-      chat: "Senin sorduğun şeye gerçek yanıt",
-      scene: "İsteği doğru araca sevk eden figür",
+      spec: "The intent breakdown of the request",
+      terminal: "Routing each step to the right tool",
+      chat: "A real answer to what you asked",
+      scene: "Routes each request to the right tool",
     },
   },
   {
@@ -215,9 +196,6 @@ export const PROJECTS: ProjectMeta[] = [
     defaultTask: "Resume a 3-day ingestion workflow exactly where it was interrupted.",
     fallback:
       "I'm the persistence layer. The graph is compiled with a checkpointer and run under a thread_id, so state is saved at every step and a long-running task can pause and resume cleanly while retaining memory. For your task: the 3-day ingestion run is checkpointed continuously; after an interruption I reload the saved state for its thread_id and continue from the exact step it stopped on — no re-processing, no lost context. This is how Mustafa keeps long-horizon agents durable.",
-    modelUrl: "/models/lib/Keeper.glb",
-    clip: "CharacterArmature|Idle",
-    modelScale: 1.4,
     suggestions: [
       "Resume a crawl that died at document 4,000 of 12,000.",
       "Recover an agent run after a 2-day outage.",
@@ -239,12 +217,12 @@ export const PROJECTS: ProjectMeta[] = [
         "status: «resumable»",
       ],
     },
-    flow: ["durumu yükler", "adımları işler", "sana cevap verir", "sonucu sahnede gösterir"],
+    flow: ["loads the state", "works the steps", "answers you", "renders the result"],
     subtitles: {
-      spec: "Kaydedilen kontrol noktası (checkpoint)",
-      terminal: "Kaldığı yerden devam ederken",
-      chat: "Senin sorduğun şeye gerçek yanıt",
-      scene: "Duraklayıp kaldığı yerden dönen figür",
+      spec: "The saved checkpoint",
+      terminal: "Resuming from where it stopped",
+      chat: "A real answer to what you asked",
+      scene: "Pauses at the checkpoint and resumes",
     },
   },
   {
@@ -259,11 +237,6 @@ export const PROJECTS: ProjectMeta[] = [
     defaultTask: "Coordinate 20 agents indexing 50 media brands without collisions.",
     fallback:
       "I'm the swarm coordinator. Specialized agents dynamically hand off control to one another and resume conversations through handoff tools; combined with multi-level supervisor hierarchies, this structures how a large, decentralized swarm divides and synchronizes work. For your task: I'd shard the 50 media brands across 20 agents under sub-supervisors, let agents hand off edge cases to specialists, and synchronize state so nobody double-indexes — coordination models for decentralized agent ecosystems.",
-    modelUrl: "/models/lib/TeamA.glb",
-    flock: ["/models/lib/TeamA.glb", "/models/lib/TeamB.glb", "/models/lib/TeamC.glb"],
-    ground: true,
-    clip: "CharacterArmature|Walk",
-    modelScale: 1.2,
     suggestions: [
       "Index 50 brands across 20 agents with zero collisions.",
       "Crawl 1M pages split over a 3-level agent hierarchy.",
@@ -285,12 +258,12 @@ export const PROJECTS: ProjectMeta[] = [
         "collisions: «0»",
       ],
     },
-    flow: ["sürüyü kurar", "işi böler", "sana cevap verir", "sonucu sahnede gösterir"],
+    flow: ["spawns the swarm", "splits the work", "answers you", "renders the result"],
     subtitles: {
-      spec: "Sürünün iş bölümü haritası",
-      terminal: "Ajanlar çakışmadan koordine olurken",
-      chat: "Senin sorduğun şeye gerçek yanıt",
-      scene: "Uyumlu çalışan küçük ekip",
+      spec: "The swarm's work-division map",
+      terminal: "Agents coordinating without collisions",
+      chat: "A real answer to what you asked",
+      scene: "Swarm coordinated under sub-supervisors",
     },
   },
   {
@@ -305,10 +278,6 @@ export const PROJECTS: ProjectMeta[] = [
     defaultTask: "Gate an automated mass-unpublish action behind human approval.",
     fallback:
       "I'm the HITL safety protocol. Before a sensitive action runs, interrupt() pauses the graph and surfaces a payload for approval; the run only continues when you resume with Command(resume=...), routing to proceed or cancel — preserving human agency and auditability. For your task: the automated mass-unpublish hits my gate, freezes, and waits for a human to approve or reject with the full context shown — safety-focused interruption patterns that keep a person in control of irreversible steps.",
-    // A human in the loop — the approver who must sign off before risky steps.
-    modelUrl: "/models/lib/BusinessMan.glb",
-    modelScale: 1.4,
-    clip: "Wave",
 
     suggestions: [
       "Gate an automated mass-delete behind human approval.",
@@ -330,12 +299,12 @@ export const PROJECTS: ProjectMeta[] = [
         "decision: «awaiting human»",
       ],
     },
-    flow: ["riskli adıma gelir", "insan onayını bekler", "sana cevap verir", "sonucu sahnede gösterir"],
+    flow: ["reaches a risky step", "waits for human approval", "answers you", "renders the result"],
     subtitles: {
-      spec: "İnsan onayı bekleyen aksiyon",
-      terminal: "interrupt() ile durup beklerken",
-      chat: "Senin sorduğun şeye gerçek yanıt",
-      scene: "Onay veren insan — döngüdeki kişi",
+      spec: "The action awaiting human approval",
+      terminal: "Paused at interrupt(), awaiting a human",
+      chat: "A real answer to what you asked",
+      scene: "Flow waits at the approval gate",
     },
   },
 ];
