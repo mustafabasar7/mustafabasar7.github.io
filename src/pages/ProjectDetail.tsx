@@ -174,68 +174,9 @@ const ProjectDetail = () => {
       </div>
 
       <div className="pd-grid">
-        <div className="pd-stage">
-          <div className="pd-panel-bar">
-            <span className="pd-panel-name">3D scene</span>
-            <span className="pd-badge pd-badge-real">● drag · click to play</span>
-          </div>
-          <Suspense fallback={<div className="pd-stage-load">loading 3D…</div>}>
-            <ModelViewer
-              url={project.modelUrl}
-              scale={project.modelScale}
-              clip={project.clip}
-              flock={project.flock}
-              ground={project.ground}
-              rotX={project.rotX}
-            />
-          </Suspense>
-        </div>
-
-        <div className="pd-workspace">
-          {/* Terminal — representational, scrubber-controlled */}
-          <div className="pd-panel pd-terminal">
-            <div className="pd-panel-bar">
-              <span className="pd-panel-name">terminal</span>
-              <span className="pd-badge pd-badge-sim">
-                {atEnd ? "complete" : `step ${step} / ${stepCount}`}
-              </span>
-            </div>
-            <div className="pd-term-body">
-              {project.terminal.slice(0, step).map((line, i) => (
-                <div className="pd-term-line" key={i}>
-                  {line}
-                  {playing && !atEnd && i === step - 1 && <span className="pd-caret" />}
-                </div>
-              ))}
-            </div>
-            <div className="pd-scrub">
-              <button className="pd-scrub-btn" onClick={stepBack} disabled={step === 0} data-cursor="disable" aria-label="step back">◀</button>
-              <button className="pd-scrub-btn" onClick={toggle} data-cursor="disable" aria-label="play/pause">
-                {atEnd ? "↻" : playing ? "❚❚" : "▶"}
-              </button>
-              <button className="pd-scrub-btn" onClick={stepFwd} disabled={atEnd} data-cursor="disable" aria-label="step forward">▶</button>
-              <div className="pd-scrub-track">
-                <div className="pd-scrub-fill" style={{ width: `${stepCount ? (step / stepCount) * 100 : 0}%` }} />
-              </div>
-              <button className="pd-scrub-speed" onClick={cycleSpeed} data-cursor="disable">{speed}×</button>
-            </div>
-          </div>
-
-          {/* Document — representational */}
-          <div className="pd-panel pd-document">
-            <div className="pd-panel-bar">
-              <span className="pd-panel-name">{project.document.title}</span>
-              <span className="pd-badge pd-badge-sim">simulated</span>
-            </div>
-            <div className="pd-doc-body">
-              {project.document.lines.slice(0, docCount).map((line, i) => (
-                <DocLine line={line} key={i} />
-              ))}
-            </div>
-          </div>
-
-          {/* Agent answer — live / cached / demo */}
-          <div className="pd-panel pd-chat">
+        {/* HERO ROW: live chat (dominant) + 3D scene (supporting) */}
+        <div className="pd-hero">
+          <div className="pd-panel pd-chat pd-hero-chat">
             <div className="pd-panel-bar">
               <span className="pd-panel-name">LangGraph action</span>
               <span className={`pd-badge ${badgeClass}`}>{badge}</span>
@@ -290,6 +231,65 @@ const ProjectDetail = () => {
               Type a task and run it — a live DeepSeek-backed LangGraph agent answers, with real
               token usage below. Re-run the same task → served instantly from cache.
             </p>
+          </div>
+          <div className="pd-stage pd-hero-stage">
+            <div className="pd-panel-bar">
+              <span className="pd-panel-name">3D scene</span>
+              <span className="pd-badge pd-badge-real">● drag · click to play</span>
+            </div>
+            <Suspense fallback={<div className="pd-stage-load">loading 3D…</div>}>
+              <ModelViewer
+                url={project.modelUrl}
+                scale={project.modelScale}
+                clip={project.clip}
+                flock={project.flock}
+                ground={project.ground}
+                rotX={project.rotX}
+              />
+            </Suspense>
+          </div>
+        </div>
+
+        {/* EVIDENCE STRIP: representational terminal + document */}
+        <div className="pd-evidence">
+          <div className="pd-panel pd-terminal">
+            <div className="pd-panel-bar">
+              <span className="pd-panel-name">terminal</span>
+              <span className="pd-badge pd-badge-sim">
+                {atEnd ? "complete" : `step ${step} / ${stepCount}`}
+              </span>
+            </div>
+            <div className="pd-term-body">
+              {project.terminal.slice(0, step).map((line, i) => (
+                <div className="pd-term-line" key={i}>
+                  {line}
+                  {playing && !atEnd && i === step - 1 && <span className="pd-caret" />}
+                </div>
+              ))}
+            </div>
+            <div className="pd-scrub">
+              <button className="pd-scrub-btn" onClick={stepBack} disabled={step === 0} data-cursor="disable" aria-label="step back">◀</button>
+              <button className="pd-scrub-btn" onClick={toggle} data-cursor="disable" aria-label="play/pause">
+                {atEnd ? "↻" : playing ? "❚❚" : "▶"}
+              </button>
+              <button className="pd-scrub-btn" onClick={stepFwd} disabled={atEnd} data-cursor="disable" aria-label="step forward">▶</button>
+              <div className="pd-scrub-track">
+                <div className="pd-scrub-fill" style={{ width: `${stepCount ? (step / stepCount) * 100 : 0}%` }} />
+              </div>
+              <button className="pd-scrub-speed" onClick={cycleSpeed} data-cursor="disable">{speed}×</button>
+            </div>
+          </div>
+
+          <div className="pd-panel pd-document">
+            <div className="pd-panel-bar">
+              <span className="pd-panel-name">{project.document.title}</span>
+              <span className="pd-badge pd-badge-sim">simulated</span>
+            </div>
+            <div className="pd-doc-body">
+              {project.document.lines.slice(0, docCount).map((line, i) => (
+                <DocLine line={line} key={i} />
+              ))}
+            </div>
           </div>
         </div>
       </div>
