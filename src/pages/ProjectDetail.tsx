@@ -237,8 +237,28 @@ const ProjectDetail = () => {
               </button>
             </div>
             <p className="pd-hint">
-              Type a task and run it — a live DeepSeek-backed LangGraph agent answers, with real
-              token usage below. Re-run the same task → served instantly from cache.
+              {status === "live" ? (
+                <>✓ Answered live by DeepSeek — real token usage above. Re-run the same task → instant from cache.</>
+              ) : status === "cached" ? (
+                <>⚡ Served from cache — identical request, replayed instantly. Real token usage above.</>
+              ) : status === "demo" ? (
+                <>
+                  This is a <b>doc-grounded demo</b>: there's no live backend on this host, so the reply is a
+                  prewritten response — your typed wording isn't sent to a model here. The live DeepSeek-backed
+                  version, which answers your own free-form questions with real token usage, runs on the{" "}
+                  <a
+                    className="pd-link"
+                    href={`https://portfolio-website-three-xi-84.vercel.app/myworks/${project.slug}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    data-cursor="disable"
+                  >
+                    Vercel build ↗
+                  </a>.
+                </>
+              ) : (
+                <>Type your own task and run it — or pick a suggestion below.</>
+              )}
             </p>
           </div>
           <div className="pd-stage pd-hero-stage">
