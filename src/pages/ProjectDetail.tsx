@@ -206,7 +206,7 @@ const ProjectDetail = () => {
             )}
 
             {project.suggestions && project.suggestions.length > 0 && (
-              <div className="pd-suggest">
+              <div className={`pd-suggest${!text && !streaming ? " is-inviting" : ""}`}>
                 {project.suggestions.map((s) => (
                   <button
                     key={s}

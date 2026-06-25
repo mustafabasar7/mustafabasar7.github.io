@@ -308,6 +308,15 @@
 .pd-chip:hover:not(:disabled) { background: rgba(157, 123, 255, 0.22); transform: translateY(-1px); }
 .pd-chip:disabled { opacity: 0.45; cursor: default; }
 
+@keyframes pd-chip-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(120,170,255,0.0); }
+  50% { box-shadow: 0 0 0 4px rgba(120,170,255,0.18); }
+}
+.pd-suggest.is-inviting .pd-chip { animation: pd-chip-pulse 2.2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .pd-suggest.is-inviting .pd-chip { animation: none; }
+}
+
 .pd-chat-foot {
   display: flex;
   align-items: stretch;
