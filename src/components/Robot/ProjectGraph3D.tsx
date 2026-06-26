@@ -74,7 +74,7 @@ function normalize(obj: THREE.Object3D): THREE.Object3D {
 // over the SVG; an orthographic camera is mapped 1:1 to the SVG viewBox so each
 // object sits exactly on its node. Objects are lightweight procedural meshes
 // (no GLB downloads) that read as the node's role: doc / globe / check / hub…
-export type GNode3D = { x: number; y: number; r: number; kind: string; glb?: string };
+export type GNode3D = { x: number; y: number; r: number; kind: string; glb?: string; scale?: number };
 
 const VB_W = 300;
 const VB_H = 372;
@@ -232,20 +232,23 @@ const ProjectGraph3D = ({ nodes, running }: { nodes: GNode3D[]; running?: boolea
       o.add(inner);
       o.position.set(n.x, VB_H - n.y, 0); // flip Y to match the SVG (Y-down)
       // Per-kind size tweaks so small/dark models (e.g. tools) still read.
-      const KIND_SCALE: Record<string, number> = { tool: 1.5, tool2: 1.5, doc: 1.2, human: 1.35 };
-      o.scale.setScalar(n.r * 1.42 * (KIND_SCALE[n.kind] ?? 1));
+      const KIND_SCALE: Record<string, number> = { tool: 1.5, tool2: 1.5, doc: 1.2, human: 0.9 };
+      o.scale.setScalar(n.r * 1.42 * (n.scale ?? KIND_SCALE[n.kind] ?? 1));
+      // The tall human spanned both labels — keep it small and centered so its
+      // head clears "risky step" above and its feet clear "interrupt" below.
+      if (n.kind === "human") o.position.y -= 2;
 
-      // An animated character (the human approver) stands still and plays a clip;
-      // everything else slowly spins to show its 3D form.
-      const wave = clips?.find((c) => /Wave/i.test(c.name));
+      // Any model that ships animation clips stands still and plays Idle (so it
+      // feels alive); the human approver also waves every 5s. Others slowly spin.
+      const wave = clips?.find((c) => /\bWave\b/i.test(c.name));
       const idle = clips?.find((c) => /Idle$/i.test(c.name)) ?? clips?.find((c) => /Idle/i.test(c.name));
-      if (n.kind === "human" && (wave || idle)) {
+      if (clips && clips.length && (idle || wave)) {
         o.userData.spin = 0;
         o.rotation.x = 0;
         const mixer = new THREE.AnimationMixer(inner);
         mixers.push(mixer);
         if (idle) mixer.clipAction(idle).play();
-        if (wave) {
+        if (n.kind === "human" && wave) {
           const waveAt = () => {
             if (disposed) return;
             const a = mixer.clipAction(wave);
@@ -260,6 +263,10 @@ const ProjectGraph3D = ({ nodes, running }: { nodes: GNode3D[]; running?: boolea
         o.userData.spin = 0.3 + Math.random() * 0.3;
         o.rotation.x = inner.userData.upright ? 0 : -0.18;
       }
+      // Gentle vertical bob so even the non-animated models feel alive.
+      o.userData.baseY = o.position.y;
+      o.userData.bob = n.kind === "human" ? 0 : 1.4 + Math.random();
+      o.userData.phase = Math.random() * Math.PI * 2;
       scene.add(o);
       objs.push(o);
     };
@@ -288,8 +295,13 @@ const ProjectGraph3D = ({ nodes, running }: { nodes: GNode3D[]; running?: boolea
     const animate = () => {
       raf = requestAnimationFrame(animate);
       const dt = clock.getDelta();
+      const t = clock.getElapsedTime();
       const speed = running ? 1.8 : 1;
-      objs.forEach((o) => (o.rotation.y += dt * (o.userData.spin as number) * speed));
+      objs.forEach((o) => {
+        o.rotation.y += dt * (o.userData.spin as number) * speed;
+        const bob = o.userData.bob as number;
+        if (bob) o.position.y = (o.userData.baseY as number) + Math.sin(t * 1.6 + (o.userData.phase as number)) * bob * speed;
+      });
       mixers.forEach((m) => m.update(dt));
       renderer.render(scene, camera);
     };
