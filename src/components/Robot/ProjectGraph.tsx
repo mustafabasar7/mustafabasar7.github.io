@@ -40,7 +40,7 @@ const NODES_3D: Record<string, GNode3D[]> = {
   "hitl-safety": [
     { x: 150, y: 40, r: 16, kind: "dot" },
     { x: 150, y: 118, r: 21, kind: "warn" },
-    { x: 150, y: 192, r: 25, kind: "stop" },
+    { x: 150, y: 192, r: 25, kind: "human" }, // the human in the loop — waves every 5s
     { x: 64, y: 288, r: 15, kind: "x" },
     { x: 236, y: 288, r: 15, kind: "play" },
   ],

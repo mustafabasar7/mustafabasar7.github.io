@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
-import { GLTFLoader } from "three-stdlib";
+import { GLTFLoader, SkeletonUtils } from "three-stdlib";
 
 // Ready-made GLBs per node kind (CC0, from poly.pizza). Kinds without an entry
 // fall back to a procedural mesh, so the cast can grow one model at a time.
@@ -8,25 +8,56 @@ const GLB_BY_KIND: Record<string, string> = {
   doc: "/models/graph/doc.glb",
   tool: "/models/graph/tool1.glb",
   tool2: "/models/graph/tool2.glb",
+  human: "/models/graph/human.glb",
 };
 
-const glbCache = new Map<string, Promise<THREE.Object3D>>();
-function loadGLB(url: string): Promise<THREE.Object3D> {
+type LoadedGLB = { scene: THREE.Object3D; animations: THREE.AnimationClip[] };
+const glbCache = new Map<string, Promise<LoadedGLB>>();
+
+function loadGLBRaw(url: string): Promise<LoadedGLB> {
   let p = glbCache.get(url);
   if (!p) {
-    p = new Promise<THREE.Object3D>((resolve, reject) => {
-      new GLTFLoader().load(url, (g) => resolve(g.scene), undefined, reject);
+    p = new Promise<LoadedGLB>((resolve, reject) => {
+      new GLTFLoader().load(url, (g) => resolve({ scene: g.scene, animations: g.animations }), undefined, reject);
     });
     glbCache.set(url, p);
   }
-  // Each node gets its own clone so transforms don't collide.
-  return p.then((scene) => normalize(scene.clone(true)));
+  return p;
+}
+
+// Returns a normalized clone plus a clip lookup (for animated models). Uses
+// SkeletonUtils.clone so skinned meshes animate correctly per-instance.
+function loadGLB(url: string): Promise<{ object: THREE.Object3D; clips: THREE.AnimationClip[] }> {
+  return loadGLBRaw(url).then(({ scene, animations }) => ({
+    object: normalize(SkeletonUtils.clone(scene)),
+    clips: animations,
+  }));
+}
+
+// Measure a model's real size from its GEOMETRY bounding boxes (transformed by
+// world matrix), not Box3.setFromObject — skinned characters have a stray bone
+// that blows up setFromObject and shrinks the figure to a speck.
+function measureBox(obj: THREE.Object3D): THREE.Box3 {
+  obj.updateWorldMatrix(true, true);
+  const box = new THREE.Box3();
+  const tmp = new THREE.Box3();
+  obj.traverse((o) => {
+    const m = o as THREE.Mesh;
+    if (m.isMesh && m.geometry) {
+      if (!m.geometry.boundingBox) m.geometry.computeBoundingBox();
+      if (m.geometry.boundingBox) {
+        tmp.copy(m.geometry.boundingBox).applyMatrix4(m.matrixWorld);
+        box.union(tmp);
+      }
+    }
+  });
+  return box;
 }
 
 // Center the model and scale it so its largest dimension is ~2 world units,
 // so a node's `scale = r * factor` frames it consistently.
 function normalize(obj: THREE.Object3D): THREE.Object3D {
-  const box = new THREE.Box3().setFromObject(obj);
+  const box = measureBox(obj);
   const size = box.getSize(new THREE.Vector3());
   const center = box.getCenter(new THREE.Vector3());
   obj.position.sub(center);
@@ -34,6 +65,8 @@ function normalize(obj: THREE.Object3D): THREE.Object3D {
   const wrap = new THREE.Group();
   obj.scale.multiplyScalar(2 / max);
   wrap.add(obj);
+  // Skinned meshes can frustum-cull incorrectly (stray bone) → disable it.
+  obj.traverse((o) => { o.frustumCulled = false; });
   return wrap;
 }
 
@@ -189,20 +222,44 @@ const ProjectGraph3D = ({ nodes, running }: { nodes: GNode3D[]; running?: boolea
     scene.add(rim);
 
     const objs: THREE.Object3D[] = [];
+    const mixers: THREE.AnimationMixer[] = [];
+    const timers: number[] = [];
     let disposed = false;
 
-    const place = (inner: THREE.Object3D, n: GNode3D) => {
+    const place = (inner: THREE.Object3D, n: GNode3D, clips?: THREE.AnimationClip[]) => {
       if (disposed) return;
       const o = new THREE.Group();
       o.add(inner);
       o.position.set(n.x, VB_H - n.y, 0); // flip Y to match the SVG (Y-down)
       // Per-kind size tweaks so small/dark models (e.g. tools) still read.
-      const KIND_SCALE: Record<string, number> = { tool: 1.5, tool2: 1.5, doc: 1.2 };
+      const KIND_SCALE: Record<string, number> = { tool: 1.5, tool2: 1.5, doc: 1.2, human: 1.35 };
       o.scale.setScalar(n.r * 1.42 * (KIND_SCALE[n.kind] ?? 1));
-      o.userData.spin = 0.3 + Math.random() * 0.3;
-      // Upright objects (e.g. the check mark) stand straight and spin only on Y;
-      // others get a slight forward tilt so their 3D form reads.
-      o.rotation.x = inner.userData.upright ? 0 : -0.18;
+
+      // An animated character (the human approver) stands still and plays a clip;
+      // everything else slowly spins to show its 3D form.
+      const wave = clips?.find((c) => /Wave/i.test(c.name));
+      const idle = clips?.find((c) => /Idle$/i.test(c.name)) ?? clips?.find((c) => /Idle/i.test(c.name));
+      if (n.kind === "human" && (wave || idle)) {
+        o.userData.spin = 0;
+        o.rotation.x = 0;
+        const mixer = new THREE.AnimationMixer(inner);
+        mixers.push(mixer);
+        if (idle) mixer.clipAction(idle).play();
+        if (wave) {
+          const waveAt = () => {
+            if (disposed) return;
+            const a = mixer.clipAction(wave);
+            a.setLoop(THREE.LoopOnce, 1);
+            a.reset();
+            a.play();
+          };
+          waveAt();
+          timers.push(window.setInterval(waveAt, 5000)); // wave every 5s
+        }
+      } else {
+        o.userData.spin = 0.3 + Math.random() * 0.3;
+        o.rotation.x = inner.userData.upright ? 0 : -0.18;
+      }
       scene.add(o);
       objs.push(o);
     };
@@ -211,7 +268,7 @@ const ProjectGraph3D = ({ nodes, running }: { nodes: GNode3D[]; running?: boolea
       const url = n.glb || GLB_BY_KIND[n.kind];
       if (url) {
         loadGLB(url)
-          .then((m) => place(m, n))
+          .then(({ object, clips }) => place(object, n, clips))
           .catch(() => place(makeMesh(n.kind), n)); // fall back if the GLB fails
       } else {
         place(makeMesh(n.kind), n);
@@ -233,6 +290,7 @@ const ProjectGraph3D = ({ nodes, running }: { nodes: GNode3D[]; running?: boolea
       const dt = clock.getDelta();
       const speed = running ? 1.8 : 1;
       objs.forEach((o) => (o.rotation.y += dt * (o.userData.spin as number) * speed));
+      mixers.forEach((m) => m.update(dt));
       renderer.render(scene, camera);
     };
     animate();
@@ -240,6 +298,8 @@ const ProjectGraph3D = ({ nodes, running }: { nodes: GNode3D[]; running?: boolea
     return () => {
       disposed = true;
       cancelAnimationFrame(raf);
+      timers.forEach((id) => clearInterval(id));
+      mixers.forEach((m) => m.stopAllAction());
       ro.disconnect();
       renderer.dispose();
       if (renderer.domElement.parentNode === mount) mount.removeChild(renderer.domElement);
