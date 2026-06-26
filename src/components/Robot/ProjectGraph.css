@@ -79,9 +79,12 @@
 .project-graph.is-running .pg-pulse { opacity: 1; filter: drop-shadow(0 0 7px #d9b3ff); }
 .project-graph.is-running .pg-node circle { animation-duration: 1.8s; }
 
+/* Under reduced-motion we calm the node glow but keep the control-flow pulses
+   moving — that flow is the whole point of the diagram, and the dots are small
+   and non-flashing. (Hiding them made the graph look frozen for users who have
+   "reduce animations" enabled in their OS.) */
 @media (prefers-reduced-motion: reduce) {
-  .pg-node circle { animation: none; stroke-opacity: 0.8; }
-  .pg-pulse { display: none; }
+  .pg-node circle { animation: none; stroke-opacity: 0.85; }
 }
 
 .pg-caption {
