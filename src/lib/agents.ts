@@ -9,6 +9,9 @@
 // streamAgent() also caches responses: re-running an identical request replays
 // instantly and reports "cached" — a real, observable prompt-caching demo.
 
+// Turkish prose overlay for project demos (type-only dep back to here, no cycle).
+import { PROJECTS_TR } from "./agents.tr";
+
 export interface AgentMeta {
   /** Short label used on the 3D scene + chips. */
   short: string;
@@ -357,10 +360,15 @@ export async function streamAgent(
   task: string,
   onToken: (chunk: string) => void,
   signal?: AbortSignal,
+  lang: "en" | "tr" = "en",
 ): Promise<RunResult> {
   const meta = set === "project" ? PROJECTS[role] : AGENTS[role];
-  const resolved = (task || "").trim() || meta?.defaultTask || "";
-  const key = `${set}:${role}:${resolved}`;
+  // For projects in Turkish, the doc-grounded demo prose comes from the TR overlay.
+  const trContent =
+    lang === "tr" && set === "project" && meta ? PROJECTS_TR[(meta as ProjectMeta).slug] : undefined;
+  const defaultTask = trContent?.defaultTask ?? meta?.defaultTask ?? "";
+  const resolved = (task || "").trim() || defaultTask;
+  const key = `${set}:${role}:${lang}:${resolved}`;
   const t0 = performance.now();
 
   const cached = responseCache.get(key);
@@ -414,7 +422,7 @@ export async function streamAgent(
     if (text.trim()) responseCache.set(key, { text, telemetry });
     return { status: "live", telemetry };
   } catch {
-    const text = meta?.fallback ?? "";
+    const text = trContent?.fallback ?? meta?.fallback ?? "";
     for (const piece of text.match(/\s*\S+/g) ?? []) {
       if (signal?.aborted) break;
       onToken(piece);

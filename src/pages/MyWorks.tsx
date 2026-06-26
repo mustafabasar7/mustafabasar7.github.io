@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { config } from "../config";
 import { useLang } from "../i18n/LanguageProvider";
+import LangToggle from "../i18n/LangToggle";
 import { PROJECTS, type ProjectMeta } from "../lib/agents";
 import "./MyWorks.css";
 
@@ -90,6 +91,7 @@ const MyWorks = () => {
 
   return (
     <div className="myworks-page">
+      <LangToggle className="lang-toggle-fixed" />
       <div className="myworks-header">
         <Link to="/" className="back-button" data-cursor="disable">
           {t("myworks.back")}

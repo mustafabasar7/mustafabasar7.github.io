@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { PROJECTS, streamAgent, type RunStatus, type Telemetry } from "../lib/agents";
-import { config } from "../config";
+import { PROJECTS_TR } from "../lib/agents.tr";
+import { useLang } from "../i18n/LanguageProvider";
+import LangToggle from "../i18n/LangToggle";
 import ProjectGraph from "../components/Robot/ProjectGraph";
 import "./ProjectDetail.css";
 
@@ -27,9 +29,14 @@ const DocLine = ({ line }: { line: string }) => {
 
 const ProjectDetail = () => {
   const { slug } = useParams();
+  const { lang, c, t } = useLang();
   const index = PROJECTS.findIndex((p) => p.slug === slug);
-  const project = index >= 0 ? PROJECTS[index] : null;
-  const cfg = project ? config.projects.find((p) => p.id === project.configId) : null;
+  const base = index >= 0 ? PROJECTS[index] : null;
+  // Overlay Turkish prose (name/capability/metrics/flow/subtitles/suggestions)
+  // when in TR; terminal + document stay as-is (CLI/code). Keeps base shape.
+  const project =
+    base && lang === "tr" && PROJECTS_TR[base.slug] ? { ...base, ...PROJECTS_TR[base.slug] } : base;
+  const cfg = project ? c.projects.find((p) => p.id === project.configId) : null;
 
   // --- terminal sim (scrubber-controlled) ---
   const [step, setStep] = useState(0);
@@ -71,14 +78,15 @@ const ProjectDetail = () => {
           acc += chunk;
           setText(acc);
         },
-        ac.signal
+        ac.signal,
+        lang
       );
       if (ac.signal.aborted) return;
       setStatus(res.status);
       setTelemetry(res.telemetry);
       setStreaming(false);
     },
-    [index]
+    [index, lang]
   );
 
   // The home page locks `body { overflow: hidden }` for its own scroller; this
@@ -114,8 +122,8 @@ const ProjectDetail = () => {
     return (
       <div className="pd-page">
         <div className="pd-notfound">
-          <h1>Project not found</h1>
-          <Link to="/myworks" className="pd-back" data-cursor="disable">← All Works</Link>
+          <h1>{t("pd.notFound")}</h1>
+          <Link to="/myworks" className="pd-back" data-cursor="disable">{t("pd.back")}</Link>
         </div>
       </div>
     );
@@ -125,14 +133,14 @@ const ProjectDetail = () => {
   const submit = () => runAgent(task.trim());
 
   const badge = streaming
-    ? "● running…"
+    ? t("pd.badge.running")
     : status === "live"
-    ? "✓ live · DeepSeek"
+    ? t("pd.badge.live")
     : status === "cached"
-    ? "⚡ cached · instant"
+    ? t("pd.badge.cached")
     : status === "demo"
-    ? "demo · offline"
-    : "ready";
+    ? t("pd.badge.demo")
+    : t("pd.badge.ready");
   const badgeClass = streaming
     ? "pd-badge-sim"
     : status === "live"
@@ -156,8 +164,9 @@ const ProjectDetail = () => {
   return (
     <div className="pd-page">
       <div className="pd-topbar">
-        <Link to="/myworks" className="pd-back" data-cursor="disable">← All Works</Link>
-        <span className="pd-tag">Interactive · live agent + playable 3D</span>
+        <Link to="/myworks" className="pd-back" data-cursor="disable">{t("pd.back")}</Link>
+        <span className="pd-tag">{t("pd.tag")}</span>
+        <LangToggle />
       </div>
 
       <div className="pd-head">
@@ -186,7 +195,7 @@ const ProjectDetail = () => {
         <div className="pd-hero">
           <div className="pd-panel pd-chat pd-hero-chat">
             <div className="pd-panel-bar">
-              <span className="pd-panel-name">LangGraph action</span>
+              <span className="pd-panel-name">{t("pd.panel.chat")}</span>
               <span className="pd-panel-sub">{project.subtitles.chat}</span>
               <span className={`pd-badge ${badgeClass}`}>{badge}</span>
             </div>
@@ -228,24 +237,22 @@ const ProjectDetail = () => {
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); submit(); }
                 }}
-                placeholder={`Ask this agent anything — e.g. "${project.defaultTask}"`}
+                placeholder={`${t("pd.placeholder")} "${project.defaultTask}"`}
                 rows={2}
                 data-cursor="disable"
               />
               <button className="pd-run" onClick={submit} disabled={streaming} data-cursor="disable">
-                {streaming ? "Running…" : "Run ▶"}
+                {streaming ? t("pd.running") : t("pd.run")}
               </button>
             </div>
             <p className="pd-hint">
               {status === "live" ? (
-                <>✓ Answered live by DeepSeek — real token usage above. Re-run the same task → instant from cache.</>
+                <>{t("pd.hint.live")}</>
               ) : status === "cached" ? (
-                <>⚡ Served from cache — identical request, replayed instantly. Real token usage above.</>
+                <>{t("pd.hint.cached")}</>
               ) : status === "demo" ? (
                 <>
-                  This is a <b>doc-grounded demo</b>: there's no live backend on this host, so the reply is a
-                  prewritten response — your typed wording isn't sent to a model here. The live DeepSeek-backed
-                  version, which answers your own free-form questions with real token usage, runs on the{" "}
+                  {t("pd.hint.demoPre")}
                   <a
                     className="pd-link"
                     href={`https://portfolio-website-three-xi-84.vercel.app/myworks/${project.slug}`}
@@ -253,19 +260,19 @@ const ProjectDetail = () => {
                     rel="noreferrer"
                     data-cursor="disable"
                   >
-                    Vercel build ↗
+                    {t("pd.hint.demoLink")}
                   </a>.
                 </>
               ) : (
-                <>Type your own task and run it — or pick a suggestion below.</>
+                <>{t("pd.hint.ready")}</>
               )}
             </p>
           </div>
           <div className="pd-stage pd-hero-stage">
             <div className="pd-panel-bar">
-              <span className="pd-panel-name">agent graph</span>
+              <span className="pd-panel-name">{t("pd.panel.graph")}</span>
               <span className="pd-panel-sub">{project.subtitles.scene}</span>
-              <span className="pd-badge pd-badge-real">● live flow</span>
+              <span className="pd-badge pd-badge-real">{t("pd.badge.liveFlow")}</span>
             </div>
             <ProjectGraph variant={project.slug} running={streaming || playing} />
           </div>
@@ -275,10 +282,10 @@ const ProjectDetail = () => {
         <div className="pd-evidence">
           <div className="pd-panel pd-terminal">
             <div className="pd-panel-bar">
-              <span className="pd-panel-name">terminal</span>
+              <span className="pd-panel-name">{t("pd.panel.terminal")}</span>
               <span className="pd-panel-sub">{project.subtitles.terminal}</span>
               <span className="pd-badge pd-badge-sim">
-                {atEnd ? "example flow · done" : `example flow · ${step}/${stepCount}`}
+                {atEnd ? t("pd.badge.exampleFlowDone") : `${t("pd.badge.exampleFlow")} · ${step}/${stepCount}`}
               </span>
             </div>
             <div className="pd-term-body">
@@ -306,7 +313,7 @@ const ProjectDetail = () => {
             <div className="pd-panel-bar">
               <span className="pd-panel-name">{project.document.title}</span>
               <span className="pd-panel-sub">{project.subtitles.spec}</span>
-              <span className="pd-badge pd-badge-sim">example flow</span>
+              <span className="pd-badge pd-badge-sim">{t("pd.badge.exampleFlow")}</span>
             </div>
             <div className="pd-doc-body">
               {project.document.lines.slice(0, docCount).map((line, i) => (

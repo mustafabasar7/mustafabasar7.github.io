@@ -4,13 +4,14 @@ import HoverLinks from "./HoverLinks";
 import { gsap } from "gsap";
 import Lenis from "lenis";
 import { useLang } from "../i18n/LanguageProvider";
+import LangToggle from "../i18n/LangToggle";
 import "./styles/Navbar.css";
 
 gsap.registerPlugin(ScrollTrigger);
 export let lenis: Lenis | null = null;
 
 const Navbar = () => {
-  const { lang, toggle, t } = useLang();
+  const { t } = useLang();
   useEffect(() => {
     // Initialize Lenis smooth scroll
     lenis = new Lenis({
@@ -95,16 +96,7 @@ const Navbar = () => {
             </a>
           </li>
           <li>
-            <button
-              className="navbar-lang"
-              onClick={toggle}
-              data-cursor="disable"
-              aria-label="Toggle language"
-            >
-              <span className={lang === "en" ? "is-active" : ""}>EN</span>
-              <span className="navbar-lang-sep">/</span>
-              <span className={lang === "tr" ? "is-active" : ""}>TR</span>
-            </button>
+            <LangToggle />
           </li>
         </ul>
       </div>

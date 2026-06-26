@@ -1,0 +1,28 @@
+.lang-toggle {
+  background: none;
+  border: 1px solid rgba(194, 164, 255, 0.35);
+  border-radius: 20px;
+  padding: 4px 12px;
+  cursor: pointer;
+  color: #9d8fd0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: border-color 0.2s ease;
+}
+.lang-toggle:hover { border-color: rgba(194, 164, 255, 0.7); }
+.lang-toggle .is-active { color: #f0e9ff; }
+.lang-toggle-sep { opacity: 0.4; }
+
+/* Fixed placement for pages without a navbar (myworks list + detail). */
+.lang-toggle-fixed {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 50;
+  background: rgba(20, 16, 38, 0.7);
+  backdrop-filter: blur(6px);
+}
