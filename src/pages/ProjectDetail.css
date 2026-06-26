@@ -388,3 +388,33 @@
   transition: color 0.2s ease;
 }
 .pd-link:hover { color: #d9caff; }
+
+/* LangGraph tokens inside the terminal: highlighted like code methods so they
+   really stand out. Real methods/concepts link to the official docs. */
+.pd-term-kw {
+  color: #f0e3ff;
+  font-weight: 700;
+  background: rgba(157, 123, 255, 0.2);
+  border: 1px solid rgba(194, 164, 255, 0.3);
+  border-radius: 5px;
+  padding: 1px 5px;
+}
+.pd-term-kw-link {
+  text-decoration: none;
+  color: #eddcff;
+  background: rgba(157, 123, 255, 0.28);
+  border-color: rgba(194, 164, 255, 0.55);
+  box-shadow: 0 0 8px rgba(157, 123, 255, 0.25);
+  transition: background 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
+}
+.pd-term-kw-link::after {
+  content: "↗";
+  font-size: 0.75em;
+  opacity: 0.7;
+  margin-left: 2px;
+}
+.pd-term-kw-link:hover {
+  color: #fff;
+  background: rgba(157, 123, 255, 0.45);
+  box-shadow: 0 0 12px rgba(157, 123, 255, 0.5);
+}

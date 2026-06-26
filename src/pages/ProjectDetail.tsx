@@ -11,6 +11,55 @@ import "./ProjectDetail.css";
 const STEP_MS = 1200;
 const SPEEDS = [0.5, 1, 2];
 
+// LangGraph API surface that appears in the terminal traces. Real methods/
+// concepts link to the official docs; the rest are highlighted but not linked,
+// so the key tokens stand out without drowning the reader in links.
+const LG_DOCS = "https://langchain-ai.github.io/langgraph";
+const LG_TERMS: { token: string; href?: string }[] = [
+  { token: "interrupt()", href: `${LG_DOCS}/concepts/human_in_the_loop/` },
+  { token: "Command(resume", href: `${LG_DOCS}/concepts/human_in_the_loop/` },
+  { token: "Command", href: `${LG_DOCS}/concepts/low_level/` },
+  { token: "Send", href: `${LG_DOCS}/concepts/low_level/` },
+  { token: "checkpointer", href: `${LG_DOCS}/concepts/persistence/` },
+  { token: "SqliteSaver", href: `${LG_DOCS}/concepts/persistence/` },
+  { token: "thread_id", href: `${LG_DOCS}/concepts/persistence/` },
+  { token: "StateGraph", href: `${LG_DOCS}/concepts/low_level/` },
+  { token: "graph.invoke", href: `${LG_DOCS}/concepts/low_level/` },
+  { token: "langgraph-swarm", href: "https://github.com/langchain-ai/langgraph-swarm-py" },
+  { token: "langgraph", href: LG_DOCS },
+  { token: "handoff" }, // concept term — highlight only
+];
+
+// One alternation regex, longest tokens first so e.g. "Command(resume" wins over "Command".
+const LG_RE = new RegExp(
+  "(" +
+    LG_TERMS.map((t) => t.token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+      .sort((a, b) => b.length - a.length)
+      .join("|") +
+    ")",
+  "g"
+);
+
+// Render a terminal line with LangGraph tokens highlighted (and linked when real).
+const TermLine = ({ text }: { text: string }) => {
+  const parts = text.split(LG_RE);
+  return (
+    <>
+      {parts.map((p, i) => {
+        const hit = LG_TERMS.find((t) => t.token === p);
+        if (!hit) return <span key={i}>{p}</span>;
+        return hit.href ? (
+          <a key={i} className="pd-term-kw pd-term-kw-link" href={hit.href} target="_blank" rel="noreferrer" data-cursor="disable">
+            {p}
+          </a>
+        ) : (
+          <span key={i} className="pd-term-kw">{p}</span>
+        );
+      })}
+    </>
+  );
+};
+
 // Render a document line, highlighting any «...» spans.
 const DocLine = ({ line }: { line: string }) => {
   const parts = line.split(/(«[^»]*»)/g);
@@ -278,7 +327,7 @@ const ProjectDetail = () => {
             <div className="pd-term-body">
               {project.terminal.slice(0, step).map((line, i) => (
                 <div className="pd-term-line" key={i}>
-                  {line}
+                  <TermLine text={line} />
                   {playing && !atEnd && i === step - 1 && <span className="pd-caret" />}
                 </div>
               ))}
