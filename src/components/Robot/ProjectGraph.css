@@ -48,6 +48,15 @@
 .pg-node.gate circle { stroke: #ff9d7b; stroke-width: 3; fill: #2a1d20; }
 .pg-node.ok circle { stroke: #7be0a0; }
 .pg-node.bad circle { stroke: #e07b8a; }
+.pg-node.agent circle { stroke: #5b9bff; fill: #161f38; }
+.pg-node.tool circle { stroke: #45c46a; fill: #15281c; }
+
+/* Role glyph inside a node. */
+.pg-icon {
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+}
 .pg-node text {
   fill: #c9b9f5;
   font-size: 11px;
