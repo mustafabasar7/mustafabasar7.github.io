@@ -13,8 +13,9 @@
 .pg-stage {
   position: relative;
   width: 100%;
-  max-width: 560px;
+  max-width: 620px;
   aspect-ratio: 300 / 372;
+  margin: 0 auto;
 }
 .pg-stage svg {
   position: absolute;

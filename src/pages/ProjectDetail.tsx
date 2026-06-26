@@ -218,6 +218,24 @@ const ProjectDetail = () => {
         <LangToggle />
       </div>
 
+      {/* Horizontal project switcher — jump straight to any project. */}
+      <nav className="pd-nav" aria-label="projects">
+        {PROJECTS.map((pr, i) => {
+          const name = (lang === "tr" && PROJECTS_TR[pr.slug]?.name) || pr.name;
+          return (
+            <Link
+              key={pr.slug}
+              to={p(`/myworks/${pr.slug}`)}
+              className={`pd-nav-item${pr.slug === slug ? " is-active" : ""}`}
+              data-cursor="disable"
+            >
+              <span className="pd-nav-num">{String(i + 1).padStart(2, "0")}</span>
+              <span className="pd-nav-name">{name}</span>
+            </Link>
+          );
+        })}
+      </nav>
+
       <div className="pd-head">
         <p className="pd-category">{project.category}</p>
         <h1 className="pd-title">{project.name}</h1>

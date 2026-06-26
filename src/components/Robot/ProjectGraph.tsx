@@ -16,7 +16,7 @@ const NODES_3D: Record<string, GNode3D[]> = {
   ],
   "tool-routing": [
     { x: 44, y: 170, r: 16, kind: "box" },
-    { x: 144, y: 170, r: 24, kind: "hub" },
+    { x: 144, y: 170, r: 24, kind: "router", glb: "/models/graph/router.glb" },
     { x: 244, y: 96, r: 17, kind: "doc" },
     { x: 250, y: 170, r: 17, kind: "tool" },
     { x: 244, y: 240, r: 17, kind: "tool2" },

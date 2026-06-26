@@ -86,7 +86,10 @@ function makeMesh(kind: string): THREE.Object3D {
       shape.closePath();
       const geo = new THREE.ExtrudeGeometry(shape, { depth: 0.25, bevelEnabled: false });
       geo.center();
-      g.add(new THREE.Mesh(geo, matStd(0x35c46a)));
+      const check = new THREE.Mesh(geo, matStd(0x35c46a));
+      check.scale.setScalar(1.15);
+      g.add(check);
+      g.userData.upright = true; // keep it standing; spin around its vertical axis
       break;
     }
     case "hub": {
@@ -193,9 +196,13 @@ const ProjectGraph3D = ({ nodes, running }: { nodes: GNode3D[]; running?: boolea
       const o = new THREE.Group();
       o.add(inner);
       o.position.set(n.x, VB_H - n.y, 0); // flip Y to match the SVG (Y-down)
-      o.scale.setScalar(n.r * 1.05);
+      // Per-kind size tweaks so small/dark models (e.g. tools) still read.
+      const KIND_SCALE: Record<string, number> = { tool: 1.5, tool2: 1.5, doc: 1.2 };
+      o.scale.setScalar(n.r * 1.42 * (KIND_SCALE[n.kind] ?? 1));
       o.userData.spin = 0.3 + Math.random() * 0.3;
-      o.rotation.x = -0.18;
+      // Upright objects (e.g. the check mark) stand straight and spin only on Y;
+      // others get a slight forward tilt so their 3D form reads.
+      o.rotation.x = inner.userData.upright ? 0 : -0.18;
       scene.add(o);
       objs.push(o);
     };
