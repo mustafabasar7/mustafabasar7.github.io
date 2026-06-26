@@ -5,7 +5,9 @@ import { useLang } from "../i18n/LanguageProvider";
 
 import Marquee from "react-fast-marquee";
 
-const MARQUEE_TERMS = ["Agentic AI", "LangGraph", "Multi-Agent Systems", "HITL Governance", "State Machines"];
+// Pre-uppercased with dotless I (these are English terms; CSS uppercasing under
+// lang="tr" would turn their "i" into a dotted "İ").
+const MARQUEE_TERMS = ["AGENTIC AI", "LANGGRAPH", "MULTI-AGENT SYSTEMS", "HITL GOVERNANCE", "STATE MACHINES"];
 
 const Loading = ({ percent }: { percent: number }) => {
   const { setIsLoading } = useLoading();
