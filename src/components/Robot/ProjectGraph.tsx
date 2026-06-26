@@ -1,4 +1,50 @@
+import ProjectGraph3D, { type GNode3D } from "./ProjectGraph3D";
 import "./ProjectGraph.css";
+
+// Node coordinates + role kinds for the 3D-object overlay. Must match the <Node>
+// positions in each SVG below. `glb` pins a specific model (e.g. a robot variant
+// per agent); otherwise the kind's default GLB or a procedural mesh is used.
+const R = (n: number) => `/models/graph/robot${n}.glb`;
+const NODES_3D: Record<string, GNode3D[]> = {
+  orchestration: [
+    { x: 150, y: 40, r: 16, kind: "dot" },
+    { x: 150, y: 124, r: 24, kind: "agent", glb: R(2) },
+    { x: 60, y: 228, r: 17, kind: "agent", glb: R(1) },
+    { x: 150, y: 228, r: 17, kind: "tool" },
+    { x: 240, y: 228, r: 17, kind: "agent", glb: R(3) },
+    { x: 150, y: 316, r: 16, kind: "ring" },
+  ],
+  "tool-routing": [
+    { x: 44, y: 170, r: 16, kind: "box" },
+    { x: 144, y: 170, r: 24, kind: "hub" },
+    { x: 244, y: 96, r: 17, kind: "doc" },
+    { x: 250, y: 170, r: 17, kind: "tool" },
+    { x: 244, y: 240, r: 17, kind: "tool2" },
+    { x: 150, y: 308, r: 15, kind: "ring" },
+  ],
+  "persistent-state": [
+    { x: 150, y: 40, r: 16, kind: "dot" },
+    { x: 150, y: 118, r: 21, kind: "gear" },
+    { x: 150, y: 198, r: 26, kind: "disk" },
+    { x: 150, y: 306, r: 15, kind: "ring" },
+  ],
+  swarm: [
+    { x: 150, y: 40, r: 17, kind: "agent", glb: R(2) },
+    { x: 86, y: 120, r: 17, kind: "agent", glb: R(1) },
+    { x: 214, y: 120, r: 17, kind: "agent", glb: R(3) },
+    { x: 56, y: 228, r: 14, kind: "agent", glb: R(5) },
+    { x: 132, y: 228, r: 14, kind: "agent", glb: R(7) },
+    { x: 172, y: 228, r: 14, kind: "agent", glb: R(6) },
+    { x: 248, y: 228, r: 14, kind: "agent", glb: R(1) },
+  ],
+  "hitl-safety": [
+    { x: 150, y: 40, r: 16, kind: "dot" },
+    { x: 150, y: 118, r: 21, kind: "warn" },
+    { x: 150, y: 192, r: 25, kind: "stop" },
+    { x: 64, y: 288, r: 15, kind: "x" },
+    { x: 236, y: 288, r: 15, kind: "play" },
+  ],
+};
 
 // A per-project LangGraph-style topology - pure SVG/CSS, no three.js. Replaces
 // the old decorative 3D character with a diagram that IS the system: nodes are
@@ -61,10 +107,10 @@ const Orchestration = () => (
     ]} />
     <g className="pg-nodes">
       <Node x={150} y={40} r={16} label="start" />
-      <Node x={150} y={124} r={24} label="supervisor" cls="key" icon="🧠" />
-      <Node x={60} y={228} r={17} label="agent" cls="agent" icon="🤖" />
-      <Node x={150} y={228} r={17} label="tool" cls="tool" icon="🔧" />
-      <Node x={240} y={228} r={17} label="agent" cls="agent" icon="🤖" />
+      <Node x={150} y={124} r={24} label="supervisor" cls="key" />
+      <Node x={60} y={228} r={17} label="agent" cls="agent" />
+      <Node x={150} y={228} r={17} label="tool" cls="tool" />
+      <Node x={240} y={228} r={17} label="agent" cls="agent" />
       <Node x={150} y={316} r={16} label="end" />
     </g>
   </svg>
@@ -91,10 +137,10 @@ const ToolRouting = () => (
     ]} />
     <g className="pg-nodes">
       <Node x={44} y={170} r={16} label="task" />
-      <Node x={144} y={170} r={24} label="router" cls="key" icon="🧭" />
-      <Node x={244} y={96} r={17} label="summarize" cls="tool" icon="📝" />
-      <Node x={250} y={170} r={17} label="translate" cls="tool" icon="🌐" />
-      <Node x={244} y={240} r={17} label="validate" cls="tool" icon="✅" />
+      <Node x={144} y={170} r={24} label="router" cls="key" />
+      <Node x={244} y={96} r={17} label="summarize" cls="tool" />
+      <Node x={250} y={170} r={17} label="translate" cls="tool" />
+      <Node x={244} y={240} r={17} label="validate" cls="tool" />
       <Node x={150} y={308} r={15} label="end" />
     </g>
   </svg>
@@ -117,8 +163,8 @@ const PersistentState = () => (
     ]} />
     <g className="pg-nodes">
       <Node x={150} y={40} r={16} label="start" />
-      <Node x={150} y={118} r={21} label="step" icon="⚙️" />
-      <Node x={150} y={198} r={26} label="checkpoint" cls="key" icon="💾" />
+      <Node x={150} y={118} r={21} label="step" />
+      <Node x={150} y={198} r={26} label="checkpoint" cls="key" />
       <Node x={150} y={306} r={15} label="end" />
     </g>
   </svg>
@@ -147,13 +193,13 @@ const Swarm = () => (
       { path: "#w-b1", dur: "1.5s", begin: "1.4s" },
     ]} />
     <g className="pg-nodes">
-      <Node x={150} y={40} r={17} label="coordinator" cls="key" icon="🧠" />
+      <Node x={150} y={40} r={17} label="coordinator" cls="key" />
       <Node x={86} y={120} r={17} label="supervisor" cls="key" />
       <Node x={214} y={120} r={17} label="supervisor" cls="key" />
-      <Node x={56} y={228} r={14} label="agent" cls="sm agent" icon="🤖" />
-      <Node x={132} y={228} r={14} label="agent" cls="sm agent" icon="🤖" />
-      <Node x={172} y={228} r={14} label="agent" cls="sm agent" icon="🤖" />
-      <Node x={248} y={228} r={14} label="agent" cls="sm agent" icon="🤖" />
+      <Node x={56} y={228} r={14} label="agent" cls="sm agent" />
+      <Node x={132} y={228} r={14} label="agent" cls="sm agent" />
+      <Node x={172} y={228} r={14} label="agent" cls="sm agent" />
+      <Node x={248} y={228} r={14} label="agent" cls="sm agent" />
     </g>
   </svg>
 );
@@ -174,10 +220,10 @@ const HitlSafety = () => (
     ]} />
     <g className="pg-nodes">
       <Node x={150} y={40} r={16} label="start" />
-      <Node x={150} y={118} r={21} label="risky step" icon="⚠️" />
-      <Node x={150} y={192} r={25} label="interrupt" cls="gate" icon="⛔" />
-      <Node x={64} y={288} r={15} label="cancel" cls="sm bad" icon="✖️" />
-      <Node x={236} y={288} r={15} label="resume" cls="sm ok" icon="▶️" />
+      <Node x={150} y={118} r={21} label="risky step" />
+      <Node x={150} y={192} r={25} label="interrupt" cls="gate" />
+      <Node x={64} y={288} r={15} label="cancel" cls="sm bad" />
+      <Node x={236} y={288} r={15} label="resume" cls="sm ok" />
     </g>
   </svg>
 );
@@ -192,9 +238,13 @@ const VARIANTS: Record<string, () => JSX.Element> = {
 
 const ProjectGraph = ({ variant, running, caption }: { variant: string; running?: boolean; caption?: string }) => {
   const Graph = VARIANTS[variant] ?? Orchestration;
+  const nodes3d = NODES_3D[variant];
   return (
     <div className={`project-graph${running ? " is-running" : ""}`} aria-hidden="true">
-      <Graph />
+      <div className="pg-stage">
+        <Graph />
+        {nodes3d && <ProjectGraph3D nodes={nodes3d} running={running} />}
+      </div>
       {caption && <span className="pg-caption">{caption}</span>}
     </div>
   );

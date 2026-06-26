@@ -105,12 +105,12 @@
 
 .pd-hero {
   display: grid;
-  grid-template-columns: 1.7fr 1fr; /* chat dominant, 3D supporting */
+  grid-template-columns: 1fr 1.85fr; /* graph dominant, chat compact */
   gap: 1.25rem;
   align-items: stretch;
 }
-.pd-hero-chat { min-height: 420px; }
-.pd-hero-stage { min-height: 420px; }
+.pd-hero-chat { min-height: 600px; }
+.pd-hero-stage { min-height: 600px; }
 
 .pd-evidence {
   display: grid;
