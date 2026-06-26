@@ -29,13 +29,13 @@ const NODES_3D: Record<string, GNode3D[]> = {
     { x: 150, y: 306, r: 15, kind: "ring" },
   ],
   swarm: [
-    { x: 150, y: 40, r: 17, kind: "agent", glb: R(2) },
-    { x: 86, y: 120, r: 17, kind: "agent", glb: R(1) },
-    { x: 214, y: 120, r: 17, kind: "agent", glb: R(3) },
-    { x: 56, y: 228, r: 14, kind: "agent", glb: R(5) },
-    { x: 132, y: 228, r: 14, kind: "agent", glb: R(7) },
-    { x: 172, y: 228, r: 14, kind: "agent", glb: R(6) },
-    { x: 248, y: 228, r: 14, kind: "agent", glb: R(1) },
+    { x: 150, y: 50, r: 21, kind: "agent", glb: R(2) },
+    { x: 82, y: 166, r: 20, kind: "agent", glb: R(1) },
+    { x: 218, y: 166, r: 20, kind: "agent", glb: R(3) },
+    { x: 50, y: 306, r: 17, kind: "agent", glb: R(5) },
+    { x: 117, y: 306, r: 17, kind: "agent", glb: R(7) },
+    { x: 183, y: 306, r: 17, kind: "agent", glb: R(6) },
+    { x: 250, y: 306, r: 17, kind: "agent", glb: R(1) },
   ],
   "hitl-safety": [
     { x: 150, y: 40, r: 16, kind: "dot" },
@@ -174,14 +174,14 @@ const PersistentState = () => (
 const Swarm = () => (
   <svg viewBox="0 0 300 372" xmlns="http://www.w3.org/2000/svg">
     <g className="pg-edges">
-      <path id="w-c1" d="M150,58 L96,104" />
-      <path id="w-c2" d="M150,58 L210,104" />
-      <path id="w-a1" d="M86,138 L60,212" />
-      <path id="w-a2" d="M98,140 L132,212" />
-      <path id="w-b1" d="M204,140 L172,212" />
-      <path id="w-b2" d="M216,138 L244,212" />
-      <path id="w-x1" className="pg-cycle" d="M104,120 L196,120" />
-      <path id="w-x2" className="pg-cycle" d="M144,224 L168,224" />
+      <path id="w-c1" d="M150,72 L92,150" />
+      <path id="w-c2" d="M150,72 L208,150" />
+      <path id="w-a1" d="M70,186 L54,290" />
+      <path id="w-a2" d="M92,184 L114,290" />
+      <path id="w-b1" d="M208,184 L186,290" />
+      <path id="w-b2" d="M230,186 L246,290" />
+      <path id="w-x1" className="pg-cycle" d="M102,168 L198,168" />
+      <path id="w-x2" className="pg-cycle" d="M134,306 L166,306" />
     </g>
     <Pulses pulses={[
       { path: "#w-c1", dur: "1.4s", begin: "0s" },
@@ -193,13 +193,13 @@ const Swarm = () => (
       { path: "#w-b1", dur: "1.5s", begin: "1.4s" },
     ]} />
     <g className="pg-nodes">
-      <Node x={150} y={40} r={17} label="coordinator" cls="key" />
-      <Node x={86} y={120} r={17} label="supervisor" cls="key" />
-      <Node x={214} y={120} r={17} label="supervisor" cls="key" />
-      <Node x={56} y={228} r={14} label="agent" cls="sm agent" />
-      <Node x={132} y={228} r={14} label="agent" cls="sm agent" />
-      <Node x={172} y={228} r={14} label="agent" cls="sm agent" />
-      <Node x={248} y={228} r={14} label="agent" cls="sm agent" />
+      <Node x={150} y={50} r={21} label="coordinator" cls="key" />
+      <Node x={82} y={166} r={20} label="supervisor" cls="key" />
+      <Node x={218} y={166} r={20} label="supervisor" cls="key" />
+      <Node x={50} y={306} r={17} label="agent" cls="agent" />
+      <Node x={117} y={306} r={17} label="agent" cls="agent" />
+      <Node x={183} y={306} r={17} label="agent" cls="agent" />
+      <Node x={250} y={306} r={17} label="agent" cls="agent" />
     </g>
   </svg>
 );

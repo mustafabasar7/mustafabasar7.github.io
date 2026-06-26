@@ -257,9 +257,8 @@ const ProjectDetail = () => {
         ))}
       </ol>
 
+      {/* Left column stacks chat → terminal → document; the graph spans them all. */}
       <div className="pd-grid">
-        {/* HERO ROW: live chat (dominant) + 3D scene (supporting) */}
-        <div className="pd-hero">
           <div className="pd-panel pd-chat pd-hero-chat">
             <div className="pd-panel-bar">
               <span className="pd-panel-name">{t("pd.panel.chat")}</span>
@@ -330,10 +329,7 @@ const ProjectDetail = () => {
             </div>
             <ProjectGraph variant={project.slug} running={streaming || playing} />
           </div>
-        </div>
 
-        {/* EVIDENCE STRIP: representational terminal + document */}
-        <div className="pd-evidence">
           <div className="pd-panel pd-terminal">
             <div className="pd-panel-bar">
               <span className="pd-panel-name">{t("pd.panel.terminal")}</span>
@@ -375,7 +371,6 @@ const ProjectDetail = () => {
               ))}
             </div>
           </div>
-        </div>
       </div>
     </div>
   );

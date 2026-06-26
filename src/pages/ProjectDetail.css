@@ -101,29 +101,31 @@
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-.pd-grid { display: flex; flex-direction: column; gap: 1.25rem; }
-
-.pd-hero {
+/* Left column stacks chat → terminal → document; the graph spans all three on
+   the right. The graph column is a fixed width so every project page is sized
+   identically (standardized). */
+.pd-grid {
   display: grid;
-  /* Cap the chat width and hug the portrait graph; center the pair. align-items
-     start so the chat sizes to its content instead of stretching to the graph
-     (which left a big empty gap + scrollbars). */
-  grid-template-columns: minmax(340px, 520px) auto;
-  justify-content: center;
+  grid-template-columns: 1fr 675px;
+  grid-template-areas:
+    "chat graph"
+    "terminal graph"
+    "document graph";
   gap: 1.25rem;
   align-items: stretch;
 }
-.pd-hero-chat { min-height: 0; }
-/* The answer area grows to fill the card so the chat matches the graph height
-   cleanly (no awkward empty gap below a short panel). */
-.pd-hero-chat .pd-chat-body { flex: 1; }
-.pd-hero-stage { padding: 0; }
+.pd-hero-chat { grid-area: chat; min-height: 0; }
+.pd-hero-stage { grid-area: graph; padding: 0; align-self: start; }
+.pd-terminal { grid-area: terminal; }
+.pd-document { grid-area: document; }
+.pd-hero-chat .pd-chat-body { flex: 1; } /* answer area fills the chat card */
 
-.pd-evidence {
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* terminal + document side by side */
-  gap: 1.25rem;
-  opacity: 0.82; /* quieter than the hero */
+@media (max-width: 900px) {
+  .pd-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas: "chat" "graph" "terminal" "document";
+  }
+  .pd-hero-stage { min-height: 460px; }
 }
 
 /* shared panel chrome */
@@ -335,6 +337,7 @@
 .pd-input {
   flex: 1;
   resize: none;
+  overflow: hidden; /* kill the stray internal scrollbar from a long placeholder */
   font-family: inherit;
   font-size: 1.127rem;
   line-height: 1.4;
