@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { config } from "../config";
+import { useLang } from "../i18n/LanguageProvider";
+import LangToggle from "../i18n/LangToggle";
 import { PROJECTS, type ProjectMeta } from "../lib/agents";
 import "./MyWorks.css";
 
@@ -9,6 +11,7 @@ type Project = (typeof config.projects)[number];
 // A live "peek" over the card image: on hover, the agent's first command types
 // itself out and the metric chips animate in — a taste of the detail page.
 const WorkCard = ({ project, demo }: { project: Project; demo?: ProjectMeta }) => {
+  const { t } = useLang();
   const [hover, setHover] = useState(false);
   const [typed, setTyped] = useState("");
   const line = demo?.terminal[1] ?? demo?.terminal[0] ?? "";
@@ -50,7 +53,7 @@ const WorkCard = ({ project, demo }: { project: Project; demo?: ProjectMeta }) =
         <p className="myworks-card-category">{project.category}</p>
         <p className="myworks-card-description">{project.description}</p>
         <p className="myworks-card-tech">{project.technologies}</p>
-        {demo && <span className="myworks-card-cta">▶ Run live demo · AI + 3D</span>}
+        {demo && <span className="myworks-card-cta">{t("myworks.cta")}</span>}
       </div>
     </>
   );
@@ -77,6 +80,7 @@ const WorkCard = ({ project, demo }: { project: Project; demo?: ProjectMeta }) =
 };
 
 const MyWorks = () => {
+  const { c, t } = useLang();
   // The home page locks `body { overflow: hidden }` for its own scroller; this
   // grid is taller than the viewport, so re-enable native scrolling here.
   useEffect(() => {
@@ -87,21 +91,21 @@ const MyWorks = () => {
 
   return (
     <div className="myworks-page">
+      <LangToggle className="lang-toggle-fixed" />
       <div className="myworks-header">
         <Link to="/" className="back-button" data-cursor="disable">
-          ← Back to Home
+          {t("myworks.back")}
         </Link>
         <h1>
-          All <span>Works</span>
+          {t("myworks.title.all")} <span>{t("myworks.title.works")}</span>
         </h1>
         <p>
-          Every project is a live, interactive demo — real DeepSeek-powered LangGraph
-          agents with playable 3D animations alongside. Hover to peek, click to run it.
+          {t("myworks.intro")}
         </p>
       </div>
 
       <div className="myworks-grid">
-        {config.projects.map((project, index) => (
+        {c.projects.map((project, index) => (
           <WorkCard key={project.id} project={project} demo={PROJECTS[index]} />
         ))}
       </div>

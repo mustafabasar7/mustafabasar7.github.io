@@ -3,12 +3,13 @@ import WorkImage from "./WorkImage";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useEffect } from "react";
-import { config } from "../config";
+import { useLang } from "../i18n/LanguageProvider";
 import { Link } from "react-router-dom";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const Work = () => {
+  const { c, t } = useLang();
   useEffect(() => {
     // Disable pinning on mobile to allow scrolling
     if (window.innerWidth <= 768) return;
@@ -23,14 +24,14 @@ const Work = () => {
         .getBoundingClientRect().left;
       const rect = box[0].getBoundingClientRect();
       const parentWidth = box[0].parentElement!.getBoundingClientRect().width;
-      let padding: number =
+      const padding: number =
         parseInt(window.getComputedStyle(box[0]).padding) / 2;
       translateX = rect.width * box.length - (rectLeft + parentWidth) + padding;
     }
 
     setTranslateX();
 
-    let timeline = gsap.timeline({
+    const timeline = gsap.timeline({
       scrollTrigger: {
         trigger: ".work-section",
         start: "top top",
@@ -63,19 +64,19 @@ const Work = () => {
       <div className="work-container section-container">
         <div className="work-heading-row">
           <h2>
-            My <span>Work</span>
+            {t("work.my")} <span>{t("work.word")}</span>
           </h2>
           <Link to="/myworks" className="work-interactive-cta" data-cursor="disable">
             <span className="work-cta-pulse" />
             <span className="work-cta-text">
-              <strong>▶ Try it live</strong>
-              <em>Real AI agents + 3D · click to interact</em>
+              <strong>{t("work.tryLive")}</strong>
+              <em>{t("work.realAgents")}</em>
             </span>
             <span className="work-cta-arrow">→</span>
           </Link>
         </div>
         <div className="work-flex">
-          {config.projects.slice(0, 5).map((project, index) => (
+          {c.projects.slice(0, 5).map((project, index) => (
             <div className="work-box" key={project.id}>
               <div className="work-info">
                 <div className="work-title">
@@ -86,7 +87,7 @@ const Work = () => {
                     <p>{project.category}</p>
                   </div>
                 </div>
-                <h4>Tools and features</h4>
+                <h4>{t("work.tools")}</h4>
                 <p>{project.technologies}</p>
               </div>
               <WorkImage image={project.image} alt={project.title} />
@@ -95,10 +96,10 @@ const Work = () => {
           {/* See All Works Button */}
           <div className="work-box work-box-cta">
             <div className="see-all-works">
-              <h3>Want to see more?</h3>
-              <p>Explore all of my projects and creations</p>
+              <h3>{t("work.seeMore")}</h3>
+              <p>{t("work.exploreAll")}</p>
               <Link to="/myworks" className="see-all-btn" data-cursor="disable">
-                See All Works →
+                {t("work.seeAllBtn")}
               </Link>
             </div>
           </div>

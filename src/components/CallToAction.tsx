@@ -1,18 +1,19 @@
-import { config } from "../config";
+import { useLang } from "../i18n/LanguageProvider";
 import "./styles/CallToAction.css";
 
 const CallToAction = () => {
+  const { c, t } = useLang();
   return (
     <div className="cta-section">
       <div className="cta-buttons">
         <a
-          href={config.contact.linkedin} 
-          target="_blank" 
-          rel="noopener noreferrer" 
+          href={c.contact.linkedin}
+          target="_blank"
+          rel="noopener noreferrer"
           className="cta-btn cta-btn-hire"
           data-cursor="disable"
         >
-          Hire Me →
+          {t("cta.hireMe")}
         </a>
       </div>
     </div>
