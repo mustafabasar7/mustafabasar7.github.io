@@ -21,11 +21,17 @@ const Pulses = ({ pulses }: { pulses: Pulse[] }) => (
   </g>
 );
 
-// A node: a glowing circle with its label centered just beneath it.
-type N = { x: number; y: number; r: number; label: string; cls?: string };
-const Node = ({ x, y, r, label, cls }: N) => (
+// A node: a glowing circle (optionally with a role glyph inside) and a label
+// beneath it. `cls` colors the node by role (agent / tool / key / gate / ok / bad).
+type N = { x: number; y: number; r: number; label: string; cls?: string; icon?: string };
+const Node = ({ x, y, r, label, cls, icon }: N) => (
   <g className={`pg-node${cls ? " " + cls : ""}`}>
     <circle cx={x} cy={y} r={r} />
+    {icon && (
+      <text className="pg-icon" x={x} y={y} dominantBaseline="central" style={{ fontSize: r * 0.95 }}>
+        {icon}
+      </text>
+    )}
     <text x={x} y={y + r + 14}>{label}</text>
   </g>
 );
@@ -55,10 +61,10 @@ const Orchestration = () => (
     ]} />
     <g className="pg-nodes">
       <Node x={150} y={40} r={16} label="start" />
-      <Node x={150} y={124} r={24} label="supervisor" cls="key" />
-      <Node x={60} y={228} r={17} label="agent" />
-      <Node x={150} y={228} r={17} label="tool" />
-      <Node x={240} y={228} r={17} label="agent" />
+      <Node x={150} y={124} r={24} label="supervisor" cls="key" icon="🧠" />
+      <Node x={60} y={228} r={17} label="agent" cls="agent" icon="🤖" />
+      <Node x={150} y={228} r={17} label="tool" cls="tool" icon="🔧" />
+      <Node x={240} y={228} r={17} label="agent" cls="agent" icon="🤖" />
       <Node x={150} y={316} r={16} label="end" />
     </g>
   </svg>
@@ -85,10 +91,10 @@ const ToolRouting = () => (
     ]} />
     <g className="pg-nodes">
       <Node x={44} y={170} r={16} label="task" />
-      <Node x={144} y={170} r={24} label="router" cls="key" />
-      <Node x={244} y={96} r={17} label="summarize" />
-      <Node x={250} y={170} r={17} label="translate" />
-      <Node x={244} y={240} r={17} label="validate" />
+      <Node x={144} y={170} r={24} label="router" cls="key" icon="🧭" />
+      <Node x={244} y={96} r={17} label="summarize" cls="tool" icon="📝" />
+      <Node x={250} y={170} r={17} label="translate" cls="tool" icon="🌐" />
+      <Node x={244} y={240} r={17} label="validate" cls="tool" icon="✅" />
       <Node x={150} y={308} r={15} label="end" />
     </g>
   </svg>
@@ -111,8 +117,8 @@ const PersistentState = () => (
     ]} />
     <g className="pg-nodes">
       <Node x={150} y={40} r={16} label="start" />
-      <Node x={150} y={118} r={21} label="step" />
-      <Node x={150} y={198} r={26} label="checkpoint" cls="key" />
+      <Node x={150} y={118} r={21} label="step" icon="⚙️" />
+      <Node x={150} y={198} r={26} label="checkpoint" cls="key" icon="💾" />
       <Node x={150} y={306} r={15} label="end" />
     </g>
   </svg>
@@ -141,13 +147,13 @@ const Swarm = () => (
       { path: "#w-b1", dur: "1.5s", begin: "1.4s" },
     ]} />
     <g className="pg-nodes">
-      <Node x={150} y={40} r={17} label="coordinator" cls="key" />
-      <Node x={86} y={120} r={17} label="supervisor" />
-      <Node x={214} y={120} r={17} label="supervisor" />
-      <Node x={56} y={228} r={14} label="agent" cls="sm" />
-      <Node x={132} y={228} r={14} label="agent" cls="sm" />
-      <Node x={172} y={228} r={14} label="agent" cls="sm" />
-      <Node x={248} y={228} r={14} label="agent" cls="sm" />
+      <Node x={150} y={40} r={17} label="coordinator" cls="key" icon="🧠" />
+      <Node x={86} y={120} r={17} label="supervisor" cls="key" />
+      <Node x={214} y={120} r={17} label="supervisor" cls="key" />
+      <Node x={56} y={228} r={14} label="agent" cls="sm agent" icon="🤖" />
+      <Node x={132} y={228} r={14} label="agent" cls="sm agent" icon="🤖" />
+      <Node x={172} y={228} r={14} label="agent" cls="sm agent" icon="🤖" />
+      <Node x={248} y={228} r={14} label="agent" cls="sm agent" icon="🤖" />
     </g>
   </svg>
 );
@@ -168,10 +174,10 @@ const HitlSafety = () => (
     ]} />
     <g className="pg-nodes">
       <Node x={150} y={40} r={16} label="start" />
-      <Node x={150} y={118} r={21} label="risky step" />
-      <Node x={150} y={192} r={25} label="interrupt" cls="gate" />
-      <Node x={64} y={288} r={15} label="cancel" cls="sm bad" />
-      <Node x={236} y={288} r={15} label="resume" cls="sm ok" />
+      <Node x={150} y={118} r={21} label="risky step" icon="⚠️" />
+      <Node x={150} y={192} r={25} label="interrupt" cls="gate" icon="⛔" />
+      <Node x={64} y={288} r={15} label="cancel" cls="sm bad" icon="✖️" />
+      <Node x={236} y={288} r={15} label="resume" cls="sm ok" icon="▶️" />
     </g>
   </svg>
 );
