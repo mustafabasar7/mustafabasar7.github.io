@@ -193,7 +193,7 @@ const ProjectGraph3D = ({ nodes, running }: { nodes: GNode3D[]; running?: boolea
       const o = new THREE.Group();
       o.add(inner);
       o.position.set(n.x, VB_H - n.y, 0); // flip Y to match the SVG (Y-down)
-      o.scale.setScalar(n.r * 0.8);
+      o.scale.setScalar(n.r * 1.05);
       o.userData.spin = 0.3 + Math.random() * 0.3;
       o.rotation.x = -0.18;
       scene.add(o);

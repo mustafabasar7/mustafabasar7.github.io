@@ -12,7 +12,8 @@
    300/372 aspect ratio matches the SVG viewBox so the 3D nodes align 1:1. */
 .pg-stage {
   position: relative;
-  width: min(100%, 560px);
+  width: 100%;
+  max-width: 560px;
   aspect-ratio: 300 / 372;
 }
 .pg-stage svg {
