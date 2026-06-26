@@ -1,13 +1,14 @@
 import "./styles/About.css";
-import { config } from "../config";
+import { useLang } from "../i18n/LanguageProvider";
 
 const About = () => {
+  const { c } = useLang();
   return (
     <div className="about-section" id="about">
       <div className="about-me">
-        <h3 className="title">{config.about.title}</h3>
+        <h3 className="title">{c.about.title}</h3>
         <p className="para">
-          {config.about.description}
+          {c.about.description}
         </p>
       </div>
     </div>

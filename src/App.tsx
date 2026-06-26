@@ -9,10 +9,16 @@ const MainContainer = lazy(() => import("./components/MainContainer"));
 const MyWorks = lazy(() => import("./pages/MyWorks"));
 const ProjectDetail = lazy(() => import("./pages/ProjectDetail"));
 import { LoadingProvider } from "./context/LoadingProvider";
+import { LanguageProvider, useLang } from "./i18n/LanguageProvider";
 
-const App = () => {
+// GSAP's SplitText mutates heading DOM nodes; when the language toggle changes
+// that text, React's reconciler can't find the original nodes (removeChild
+// errors). Remounting the whole route subtree on language change rebuilds the
+// DOM cleanly. The router and provider sit above this key so URL + lang persist.
+const AppRoutes = () => {
+  const { lang } = useLang();
   return (
-    <BrowserRouter>
+    <div key={lang}>
       <Routes>
         <Route
           path="/"
@@ -45,8 +51,18 @@ const App = () => {
           }
         />
       </Routes>
-      <Analytics />
-      <SpeedInsights />
+    </div>
+  );
+};
+
+const App = () => {
+  return (
+    <BrowserRouter>
+      <LanguageProvider>
+        <AppRoutes />
+        <Analytics />
+        <SpeedInsights />
+      </LanguageProvider>
     </BrowserRouter>
   );
 };

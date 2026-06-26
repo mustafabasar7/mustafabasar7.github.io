@@ -1,11 +1,12 @@
 import { PropsWithChildren } from "react";
 import "./styles/Landing.css";
-import { config } from "../config";
+import { useLang } from "../i18n/LanguageProvider";
 import AgentGraph from "./AgentGraph";
 
 const Landing = ({ children }: PropsWithChildren) => {
-  const nameParts = config.developer.fullName.split(" ");
-  const firstName = nameParts[0] || config.developer.name;
+  const { c, t } = useLang();
+  const nameParts = c.developer.fullName.split(" ");
+  const firstName = nameParts[0] || c.developer.name;
   const lastName = nameParts.slice(1).join(" ") || "";
 
   return (
@@ -13,7 +14,7 @@ const Landing = ({ children }: PropsWithChildren) => {
       <div className="landing-section" id="landingDiv">
         <div className="landing-container">
           <div className="landing-intro">
-            <h2>Hello! I'm</h2>
+            <h2>{t("hero.hello")}</h2>
             <h1>
               {firstName.toUpperCase()}
               {' '}
@@ -22,9 +23,9 @@ const Landing = ({ children }: PropsWithChildren) => {
             </h1>
           </div>
           <div className="landing-info">
-            <h3>An</h3>
+            <h3>{t("hero.an")}</h3>
             <h2 className="landing-info-h2">
-              <div className="landing-h2-1">AI Solutions Engineer</div>
+              <div className="landing-h2-1">{c.developer.title}</div>
             </h2>
           </div>
           {/* Mobile hero - animated agent graph, shows only where the 3D character is hidden */}
