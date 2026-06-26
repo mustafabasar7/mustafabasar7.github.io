@@ -9,9 +9,9 @@ import "./MyWorks.css";
 type Project = (typeof config.projects)[number];
 
 // A live "peek" over the card image: on hover, the agent's first command types
-// itself out and the metric chips animate in — a taste of the detail page.
+// itself out and the metric chips animate in - a taste of the detail page.
 const WorkCard = ({ project, demo }: { project: Project; demo?: ProjectMeta }) => {
-  const { t } = useLang();
+  const { t, p } = useLang();
   const [hover, setHover] = useState(false);
   const [typed, setTyped] = useState("");
   const line = demo?.terminal[1] ?? demo?.terminal[0] ?? "";
@@ -65,7 +65,7 @@ const WorkCard = ({ project, demo }: { project: Project; demo?: ProjectMeta }) =
 
   return demo ? (
     <Link
-      to={`/myworks/${demo.slug}`}
+      to={p(`/myworks/${demo.slug}`)}
       className={`myworks-card myworks-card-link${hover ? " is-peeking" : ""}`}
       data-cursor="disable"
       {...handlers}
@@ -80,7 +80,7 @@ const WorkCard = ({ project, demo }: { project: Project; demo?: ProjectMeta }) =
 };
 
 const MyWorks = () => {
-  const { c, t } = useLang();
+  const { c, t, p } = useLang();
   // The home page locks `body { overflow: hidden }` for its own scroller; this
   // grid is taller than the viewport, so re-enable native scrolling here.
   useEffect(() => {
@@ -93,7 +93,7 @@ const MyWorks = () => {
     <div className="myworks-page">
       <LangToggle className="lang-toggle-fixed" />
       <div className="myworks-header">
-        <Link to="/" className="back-button" data-cursor="disable">
+        <Link to={p("/")} className="back-button" data-cursor="disable">
           {t("myworks.back")}
         </Link>
         <h1>

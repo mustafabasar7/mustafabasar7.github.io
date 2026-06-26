@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import "./styles/Loading.css";
 import { useLoading } from "../context/LoadingProvider";
+import { useLang } from "../i18n/LanguageProvider";
 
 import Marquee from "react-fast-marquee";
 
+const MARQUEE_TERMS = ["Agentic AI", "LangGraph", "Multi-Agent Systems", "HITL Governance"];
+
 const Loading = ({ percent }: { percent: number }) => {
   const { setIsLoading } = useLoading();
+  const { t } = useLang();
   const [loaded, setLoaded] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [clicked, setClicked] = useState(false);
@@ -62,8 +66,9 @@ const Loading = ({ percent }: { percent: number }) => {
       <div className="loading-screen">
         <div className="loading-marquee">
           <Marquee>
-            <span>&nbsp; AI Engineer &nbsp;</span> <span>&nbsp; Full Stack Developer &nbsp;</span>
-            <span>&nbsp; AI Engineer &nbsp;</span> <span>&nbsp; Full Stack Developer &nbsp;</span>
+            {[...MARQUEE_TERMS, ...MARQUEE_TERMS].map((term, i) => (
+              <span key={i}>&nbsp; {term} &nbsp;·</span>
+            ))}
           </Marquee>
         </div>
         <div
@@ -75,13 +80,13 @@ const Loading = ({ percent }: { percent: number }) => {
             <div className="loading-container">
               <div className="loading-content">
                 <div className="loading-content-in">
-                  Loading <span>{percent}%</span>
+                  {t("loading.loading")} <span>{percent}%</span>
                 </div>
               </div>
               <div className="loading-box"></div>
             </div>
             <div className="loading-content2">
-              <span>Welcome</span>
+              <span>{t("loading.welcome")}</span>
             </div>
           </div>
         </div>

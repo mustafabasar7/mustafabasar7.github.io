@@ -9,7 +9,7 @@ import { Link } from "react-router-dom";
 gsap.registerPlugin(ScrollTrigger);
 
 const Work = () => {
-  const { c, t } = useLang();
+  const { c, t, p } = useLang();
   useEffect(() => {
     // Disable pinning on mobile to allow scrolling
     if (window.innerWidth <= 768) return;
@@ -66,7 +66,7 @@ const Work = () => {
           <h2>
             {t("work.my")} <span>{t("work.word")}</span>
           </h2>
-          <Link to="/myworks" className="work-interactive-cta" data-cursor="disable">
+          <Link to={p("/myworks")} className="work-interactive-cta" data-cursor="disable">
             <span className="work-cta-pulse" />
             <span className="work-cta-text">
               <strong>{t("work.tryLive")}</strong>
@@ -98,7 +98,7 @@ const Work = () => {
             <div className="see-all-works">
               <h3>{t("work.seeMore")}</h3>
               <p>{t("work.exploreAll")}</p>
-              <Link to="/myworks" className="see-all-btn" data-cursor="disable">
+              <Link to={p("/myworks")} className="see-all-btn" data-cursor="disable">
                 {t("work.seeAllBtn")}
               </Link>
             </div>

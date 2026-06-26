@@ -17,10 +17,10 @@ const WORKER_POSITIONS = [
 const SUPERVISOR_ANCHOR = new THREE.Vector3(0, 0.1, 0);
 export const ROLES = ["Security", "Document Analyst", "Tester"];
 // Role-specific "action" each worker performs when activated.
-// Security (Death — neutralizes & stays down), Document Analyst (Dance), Tester (Running — runs the suite).
+// Security (Death - neutralizes & stays down), Document Analyst (Dance), Tester (Running - runs the suite).
 const ROLE_ACTIONS = ["Death", "Dance", "Running"];
 const ROLE_ONCE = [true, false, false]; // Death plays once and holds the pose
-// The supervisor is the only one who "likes" (ThumbsUp) — it approves the work.
+// The supervisor is the only one who "likes" (ThumbsUp) - it approves the work.
 const SUPERVISOR_GESTURE = "ThumbsUp";
 
 export interface RobotController {
@@ -144,7 +144,7 @@ const RobotScene = ({ onReady, onWorkerClick }: Props) => {
     let autoAt = 2.5;
     let manualPauseUntil = 0;
     // The supervisor only "likes" after a worker we clicked finishes its task.
-    const LIKE_DELAY = 1.4; // a bit past the middle of the worker's action — not too early, not at the very end
+    const LIKE_DELAY = 1.4; // a bit past the middle of the worker's action - not too early, not at the very end
     const LIKE_HOLD = 1.8; // how long to hold the ThumbsUp before idling
     let likeAt = 0; // when to play the supervisor's ThumbsUp (0 = none pending)
     let supervisorIdleAt = 0; // when to return the supervisor to Idle
@@ -252,7 +252,7 @@ const RobotScene = ({ onReady, onWorkerClick }: Props) => {
           const idx = pickWorker(e, workerRoots);
           if (idx !== -1) {
             const r = mount.getBoundingClientRect();
-            label.textContent = `${ROLES[idx]} — click to assign`;
+            label.textContent = `${ROLES[idx]} - click to assign`;
             label.style.left = `${e.clientX - r.left}px`;
             label.style.top = `${e.clientY - r.top}px`;
             label.style.opacity = "1";

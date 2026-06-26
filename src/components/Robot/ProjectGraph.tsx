@@ -1,6 +1,6 @@
 import "./ProjectGraph.css";
 
-// A per-project LangGraph-style topology — pure SVG/CSS, no three.js. Replaces
+// A per-project LangGraph-style topology - pure SVG/CSS, no three.js. Replaces
 // the old decorative 3D character with a diagram that IS the system: nodes are
 // agents/tools/gates, the moving dots are control flow. Each project gets a
 // visually distinct shape so the five never feel samey. Labels sit BELOW each

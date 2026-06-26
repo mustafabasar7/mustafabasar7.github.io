@@ -31,19 +31,22 @@ function loadRobot(): Promise<LoadedRobot> {
   return cache;
 }
 
-// Tint the robot's materials toward the site's purple palette.
-function tint(obj: THREE.Object3D, accent: number) {
+// Tint the robot's materials toward a solid accent color. Kept matte and opaque
+// (low emissive, higher roughness) so the figures read as solid, not glowy/ghostly.
+function tint(obj: THREE.Object3D, accent: number, strength = 0.7) {
   obj.traverse((child) => {
     const mesh = child as THREE.Mesh;
     if (mesh.isMesh && mesh.material && !Array.isArray(mesh.material)) {
       const mat = (mesh.material as THREE.MeshStandardMaterial).clone();
-      if (mat.color) mat.color.lerp(new THREE.Color(accent), 0.35);
+      if (mat.color) mat.color.lerp(new THREE.Color(accent), strength);
       if ("emissive" in mat) {
         mat.emissive = new THREE.Color(accent);
-        mat.emissiveIntensity = 0.45;
+        mat.emissiveIntensity = 0.12; // subtle, not glowing
       }
-      if ("metalness" in mat) mat.metalness = 0.6;
-      if ("roughness" in mat) mat.roughness = 0.35;
+      if ("metalness" in mat) mat.metalness = 0.3;
+      if ("roughness" in mat) mat.roughness = 0.6; // matte, not shiny
+      mat.transparent = false;
+      mat.opacity = 1;
       mesh.material = mat;
       mesh.frustumCulled = true;
     }
@@ -52,10 +55,11 @@ function tint(obj: THREE.Object3D, accent: number) {
 
 function makeInstance(
   loaded: LoadedRobot,
-  accent: number
+  accent: number,
+  strength = 0.7
 ): RobotInstance {
   const root = SkeletonUtils.clone(loaded.scene);
-  tint(root, accent);
+  tint(root, accent, strength);
   const mixer = new THREE.AnimationMixer(root);
   const actions: Record<string, THREE.AnimationAction> = {};
   loaded.animations.forEach((clip) => {
@@ -98,12 +102,15 @@ export async function buildSoloRobot(accent = 0xc2a4ff): Promise<RobotInstance> 
 export async function buildRobotTeam(workerPositions: THREE.Vector3[]): Promise<RobotTeam> {
   const loaded = await loadRobot();
 
-  const supervisor = makeInstance(loaded, 0xc2a4ff);
+  // Orchestrator keeps the site purple, but solid (not washed out / glowing).
+  const supervisor = makeInstance(loaded, 0xc2a4ff, 0.45);
   supervisor.root.scale.setScalar(0.74);
   supervisor.play("Idle");
 
-  const workers = workerPositions.map((p) => {
-    const w = makeInstance(loaded, 0x8d7bd6);
+  // Workers get distinct, solid colors: blue, red, green.
+  const WORKER_COLORS = [0x3f7fff, 0xff4d4d, 0x35c46a];
+  const workers = workerPositions.map((p, i) => {
+    const w = makeInstance(loaded, WORKER_COLORS[i] ?? 0x8d7bd6, 0.8);
     w.root.position.copy(p);
     w.root.scale.setScalar(0.6);
     w.play("Idle");

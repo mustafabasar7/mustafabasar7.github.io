@@ -12,7 +12,7 @@ interface Props {
 
 // A single centered robot that loops through the model's ready-made animation
 // clips. Used on project detail pages to visually accompany the live LangGraph
-// action. No hand-authored animation — only the clips baked into the model.
+// action. No hand-authored animation - only the clips baked into the model.
 const RobotSolo = ({ clips, hold = 2.6 }: Props) => {
   const mountRef = useRef<HTMLDivElement | null>(null);
   const clipsRef = useRef(clips);

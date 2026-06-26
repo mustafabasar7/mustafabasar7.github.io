@@ -7,7 +7,7 @@ interface TechItem {
   url: string;
 }
 
-// Agentic AI engineering stack — icon-backed tools.
+// Agentic AI engineering stack - icon-backed tools.
 // Concepts without logos (LangGraph, Multi-Agent, HITL, State Machines) live in the "What I Do" section.
 // Inverted pyramid: 6 -> 5 -> 4 -> 3 -> 2
 const techStack: TechItem[][] = [
