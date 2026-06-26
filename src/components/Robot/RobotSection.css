@@ -51,10 +51,12 @@
 
 /* "Click an agent to assign a task" cue — sits above the robots, fades out on
    first dispatch. Pointer-events off so it never blocks clicking a robot. */
+/* Sits to the side, above a sub-agent (worker), pointing down at it — not at
+   the central supervisor. */
 .robot-cue {
   position: absolute;
-  top: 14%;
-  left: 50%;
+  top: 36%;
+  left: 27%;
   transform: translateX(-50%);
   z-index: 4;
   display: flex;
@@ -81,8 +83,8 @@
   animation: robot-cue-bounce 1.4s ease-in-out infinite;
 }
 @keyframes robot-cue-bounce {
-  0%, 100% { transform: translateY(0); opacity: 0.7; }
-  50% { transform: translateY(8px); opacity: 1; }
+  0%, 100% { transform: translate(0, 0); opacity: 0.7; }
+  50% { transform: translate(6px, 6px); opacity: 1; }
 }
 @media (prefers-reduced-motion: reduce) {
   .robot-cue-arrow { animation: none; }

@@ -72,6 +72,7 @@ const Scene = () => {
       const { loadCharacter } = setCharacter(renderer, scene, camera);
 
       let cancelled = false;
+      let charResizeObserver: ResizeObserver | null = null;
       loadCharacter((value) => setLoading(value)).then((gltf) => {
         if (!cancelled && gltf) {
           const animations = setAnimations(gltf);
@@ -89,6 +90,16 @@ const Scene = () => {
             handleResize(renderer, camera, canvasDiv, character);
             updateFxaa();
           });
+          // On a language toggle the whole subtree remounts; the canvas can be
+          // sized before layout settles, leaving the model off-center. Re-fit
+          // once it loads, and observe the container so it recenters when its
+          // real size arrives.
+          const refit = () => { handleResize(renderer, camera, canvasDiv, character); updateFxaa(); };
+          requestAnimationFrame(refit);
+          if (canvasDiv.current) {
+            charResizeObserver = new ResizeObserver(refit);
+            charResizeObserver.observe(canvasDiv.current);
+          }
         }
       });
 
@@ -176,6 +187,7 @@ const Scene = () => {
         cancelled = true;
         clearTimeout(debounce);
         stop();
+        charResizeObserver?.disconnect();
         observer.disconnect();
         document.removeEventListener("visibilitychange", syncLoop);
         scene.clear();

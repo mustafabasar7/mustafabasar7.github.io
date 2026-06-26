@@ -66,14 +66,26 @@ const Work = () => {
           <h2>
             {t("work.my")} <span>{t("work.word")}</span>
           </h2>
-          <Link to={p("/myworks")} className="work-interactive-cta" data-cursor="disable">
-            <span className="work-cta-pulse" />
-            <span className="work-cta-text">
-              <strong>{t("work.tryLive")}</strong>
-              <em>{t("work.realAgents")}</em>
-            </span>
-            <span className="work-cta-arrow">→</span>
-          </Link>
+          <div className="work-cta-wrap">
+            {/* Dashed arrow (graph-style) pointing at the CTA. */}
+            <svg className="work-cta-pointer" viewBox="0 0 120 90" aria-hidden="true">
+              <path className="work-cta-dash" d="M8,8 C70,4 104,28 108,72" />
+              <path className="work-cta-head" d="M98,60 L108,74 L118,58" />
+            </svg>
+            <Link to={p("/myworks")} className="work-interactive-cta" data-cursor="disable">
+              <span className="work-cta-pulse" />
+              <span className="work-cta-text">
+                <strong>{t("work.tryLive")}</strong>
+                <em>{t("work.realAgents")}</em>
+              </span>
+              <span className="work-cta-arrow">→</span>
+            </Link>
+            {/* Animated tapping cursor, "click me" — outside the Link so the
+                button's overflow:hidden doesn't clip it. */}
+            <svg className="work-cta-tap" viewBox="0 0 28 32" aria-hidden="true">
+              <path d="M4,2 L4,24 L10,19 L14,29 L18,27 L14,17 L22,17 Z" />
+            </svg>
+          </div>
         </div>
         <div className="work-flex">
           {c.projects.slice(0, 5).map((project, index) => (

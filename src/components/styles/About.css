@@ -16,20 +16,6 @@
   max-width: calc(100% - 15px);
 }
 
-/* Portrait — full-width above the text on mobile; left half on desktop. */
-.about-portrait {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  margin-bottom: 24px;
-}
-.about-portrait img {
-  width: min(78%, 320px);
-  height: auto;
-  border-radius: 14px;
-  filter: grayscale(0.1) contrast(1.05);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
-}
 .about-me h3 {
   font-size: 18px;
   text-transform: uppercase;
@@ -93,25 +79,15 @@
 @media only screen and (min-width: 1025px) {
   .about-section {
     width: var(--cWidth);
-    justify-content: space-between;
+    justify-content: right;
     max-width: 1920px;
     height: var(--vh);
     padding: 0px;
     opacity: 1;
-    gap: 4%;
   }
   .about-me {
     padding: 0px;
     width: 50%;
-  }
-  /* Portrait sits in the left half on desktop. */
-  .about-portrait {
-    width: 42%;
-    margin-bottom: 0;
-    justify-content: flex-start;
-  }
-  .about-portrait img {
-    width: min(100%, 420px);
   }
   .about-me p {
     font-size: 1.9vw;

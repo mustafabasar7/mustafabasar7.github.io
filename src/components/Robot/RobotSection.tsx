@@ -116,7 +116,7 @@ const RobotSection = () => {
         {!dispatched && (
           <div className="robot-cue" aria-hidden="true">
             <span className="robot-cue-text">{t("robot.cue")}</span>
-            <span className="robot-cue-arrow">↓</span>
+            <span className="robot-cue-arrow">↘</span>
           </div>
         )}
       </div>

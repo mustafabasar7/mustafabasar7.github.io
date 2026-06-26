@@ -7,6 +7,7 @@ export type Lang = "en" | "tr";
 export const UI = {
   en: {
     // nav
+    "nav.home": "Home",
     "nav.work": "Work",
     "nav.about": "About",
     "nav.career": "Career",
@@ -88,6 +89,7 @@ export const UI = {
     "pd.hint.ready": "Type your own task and run it - or pick a suggestion below.",
   },
   tr: {
+    "nav.home": "Ana Sayfa",
     "nav.work": "Projeler",
     "nav.about": "Hakkımda",
     "nav.career": "Kariyer",

@@ -91,6 +91,11 @@ const Navbar = () => {
         </div>
         <ul>
           <li>
+            <a data-href="#landingDiv" href="#landingDiv">
+              <HoverLinks text={t("nav.home").toUpperCase()} />
+            </a>
+          </li>
+          <li>
             <a data-href="#about" href="#about">
               <HoverLinks text={t("nav.about").toUpperCase()} />
             </a>

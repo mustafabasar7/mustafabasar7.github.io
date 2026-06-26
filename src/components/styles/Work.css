@@ -16,22 +16,28 @@
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 16px;
+  gap: 28px;
   margin-top: 70px;
-  padding: 16px 26px;
+  padding: 38px 68px;
   border-radius: 999px;
   text-decoration: none;
   color: #1a1430;
   background: linear-gradient(95deg, #c2a4ff 0%, #ff9fd0 100%);
-  box-shadow: 0 10px 40px rgba(194, 164, 255, 0.45);
+  box-shadow: 0 16px 60px rgba(194, 164, 255, 0.6);
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   animation: ctaBob 2.6s ease-in-out infinite;
 }
 
 .work-interactive-cta:hover {
-  transform: scale(1.06) translateY(-2px);
-  box-shadow: 0 16px 55px rgba(255, 159, 208, 0.55);
+  transform: scale(1.07) translateY(-2px);
+  box-shadow: 0 22px 75px rgba(255, 159, 208, 0.7);
+  color: #1a1430; /* override the global a:hover accent so the CTA keeps its colors */
+}
+.work-interactive-cta:hover .work-cta-text strong,
+.work-interactive-cta:hover .work-cta-text em,
+.work-interactive-cta:hover .work-cta-arrow {
+  color: #1a1430;
 }
 
 .work-cta-pulse {
@@ -49,20 +55,20 @@
 }
 
 .work-cta-text strong {
-  font-size: 22px;
+  font-size: 38px;
   font-weight: 800;
   letter-spacing: 0.01em;
 }
 
 .work-cta-text em {
-  font-size: 13px;
+  font-size: 19px;
   font-style: normal;
   font-weight: 600;
-  opacity: 0.8;
+  opacity: 0.85;
 }
 
 .work-cta-arrow {
-  font-size: 26px;
+  font-size: 44px;
   font-weight: 800;
   transition: transform 0.2s ease;
 }
@@ -73,7 +79,7 @@
 
 @keyframes ctaPulse {
   0% { box-shadow: 0 0 0 0 rgba(194, 164, 255, 0.7); }
-  100% { box-shadow: 0 0 0 22px rgba(194, 164, 255, 0); }
+  100% { box-shadow: 0 0 0 36px rgba(194, 164, 255, 0); }
 }
 
 @keyframes ctaBob {
@@ -426,4 +432,62 @@
   .see-all-works p {
     font-size: 14px;
   }
+}
+/* CTA attention cluster: dashed pointer arrow + animated tapping cursor. */
+.work-cta-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Dashed arrow (same dashed look as the agent-graph edges) curving into the CTA. */
+.work-cta-pointer {
+  position: absolute;
+  left: -96px;
+  top: -54px;
+  width: 110px;
+  height: 84px;
+  pointer-events: none;
+  overflow: visible;
+}
+.work-cta-pointer path {
+  fill: none;
+  stroke: #c2a4ff;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.work-cta-dash {
+  stroke-dasharray: 6 7;
+  animation: ctaDashFlow 1.1s linear infinite;
+}
+.work-cta-head { stroke-dasharray: none; }
+@keyframes ctaDashFlow {
+  to { stroke-dashoffset: -26; }
+}
+
+/* Tapping cursor on the CTA — presses in and out to say "click me". */
+.work-cta-tap {
+  position: absolute;
+  right: -36px;
+  bottom: 4px;
+  width: 120px;
+  height: 138px;
+  fill: #1a1430;
+  stroke: #fff;
+  stroke-width: 1.4;
+  filter: drop-shadow(0 3px 6px rgba(0,0,0,0.5));
+  animation: ctaTap 1.6s ease-in-out infinite;
+  transform-origin: 20% 20%;
+  pointer-events: none;
+}
+/* Comes in from outside the button, taps it, then pulls back out. */
+@keyframes ctaTap {
+  0%, 100% { transform: translate(30px, 14px) scale(1); }
+  40% { transform: translate(-6px, -8px) scale(1); }
+  54% { transform: translate(-12px, -14px) scale(0.84); }
+  68% { transform: translate(-6px, -8px) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .work-cta-dash, .work-cta-tap { animation: none; }
 }

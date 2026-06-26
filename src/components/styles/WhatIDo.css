@@ -453,3 +453,14 @@
     line-height: 5rem;
   }
 }
+
+/* When a card expands on hover/active, show ALL its content (the h5 + tags at
+   the bottom were being clipped). Give it room and stop clipping. */
+.what-noTouch:hover .what-content-in,
+.what-content-active .what-content-in {
+  overflow: visible;
+}
+.what-noTouch:hover,
+.what-content-active {
+  min-height: 80%;
+}

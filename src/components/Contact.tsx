@@ -94,6 +94,15 @@ const Contact = () => {
             >
               Linkedin <MdArrowOutward />
             </a>
+            <a
+              href="https://yapiplan.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-cursor="disable"
+              className="contact-social"
+            >
+              yapiplan.com <MdArrowOutward />
+            </a>
           </div>
           <div className="contact-box">
             <h2>
