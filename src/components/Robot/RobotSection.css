@@ -49,6 +49,45 @@
   height: 100%;
 }
 
+/* "Click an agent to assign a task" cue — sits above the robots, fades out on
+   first dispatch. Pointer-events off so it never blocks clicking a robot. */
+.robot-cue {
+  position: absolute;
+  top: 14%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+  text-align: center;
+}
+.robot-cue-text {
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #d9caff;
+  background: rgba(31, 27, 56, 0.75);
+  border: 1px solid rgba(194, 164, 255, 0.35);
+  padding: 7px 16px;
+  border-radius: 20px;
+  backdrop-filter: blur(4px);
+}
+.robot-cue-arrow {
+  font-size: 1.5rem;
+  color: #c2a4ff;
+  animation: robot-cue-bounce 1.4s ease-in-out infinite;
+}
+@keyframes robot-cue-bounce {
+  0%, 100% { transform: translateY(0); opacity: 0.7; }
+  50% { transform: translateY(8px); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .robot-cue-arrow { animation: none; }
+}
+
 .robot-controls {
   position: relative;
   z-index: 2;

@@ -27,6 +27,7 @@ const RobotSection = () => {
   const [isDesktop] = useState(() => window.innerWidth > 1024);
   const ref = useRef<HTMLDivElement | null>(null);
   const [visible, setVisible] = useState(false);
+  const [dispatched, setDispatched] = useState(false); // hide the click-cue after first use
   const controllerRef = useRef<RobotController | null>(null);
   const [messages, setMessages] = useState<Msg[]>([]);
   const chatRef = useRef<HTMLDivElement | null>(null);
@@ -55,6 +56,7 @@ const RobotSection = () => {
 
   // Dispatch an agent: animate the robot, then stream its live explanation.
   const runAgent = useCallback((i: number) => {
+    setDispatched(true);
     controllerRef.current?.dispatch(i);
     abortRef.current?.abort();
     const ac = new AbortController();
@@ -110,6 +112,12 @@ const RobotSection = () => {
           <Suspense fallback={null}>
             <RobotScene onReady={onReady} onWorkerClick={onWorkerClick} />
           </Suspense>
+        )}
+        {!dispatched && (
+          <div className="robot-cue" aria-hidden="true">
+            <span className="robot-cue-text">{t("robot.cue")}</span>
+            <span className="robot-cue-arrow">↓</span>
+          </div>
         )}
       </div>
 
