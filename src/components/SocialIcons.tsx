@@ -1,11 +1,9 @@
 import { FaGithub, FaLinkedinIn } from "react-icons/fa6";
 import "./styles/SocialIcons.css";
-import { TbNotes } from "react-icons/tb";
-import HoverLinks from "./HoverLinks";
 import { useLang } from "../i18n/LanguageProvider";
 
 const SocialIcons = () => {
-  const { c, t } = useLang();
+  const { c } = useLang();
   return (
     <div className="icons-section">
       <div className="social-icons" data-cursor="icons" id="social">
@@ -20,12 +18,6 @@ const SocialIcons = () => {
           </a>
         </span>
       </div>
-      <a className="resume-button" href="/Mustafa_Basar.docx" target="_blank" rel="noopener noreferrer" download>
-        <HoverLinks text={t("nav.resume")} />
-        <span>
-          <TbNotes />
-        </span>
-      </a>
     </div>
   );
 };

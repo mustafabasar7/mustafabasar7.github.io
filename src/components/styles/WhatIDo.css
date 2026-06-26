@@ -21,8 +21,8 @@
 }
 
 .what-box h2 {
-  font-size: calc(2.6vw + 18px);
-  line-height: calc(2.6vw + 16px);
+  font-size: calc(2vw + 12px);
+  line-height: calc(2vw + 12px);
   font-weight: 600;
   margin-right: 28%;
   margin-bottom: 100px;
@@ -366,8 +366,8 @@
 
   .what-box h2 {
     margin: 50px 0;
-    font-size: 55px;
-    line-height: 53px;
+    font-size: 42px;
+    line-height: 42px;
   }
 
   .what-box:first-child {
@@ -449,7 +449,7 @@
 
 @media only screen and (min-width: 1950px) {
   .what-box h2 {
-    font-size: 7rem;
-    line-height: 6.8rem;
+    font-size: 5rem;
+    line-height: 5rem;
   }
 }

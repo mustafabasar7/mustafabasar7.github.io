@@ -30,12 +30,31 @@
   font-weight: 600;
   cursor: pointer;
 }
-.navbar-connect {
+/* Centered group holding the CV link + the email, near the top of the page. */
+.navbar-center {
   position: absolute;
   display: none;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+  align-items: center;
+  gap: 16px;
+}
+.navbar-cv {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: #c2a4ff;
+  border: 1px solid rgba(194, 164, 255, 0.4);
+  padding: 4px 11px;
+  border-radius: 14px;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+.navbar-cv:hover {
+  border-color: rgba(194, 164, 255, 0.8);
+  color: #e9ddff;
+}
+.navbar-connect {
   font-size: 13px;
   letter-spacing: 0.8px;
   font-weight: 500;
@@ -62,8 +81,8 @@
   }
 }
 @media only screen and (min-width: 900px) {
-  .navbar-connect {
-    display: block;
+  .navbar-center {
+    display: flex;
   }
 }
 @media only screen and (min-width: 1200px) {

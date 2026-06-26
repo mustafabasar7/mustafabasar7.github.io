@@ -72,13 +72,23 @@ const Navbar = () => {
         <a href="/#" className="navbar-title" data-cursor="disable">
           MB
         </a>
-        <a
-          href="mailto:mustafa.r.basar@gmail.com"
-          className="navbar-connect"
-          data-cursor="disable"
-        >
-          mustafa.r.basar@gmail.com
-        </a>
+        <div className="navbar-center">
+          <a
+            href="/Mustafa_Basar.docx"
+            className="navbar-cv"
+            data-cursor="disable"
+            download
+          >
+            CV ↗
+          </a>
+          <a
+            href="mailto:mustafa.r.basar@gmail.com"
+            className="navbar-connect"
+            data-cursor="disable"
+          >
+            mustafa.r.basar@gmail.com
+          </a>
+        </div>
         <ul>
           <li>
             <a data-href="#about" href="#about">
