@@ -1,16 +1,14 @@
 // Agent + project roster for the interactive multi-agent show.
 //
 // Each entry maps to a real capability from Mustafa's CV, grounded in LangChain /
-// LangGraph documentation (pulled via Context7). When the backend (/api/agent) is
-// reachable, dispatching streams a *live* DeepSeek response. With no backend (e.g.
-// a plain static build) the same entries fall back to doc-grounded canned demos —
-// so the show works on any host.
+// LangGraph documentation (pulled via Context7). Dispatching streams a
+// doc-grounded demo answer (localized for TR) - there is no live model call.
 //
 // streamAgent() also caches responses: re-running an identical request replays
-// instantly and reports "cached" — a real, observable prompt-caching demo.
+// instantly and reports "cached" - a real, observable instant-replay.
 
-// Turkish prose overlay for project demos (type-only dep back to here, no cycle).
-import { PROJECTS_TR } from "./agents.tr";
+// Turkish prose overlay for demos (type-only dep back to here, no cycle).
+import { PROJECTS_TR, AGENTS_TR } from "./agents.tr";
 
 export interface AgentMeta {
   /** Short label used on the 3D scene + chips. */
@@ -33,12 +31,12 @@ export const AGENTS: AgentMeta[] = [
   {
     short: "Security",
     name: "Security Agent",
-    tagline: "HITL governance — pauses for human approval before risky actions",
+    tagline: "HITL governance - pauses for human approval before risky actions",
     metrics: ["interrupt() fired", "awaiting human approval", "0 irreversible actions"],
     defaultTask: "Review a tool call that will delete 3M production media assets.",
     keywords: ["secur", "safe", "safety", "govern", "approve", "approval", "audit", "hitl", "human", "review", "risk", "threat", "attack", "auth", "protect", "delete", "halt", "interrupt", "policy"],
     fallback:
-      "As the security agent I run a human-in-the-loop governance node. Before any sensitive action executes, I call LangGraph's interrupt() to pause the graph and surface the exact payload — what's about to happen and why — for a human to approve. Execution only continues when you resume with Command(resume=...), routing to proceed or cancel, so nothing irreversible fires unattended. For your task: deleting 3M production assets is precisely the class of action I halt — I'd freeze the run, show the target set and blast radius, and require explicit sign-off, keeping the whole decision auditable. This is how Mustafa enforces safety and auditability in autonomous workflows.",
+      "As the security agent I run a human-in-the-loop governance node. Before any sensitive action executes, I call LangGraph's interrupt() to pause the graph and surface the exact payload - what's about to happen and why - for a human to approve. Execution only continues when you resume with Command(resume=...), routing to proceed or cancel, so nothing irreversible fires unattended. For your task: deleting 3M production assets is precisely the class of action I halt - I'd freeze the run, show the target set and blast radius, and require explicit sign-off, keeping the whole decision auditable. This is how Mustafa enforces safety and auditability in autonomous workflows.",
   },
   {
     short: "Document Analyst",
@@ -48,7 +46,7 @@ export const AGENTS: AgentMeta[] = [
     defaultTask: "Find the data-retention policy across 12k ingested media documents.",
     keywords: ["doc", "document", "retriev", "rag", "search", "index", "semantic", "summar", "analy", "extract", "knowledge", "vector", "embed", "find", "read"],
     fallback:
-      "As the document analyst I run a retrieval-augmented pipeline. I semantically index every source into a vector store, then at query time retrieve only the passages that actually ground an answer instead of stuffing whole files into context. Durable ingestion with Temporal keeps sources consistent across systems. For your task: I'd embed the 12k media documents, run a semantic search for retention-policy language, and return the specific clauses with their source files — the same retrieval-augmented approach that cut media-asset retrieval time roughly 40% in Mustafa's work.",
+      "As the document analyst I run a retrieval-augmented pipeline. I semantically index every source into a vector store, then at query time retrieve only the passages that actually ground an answer instead of stuffing whole files into context. Durable ingestion with Temporal keeps sources consistent across systems. For your task: I'd embed the 12k media documents, run a semantic search for retention-policy language, and return the specific clauses with their source files - the same retrieval-augmented approach that cut media-asset retrieval time roughly 40% in Mustafa's work.",
   },
   {
     short: "Tester",
@@ -58,7 +56,7 @@ export const AGENTS: AgentMeta[] = [
     defaultTask: "Run and cost-optimize a 40-step summarization pipeline.",
     keywords: ["test", "qa", "verify", "check", "bug", "lint", "eval", "run", "build", "cost", "cheap", "token", "cache", "caching", "optimize", "optimise", "offload", "slm", "route", "router", "latency", "budget", "efficien"],
     fallback:
-      "As the tester I verify the workflow and keep it cheap to run. I pull two cost levers: prompt caching reuses stable prompt prefixes — the system prompt and tool definitions — so the model skips recomputing tokens it has already seen, cutting input cost and latency; and SLM offloading routes the easy steps to a smaller, cheaper model, reserving the frontier model for hard reasoning. A router pattern runs about 5 calls / 9K tokens versus 7+ calls / 14K for naive handoffs. For your 40-step pipeline: I'd cache the shared instructions once, offload the simple per-step summaries to a small model, then evaluate the outputs — typically a large cost drop with no quality loss on the easy steps.",
+      "As the tester I verify the workflow and keep it cheap to run. I pull two cost levers: prompt caching reuses stable prompt prefixes - the system prompt and tool definitions - so the model skips recomputing tokens it has already seen, cutting input cost and latency; and SLM offloading routes the easy steps to a smaller, cheaper model, reserving the frontier model for hard reasoning. A router pattern runs about 5 calls / 9K tokens versus 7+ calls / 14K for naive handoffs. For your 40-step pipeline: I'd cache the shared instructions once, offload the simple per-step summaries to a small model, then evaluate the outputs - typically a large cost drop with no quality loss on the easy steps.",
   },
 ];
 
@@ -73,7 +71,7 @@ export interface ProjectMeta {
   capability: string;
   /** Stat chips shown while the demo runs. */
   metrics: string[];
-  /** Operation trace — lights up step by step in sync with the live action. */
+  /** Operation trace - lights up step by step in sync with the live action. */
   steps: string[];
   /** Ready-made robot.glb animation clips played to visualize the action. */
   clips: string[];
@@ -101,7 +99,7 @@ export interface Telemetry {
   ms: number;
 }
 
-// One per /myworks project card — grounded in real LangGraph behaviour.
+// One per /myworks project card - grounded in real LangGraph behaviour.
 export const PROJECTS: ProjectMeta[] = [
   {
     slug: "orchestration",
@@ -114,7 +112,7 @@ export const PROJECTS: ProjectMeta[] = [
     clips: ["Wave", "Running", "ThumbsUp"],
     defaultTask: "Decompose 'publish a vetted breaking-news article' across the agent team.",
     fallback:
-      "I'm the orchestration layer. A central supervisor coordinates specialized agents, delegating through tool-based handoff — a handoff tool returns a Command that routes to the target agent with a task description, and Send dispatches multiple workers in parallel. For your task: the supervisor splits 'publish a vetted breaking-news article' into research, drafting, fact-check and compliance, hands each to the right worker, runs the independent ones in parallel, then merges results — the supervisor pattern Mustafa ships for multi-step agent workflows.",
+      "I'm the orchestration layer. A central supervisor coordinates specialized agents, delegating through tool-based handoff - a handoff tool returns a Command that routes to the target agent with a task description, and Send dispatches multiple workers in parallel. For your task: the supervisor splits 'publish a vetted breaking-news article' into research, drafting, fact-check and compliance, hands each to the right worker, runs the independent ones in parallel, then merges results - the supervisor pattern Mustafa ships for multi-step agent workflows.",
     suggestions: [
       "Plan a product launch across research, copy, and legal.",
       "Split 'migrate 2TB of media' into parallel worker jobs.",
@@ -156,7 +154,7 @@ export const PROJECTS: ProjectMeta[] = [
     clips: ["Walking", "Yes", "Running"],
     defaultTask: "Route a mixed request: summarize a PDF, then check it for policy violations.",
     fallback:
-      "I'm the dynamic router. Instead of a fixed toolchain, an LLM inspects the current state and user intent and routes each step to the right capability, then invokes agents in parallel — about 5 model calls and ~9K tokens, more efficient than sequential handoffs. For your task: I'd recognize two intents, route the PDF to the summarizer and the result to the policy checker, run what I can in parallel, and return one merged answer — real-time routing driven by latent context, not a hardcoded pipeline.",
+      "I'm the dynamic router. Instead of a fixed toolchain, an LLM inspects the current state and user intent and routes each step to the right capability, then invokes agents in parallel - about 5 model calls and ~9K tokens, more efficient than sequential handoffs. For your task: I'd recognize two intents, route the PDF to the summarizer and the result to the policy checker, run what I can in parallel, and return one merged answer - real-time routing driven by latent context, not a hardcoded pipeline.",
     suggestions: [
       "Summarize a contract, then flag any policy violations.",
       "Translate this email and check it for sensitive data.",
@@ -198,7 +196,7 @@ export const PROJECTS: ProjectMeta[] = [
     clips: ["Sitting", "Standing", "Yes"],
     defaultTask: "Resume a 3-day ingestion workflow exactly where it was interrupted.",
     fallback:
-      "I'm the persistence layer. The graph is compiled with a checkpointer and run under a thread_id, so state is saved at every step and a long-running task can pause and resume cleanly while retaining memory. For your task: the 3-day ingestion run is checkpointed continuously; after an interruption I reload the saved state for its thread_id and continue from the exact step it stopped on — no re-processing, no lost context. This is how Mustafa keeps long-horizon agents durable.",
+      "I'm the persistence layer. The graph is compiled with a checkpointer and run under a thread_id, so state is saved at every step and a long-running task can pause and resume cleanly while retaining memory. For your task: the 3-day ingestion run is checkpointed continuously; after an interruption I reload the saved state for its thread_id and continue from the exact step it stopped on - no re-processing, no lost context. This is how Mustafa keeps long-horizon agents durable.",
     suggestions: [
       "Resume a crawl that died at document 4,000 of 12,000.",
       "Recover an agent run after a 2-day outage.",
@@ -239,7 +237,7 @@ export const PROJECTS: ProjectMeta[] = [
     clips: ["Running", "Jump", "Dance"],
     defaultTask: "Coordinate 20 agents indexing 50 media brands without collisions.",
     fallback:
-      "I'm the swarm coordinator. Specialized agents dynamically hand off control to one another and resume conversations through handoff tools; combined with multi-level supervisor hierarchies, this structures how a large, decentralized swarm divides and synchronizes work. For your task: I'd shard the 50 media brands across 20 agents under sub-supervisors, let agents hand off edge cases to specialists, and synchronize state so nobody double-indexes — coordination models for decentralized agent ecosystems.",
+      "I'm the swarm coordinator. Specialized agents dynamically hand off control to one another and resume conversations through handoff tools; combined with multi-level supervisor hierarchies, this structures how a large, decentralized swarm divides and synchronizes work. For your task: I'd shard the 50 media brands across 20 agents under sub-supervisors, let agents hand off edge cases to specialists, and synchronize state so nobody double-indexes - coordination models for decentralized agent ecosystems.",
     suggestions: [
       "Index 50 brands across 20 agents with zero collisions.",
       "Crawl 1M pages split over a 3-level agent hierarchy.",
@@ -276,11 +274,11 @@ export const PROJECTS: ProjectMeta[] = [
     category: "AI Governance",
     capability: "Safety-focused interruption that preserves human agency inside automation.",
     metrics: ["interrupt() gate", "Command(resume=...)", "auditable + reversible"],
-    steps: ["reach sensitive action", "interrupt() — pause", "await human approval", "Command(resume)"],
+    steps: ["reach sensitive action", "interrupt() - pause", "await human approval", "Command(resume)"],
     clips: ["No", "ThumbsUp"],
     defaultTask: "Gate an automated mass-unpublish action behind human approval.",
     fallback:
-      "I'm the HITL safety protocol. Before a sensitive action runs, interrupt() pauses the graph and surfaces a payload for approval; the run only continues when you resume with Command(resume=...), routing to proceed or cancel — preserving human agency and auditability. For your task: the automated mass-unpublish hits my gate, freezes, and waits for a human to approve or reject with the full context shown — safety-focused interruption patterns that keep a person in control of irreversible steps.",
+      "I'm the HITL safety protocol. Before a sensitive action runs, interrupt() pauses the graph and surfaces a payload for approval; the run only continues when you resume with Command(resume=...), routing to proceed or cancel - preserving human agency and auditability. For your task: the automated mass-unpublish hits my gate, freezes, and waits for a human to approve or reject with the full context shown - safety-focused interruption patterns that keep a person in control of irreversible steps.",
 
     suggestions: [
       "Gate an automated mass-delete behind human approval.",
@@ -288,7 +286,7 @@ export const PROJECTS: ProjectMeta[] = [
     ],
     terminal: [
       "$ graph reaches mass_unpublish",
-      "⛔ interrupt() — paused",
+      "⛔ interrupt() - paused",
       "→ awaiting human approval",
       "$ Command(resume='approve')",
       "✓ proceed · audit logged",
@@ -335,9 +333,6 @@ export function routeTask(text: string): number {
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-// Sentinel byte separating the streamed text from the trailing telemetry JSON.
-const SEP = "\x1e";
-
 export interface RunResult {
   status: RunStatus;
   telemetry: Telemetry;
@@ -347,12 +342,12 @@ export interface RunResult {
 const responseCache = new Map<string, { text: string; telemetry: Telemetry }>();
 
 /**
- * Stream an agent/project response one chunk at a time.
+ * Stream a doc-grounded demo response one chunk at a time.
  *
- * - Identical re-runs replay from cache instantly and resolve to "cached".
- * - A successful live call resolves to "live" and surfaces DeepSeek's real
- *   token/cache usage (which cannot be faked).
- * - No backend → doc-grounded fallback, typed out, resolves to "demo".
+ * There is no live model call anywhere — every answer is the prewritten,
+ * doc-grounded prose for that agent/project (localized for TR). An identical
+ * re-run replays instantly from cache and resolves to "cached"; the first run
+ * types out and resolves to "demo".
  */
 export async function streamAgent(
   set: AgentSet,
@@ -363,11 +358,14 @@ export async function streamAgent(
   lang: "en" | "tr" = "en",
 ): Promise<RunResult> {
   const meta = set === "project" ? PROJECTS[role] : AGENTS[role];
-  // For projects in Turkish, the doc-grounded demo prose comes from the TR overlay.
+  // Localized doc-grounded prose: project overlay by slug, agent overlay by index.
   const trContent =
-    lang === "tr" && set === "project" && meta ? PROJECTS_TR[(meta as ProjectMeta).slug] : undefined;
-  const defaultTask = trContent?.defaultTask ?? meta?.defaultTask ?? "";
-  const resolved = (task || "").trim() || defaultTask;
+    lang === "tr"
+      ? set === "project" && meta
+        ? PROJECTS_TR[(meta as ProjectMeta).slug]
+        : AGENTS_TR[role]
+      : undefined;
+  const resolved = (task || "").trim() || trContent?.defaultTask || meta?.defaultTask || "";
   const key = `${set}:${role}:${lang}:${resolved}`;
   const t0 = performance.now();
 
@@ -384,50 +382,13 @@ export async function streamAgent(
     };
   }
 
-  try {
-    const res = await fetch("/api/agent", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ set, role, task }),
-      signal,
-    });
-    if (!res.ok || !res.body) throw new Error("no live backend");
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder();
-    let raw = "";
-    let emitted = 0;
-    for (;;) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      raw += decoder.decode(value, { stream: true });
-      const sep = raw.indexOf(SEP);
-      const textEnd = sep === -1 ? raw.length : sep;
-      if (textEnd > emitted) {
-        onToken(raw.slice(emitted, textEnd));
-        emitted = textEnd;
-      }
-    }
-
-    const sep = raw.indexOf(SEP);
-    const text = sep === -1 ? raw : raw.slice(0, sep);
-    let usage: Partial<Telemetry> = {};
-    if (sep !== -1) {
-      try {
-        usage = JSON.parse(raw.slice(sep + 1));
-      } catch {
-        /* ignore malformed telemetry */
-      }
-    }
-    const telemetry: Telemetry = { ...usage, ms: Math.round(performance.now() - t0) };
-    if (text.trim()) responseCache.set(key, { text, telemetry });
-    return { status: "live", telemetry };
-  } catch {
-    const text = trContent?.fallback ?? meta?.fallback ?? "";
-    for (const piece of text.match(/\s*\S+/g) ?? []) {
-      if (signal?.aborted) break;
-      onToken(piece);
-      await sleep(22);
-    }
-    return { status: "demo", telemetry: { ms: Math.round(performance.now() - t0) } };
+  const text = trContent?.fallback ?? meta?.fallback ?? "";
+  for (const piece of text.match(/\s*\S+/g) ?? []) {
+    if (signal?.aborted) break;
+    onToken(piece);
+    await sleep(22);
   }
+  const telemetry: Telemetry = { ms: Math.round(performance.now() - t0) };
+  if (text.trim()) responseCache.set(key, { text, telemetry });
+  return { status: "demo", telemetry };
 }

@@ -12,7 +12,7 @@ export const config = {
     },
     about: {
         title: "About Me",
-        description: "I'm an AI Solutions Engineer specializing in production-grade autonomous systems. My focus is the orchestration logic — the brain layer that handles state, memory, and multi-agent coordination for enterprise-scale agentic workflows. I design state-aware multi-agent systems with LangGraph, enforce auditability and safety through human-in-the-loop governance, and optimize cost with prompt caching and SLM offloading."
+        description: "I'm an AI Solutions Engineer specializing in production-grade autonomous systems. My focus is the orchestration logic - the brain layer that handles state, memory, and multi-agent coordination for enterprise-scale agentic workflows. I design state-aware multi-agent systems with LangGraph, enforce auditability and safety through human-in-the-loop governance, and optimize cost with prompt caching and SLM offloading."
     },
     experiences: [
         {
@@ -94,13 +94,13 @@ export const config = {
         develop: {
             title: "AGENTIC AI",
             description: "Multi-agent orchestration & governance",
-            details: "Designing state-aware multi-agent systems with LangGraph — supervisor patterns, persistent memory, dynamic tool routing, and HITL governance for auditable, safe autonomous workflows.",
+            details: "Designing state-aware multi-agent systems with LangGraph - supervisor patterns, persistent memory, dynamic tool routing, and HITL governance for auditable, safe autonomous workflows.",
             tools: ["LangGraph", "LangChain", "Multi-Agent Systems", "HITL Governance", "State Machines", "Adaptive RAG", "Context Engineering", "Python"]
         },
         design: {
             title: "AI PLATFORM",
             description: "Production AI systems & tooling",
-            details: "Shipping reliable AI platforms with the modern agentic stack — observability, evaluation, model routing, and durable orchestration across distributed services.",
+            details: "Shipping reliable AI platforms with the modern agentic stack - observability, evaluation, model routing, and durable orchestration across distributed services.",
             tools: ["OpenAI Agents SDK", "Vercel AI SDK", "Haystack", "LiteLLM", "Langfuse", "OpenTelemetry", "Temporal", "FastAPI", "Next.js"]
         }
     }

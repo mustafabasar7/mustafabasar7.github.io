@@ -45,7 +45,7 @@ const Scene = () => {
       camera.zoom = 1.1;
       camera.updateProjectionMatrix();
 
-      // FXAA post-process antialiasing — lighter than MSAA, preserves transparency.
+      // FXAA post-process antialiasing - lighter than MSAA, preserves transparency.
       const composer = new EffectComposer(renderer);
       composer.setPixelRatio(renderer.getPixelRatio());
       composer.addPass(new RenderPass(scene, camera));

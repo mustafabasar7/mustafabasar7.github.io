@@ -25,7 +25,7 @@ const Landing = ({ children }: PropsWithChildren) => {
           <div className="landing-info">
             <h3>{t("hero.an")}</h3>
             <h2 className="landing-info-h2">
-              <div className="landing-h2-1">{c.developer.title}</div>
+              <div className="landing-h2-1">{t("hero.role")}</div>
             </h2>
           </div>
           {/* Mobile hero - animated agent graph, shows only where the 3D character is hidden */}

@@ -7,7 +7,7 @@ import LangToggle from "../i18n/LangToggle";
 import ProjectGraph from "../components/Robot/ProjectGraph";
 import "./ProjectDetail.css";
 
-// Base pace of the terminal sim — divided by the chosen speed.
+// Base pace of the terminal sim - divided by the chosen speed.
 const STEP_MS = 1200;
 const SPEEDS = [0.5, 1, 2];
 
@@ -29,7 +29,7 @@ const DocLine = ({ line }: { line: string }) => {
 
 const ProjectDetail = () => {
   const { slug } = useParams();
-  const { lang, c, t } = useLang();
+  const { lang, c, t, p } = useLang();
   const index = PROJECTS.findIndex((p) => p.slug === slug);
   const base = index >= 0 ? PROJECTS[index] : null;
   // Overlay Turkish prose (name/capability/metrics/flow/subtitles/suggestions)
@@ -40,7 +40,7 @@ const ProjectDetail = () => {
 
   // --- terminal sim (scrubber-controlled) ---
   const [step, setStep] = useState(0);
-  const [playing, setPlaying] = useState(false); // was true — page is calm until a task runs
+  const [playing, setPlaying] = useState(false); // was true - page is calm until a task runs
   const [speed, setSpeed] = useState(1);
 
   // --- agent answer (live / cached / demo) ---
@@ -97,7 +97,7 @@ const ProjectDetail = () => {
     return () => { document.body.style.overflow = prev; };
   }, []);
 
-  // Reset to a calm, empty state when the project changes — nothing runs until
+  // Reset to a calm, empty state when the project changes - nothing runs until
   // the visitor clicks a chip or hits Run.
   useEffect(() => {
     acRef.current?.abort();
@@ -123,7 +123,7 @@ const ProjectDetail = () => {
       <div className="pd-page">
         <div className="pd-notfound">
           <h1>{t("pd.notFound")}</h1>
-          <Link to="/myworks" className="pd-back" data-cursor="disable">{t("pd.back")}</Link>
+          <Link to={p("/myworks")} className="pd-back" data-cursor="disable">{t("pd.back")}</Link>
         </div>
       </div>
     );
@@ -164,7 +164,7 @@ const ProjectDetail = () => {
   return (
     <div className="pd-page">
       <div className="pd-topbar">
-        <Link to="/myworks" className="pd-back" data-cursor="disable">{t("pd.back")}</Link>
+        <Link to={p("/myworks")} className="pd-back" data-cursor="disable">{t("pd.back")}</Link>
         <span className="pd-tag">{t("pd.tag")}</span>
         <LangToggle />
       </div>
@@ -246,26 +246,13 @@ const ProjectDetail = () => {
               </button>
             </div>
             <p className="pd-hint">
-              {status === "live" ? (
-                <>{t("pd.hint.live")}</>
-              ) : status === "cached" ? (
-                <>{t("pd.hint.cached")}</>
-              ) : status === "demo" ? (
-                <>
-                  {t("pd.hint.demoPre")}
-                  <a
-                    className="pd-link"
-                    href={`https://portfolio-website-three-xi-84.vercel.app/myworks/${project.slug}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    data-cursor="disable"
-                  >
-                    {t("pd.hint.demoLink")}
-                  </a>.
-                </>
-              ) : (
-                <>{t("pd.hint.ready")}</>
-              )}
+              {status === "live"
+                ? t("pd.hint.live")
+                : status === "cached"
+                ? t("pd.hint.cached")
+                : status === "demo"
+                ? t("pd.hint.demo")
+                : t("pd.hint.ready")}
             </p>
           </div>
           <div className="pd-stage pd-hero-stage">
