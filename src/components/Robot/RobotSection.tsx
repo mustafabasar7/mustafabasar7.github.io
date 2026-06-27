@@ -4,6 +4,7 @@ import type { RobotController } from "./RobotScene";
 import { AGENTS, streamAgent, type RunStatus } from "../../lib/agents";
 import { AGENTS_TR } from "../../lib/agents.tr";
 import { useLang } from "../../i18n/LanguageProvider";
+import OverseerBust from "./OverseerBust";
 
 const RobotScene = lazy(() => import("./RobotScene"));
 
@@ -35,7 +36,7 @@ const RobotSection = () => {
   const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
-    if (!isDesktop || !ref.current) return;
+    if (!ref.current) return;
     const el = ref.current;
     const io = new IntersectionObserver(
       ([e]) => {
@@ -96,8 +97,6 @@ const RobotSection = () => {
 
   useEffect(() => () => abortRef.current?.abort(), []);
 
-  if (!isDesktop) return null;
-
   return (
     <section className="robot-section" ref={ref}>
       <div className="robot-section-head">
@@ -112,6 +111,12 @@ const RobotSection = () => {
           <Suspense fallback={null}>
             <RobotScene onReady={onReady} onWorkerClick={onWorkerClick} />
           </Suspense>
+        )}
+        {/* Mustafa oversees the agent team — desktop only (heavy 11MB bust). */}
+        {visible && isDesktop && (
+          <div className="robot-overseer">
+            <OverseerBust size={340} label="Mustafa Başar" />
+          </div>
         )}
         {!dispatched && (
           <div className="robot-cue" aria-hidden="true">

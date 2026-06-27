@@ -1,5 +1,5 @@
 .work-section h2 {
-  margin-top: 100px;
+  margin-top: 0;
   font-size: 70px;
   font-weight: 500;
 }
@@ -9,6 +9,7 @@
   align-items: center;
   gap: 40px;
   flex-wrap: wrap;
+  margin-top: 100px; /* clear gap below the fixed navbar so the CTA isn't jammed up top */
 }
 
 /* Big, attention-grabbing "this is interactive" CTA next to My Work */
@@ -17,7 +18,7 @@
   display: inline-flex;
   align-items: center;
   gap: 28px;
-  margin-top: 20px;
+  margin-top: 14px;
   padding: 38px 68px;
   border-radius: 999px;
   text-decoration: none;
@@ -246,7 +247,10 @@
   .work-section h2 {
     font-size: 60px;
     margin-bottom: 30px;
-    margin-top: 70px;
+    margin-top: 0;
+  }
+  .work-heading-row {
+    margin-top: 80px;
   }
 }
 
@@ -432,12 +436,54 @@
   .see-all-works p {
     font-size: 14px;
   }
+
+  /* Big "Try it live" CTA: shrink + center so it doesn't cramp on phones,
+     and drop the absolutely-positioned decorations that overflow a 360px view. */
+  .work-heading-row {
+    gap: 16px;
+    justify-content: center;
+  }
+
+  .work-cta-wrap {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .work-interactive-cta {
+    width: 100%;
+    justify-content: center;
+    gap: 14px;
+    padding: 18px 26px;
+    margin-top: 6px;
+  }
+
+  .work-cta-text {
+    text-align: center;
+  }
+
+  .work-cta-text strong {
+    font-size: 23px;
+  }
+
+  .work-cta-text em {
+    font-size: 12.5px;
+  }
+
+  .work-cta-arrow {
+    font-size: 28px;
+  }
+
+  .work-cta-pointer,
+  .work-cta-tap {
+    display: none;
+  }
 }
 /* CTA attention cluster: dashed pointer arrow + animated tapping cursor. */
 .work-cta-wrap {
   position: relative;
   display: inline-flex;
   align-items: center;
+  transform: translateY(-24px); /* lift the CTA cluster above the heading baseline */
 }
 
 /* Dashed arrow (same dashed look as the agent-graph edges) curving into the CTA. */

@@ -61,7 +61,7 @@ export const PROJECTS_TR: Record<string, ProjectContent> = {
     ],
     defaultTask: "'Doğrulanmış bir son dakika haberi yayınla' görevini ekibe dağıt.",
     fallback:
-      "Ben orkestrasyon katmanıyım. Merkezi bir süpervizör, uzman ajanları koordine eder ve araç tabanlı devir yoluyla görev dağıtır - bir devir aracı, hedef ajana görev tanımıyla yönlendiren bir Command döndürür ve Send birden çok işçiyi paralel çalıştırır. Senin görevin için: süpervizör 'doğrulanmış bir son dakika haberi yayınla' işini araştırma, taslak, doğruluk kontrolü ve uyumluluk olarak böler, her birini doğru işçiye verir, bağımsız olanları paralel çalıştırır ve sonuçları birleştirir - Mustafa'nın çok adımlı ajan iş akışları için kullandığı süpervizör deseni.",
+      "Ben Mustafa'nın Turkuvaz Medya'da kurduğu orkestrasyon katmanıyım. Merkezi bir süpervizör, uzman ajanları koordine eder ve araç tabanlı devir yoluyla görev dağıtır - bir devir aracı, hedef ajana görev tanımıyla yönlendiren bir Command döndürür ve Send birden çok işçiyi paralel çalıştırır. Senin görevin için: süpervizör 'doğrulanmış bir son dakika haberi yayınla' işini araştırma, taslak, doğruluk kontrolü ve uyumluluk olarak böler, her birini doğru işçiye verir, bağımsız olanları paralel çalıştırır ve sonuçları birleştirir - haber odasının çok adımlı editöryel iş akışlarının arkasındaki süpervizör deseni.",
   },
   "tool-routing": {
     name: "Bağlam-Farkında Dinamik Araç Yönlendirme",
@@ -81,7 +81,7 @@ export const PROJECTS_TR: Record<string, ProjectContent> = {
     ],
     defaultTask: "Karışık bir isteği yönlendir: bir PDF'i özetle, sonra politika ihlali için kontrol et.",
     fallback:
-      "Ben dinamik yönlendiriciyim. Sabit bir araç zinciri yerine, bir LLM mevcut durumu ve kullanıcı niyetini inceler, her adımı doğru yeteneğe yönlendirir ve ajanları paralel çağırır - yaklaşık 5 model çağrısı ve ~9K token, sıralı devirlerden daha verimli. Senin görevin için: iki niyeti tanır, PDF'i özetleyiciye ve sonucu politika denetleyicisine yönlendirir, yapabildiğimi paralel çalıştırır ve birleşik tek bir yanıt döndürürüm - sabit bir hat değil, gizli bağlamla yönlendirilen gerçek zamanlı yönlendirme.",
+      "Ben Mustafa'nın Turkuvaz Medya'da kurduğu dinamik yönlendiriciyim. Sabit bir araç zinciri yerine, bir LLM mevcut durumu ve kullanıcı niyetini inceler, her adımı doğru yeteneğe yönlendirir ve ajanları paralel çağırır - yaklaşık 5 model çağrısı ve ~9K token, sıralı devirlerden daha verimli. Senin görevin için: iki niyeti tanır, PDF'i özetleyiciye ve sonucu politika denetleyicisine yönlendirir, yapabildiğimi paralel çalıştırır ve birleşik tek bir yanıt döndürürüm - sabit bir hat değil, gizli bağlamla yönlendirilen gerçek zamanlı yönlendirme.",
   },
   "persistent-state": {
     name: "Kalıcı Hafıza ve Ajansal Durum",
@@ -101,7 +101,7 @@ export const PROJECTS_TR: Record<string, ProjectContent> = {
     ],
     defaultTask: "3 günlük bir veri alım iş akışını kaldığı yerden tam olarak sürdür.",
     fallback:
-      "Ben kalıcılık katmanıyım. Graf bir checkpointer ile derlenir ve bir thread_id altında çalışır, böylece durum her adımda kaydedilir ve uzun süren bir görev hafızayı koruyarak temiz biçimde duraklayıp devam edebilir. Senin görevin için: 3 günlük veri alımı sürekli checkpoint'lenir; bir kesintiden sonra ilgili thread_id için kaydedilmiş durumu yeniden yükler ve durduğu adımdan devam ederim - yeniden işleme yok, kayıp bağlam yok. Mustafa uzun-soluklu ajanları böyle dayanıklı tutar.",
+      "Ben Mustafa'nın Turkuvaz Medya'da kurduğu kalıcılık katmanıyım. Graf bir checkpointer ile derlenir ve bir thread_id altında çalışır, böylece durum her adımda kaydedilir ve uzun süren bir görev hafızayı koruyarak temiz biçimde duraklayıp devam edebilir. Senin görevin için: 3 günlük veri alımı sürekli checkpoint'lenir; bir kesintiden sonra ilgili thread_id için kaydedilmiş durumu yeniden yükler ve durduğu adımdan devam ederim - yeniden işleme yok, kayıp bağlam yok. Sistem uzun-soluklu ajanları böyle dayanıklı tutar.",
   },
   swarm: {
     name: "Hiyerarşik Sürü Koordinasyonu",
@@ -121,7 +121,7 @@ export const PROJECTS_TR: Record<string, ProjectContent> = {
     ],
     defaultTask: "50 medya markasını indeksleyen 20 ajanı çakışma olmadan koordine et.",
     fallback:
-      "Ben sürü koordinatörüyüm. Uzman ajanlar, devir araçlarıyla kontrolü birbirine dinamik olarak devreder ve konuşmaları sürdürür; çok seviyeli süpervizör hiyerarşileriyle birleştiğinde bu, büyük ve merkezi olmayan bir sürünün işi nasıl bölüp senkronize ettiğini yapılandırır. Senin görevin için: 50 medya markasını alt-süpervizörler altında 20 ajana parçalar, ajanların kenar durumları uzmanlara devretmesine izin verir ve durumu senkronize ederim, böylece kimse aynı şeyi iki kez indekslemez - merkezi olmayan ajan ekosistemleri için koordinasyon modelleri.",
+      "Ben Mustafa'nın Turkuvaz Medya'da kurduğu sürü koordinatörüyüm. Uzman ajanlar, devir araçlarıyla kontrolü birbirine dinamik olarak devreder ve konuşmaları sürdürür; çok seviyeli süpervizör hiyerarşileriyle birleştiğinde bu, büyük ve merkezi olmayan bir sürünün işi nasıl bölüp senkronize ettiğini yapılandırır. Senin görevin için: 50 medya markasını alt-süpervizörler altında 20 ajana parçalar, ajanların kenar durumları uzmanlara devretmesine izin verir ve durumu senkronize ederim, böylece kimse aynı şeyi iki kez indekslemez - merkezi olmayan ajan ekosistemleri için koordinasyon modelleri.",
   },
   "hitl-safety": {
     name: "Uyarlanır HITL Güvenlik Protokolleri",
@@ -141,7 +141,7 @@ export const PROJECTS_TR: Record<string, ProjectContent> = {
     ],
     defaultTask: "Otomatik bir toplu yayından-kaldırma işlemini insan onayının arkasına al.",
     fallback:
-      "Ben HITL güvenlik protokolüyüm. Hassas bir aksiyon çalışmadan önce, interrupt() grafı duraklatır ve onay için bir yük (payload) sunar; çalışma yalnızca Command(resume=...) ile devam ettiğinde sürer, devam ya da iptale yönlenir - insan iradesini ve denetlenebilirliği korur. Senin görevin için: otomatik toplu yayından-kaldırma kapıma çarpar, donar ve tüm bağlam gösterilerek bir insanın onaylamasını ya da reddetmesini bekler - geri alınamaz adımlarda kişiyi kontrolde tutan güvenlik odaklı kesinti desenleri.",
+      "Ben Mustafa'nın Turkuvaz Medya'da kurduğu HITL güvenlik protokolüyüm. Hassas bir aksiyon çalışmadan önce, interrupt() grafı duraklatır ve onay için bir yük (payload) sunar; çalışma yalnızca Command(resume=...) ile devam ettiğinde sürer, devam ya da iptale yönlenir - insan iradesini ve denetlenebilirliği korur. Senin görevin için: otomatik toplu yayından-kaldırma kapıma çarpar, donar ve tüm bağlam gösterilerek bir insanın onaylamasını ya da reddetmesini bekler - geri alınamaz adımlarda kişiyi kontrolde tutan güvenlik odaklı kesinti desenleri.",
   },
   "rag-pipeline": {
     name: "Dayanıklı RAG Doküman Zekâsı",

@@ -20,7 +20,7 @@ export const UI = {
     "hero.viewWork": "View Work",
     "hero.getInTouch": "Get in Touch",
     // section headings
-    "about.caption": "Istanbul-based — turning agent chaos into dependable orchestration.",
+    "about.caption": "Mustafa Başar — AI Solutions Engineer. I design state-aware multi-agent systems with LangGraph, enforce human-in-the-loop governance for safety, and cut token cost with prompt caching and SLM routing.",
     "whatido.heading": "What I Do",
     "whatido.skillset": "Skillset & tools",
     "robot.headPre": "How I",
@@ -101,7 +101,7 @@ export const UI = {
     "hero.role": "Yapay Zeka Mühendisi",
     "hero.viewWork": "Projeleri Gör",
     "hero.getInTouch": "İletişime Geç",
-    "about.caption": "İstanbul merkezli — ajan kaosunu güvenilir orkestrasyona çeviriyorum.",
+    "about.caption": "Mustafa Başar — Yapay Zeka Çözüm Mühendisi. LangGraph ile durum-farkında çoklu-ajan sistemleri tasarlıyor, güvenlik için insan-döngüde yönetişim uyguluyor, prompt önbellekleme ve SLM yönlendirmesiyle token maliyetini düşürüyorum.",
     "whatido.heading": "Ne Yapıyorum",
     "whatido.skillset": "Yetenekler & araçlar",
     "robot.headPre": "Nasıl",

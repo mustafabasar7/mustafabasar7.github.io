@@ -17,6 +17,7 @@
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
+    justify-content: center; /* center name + role in the empty hero (no 3D char on mobile) */
     padding: 0 15px;
     padding-bottom: 40px;
   }

@@ -1,8 +1,8 @@
 .about-section {
   display: flex;
+  flex-direction: column; /* mobile: photo stacked above the bio (not cramped side by side) */
   align-items: center;
-  justify-content: left;
-  place-items: center;
+  justify-content: center;
   position: relative;
   opacity: 1;
   height: auto;

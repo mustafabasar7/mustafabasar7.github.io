@@ -3,6 +3,7 @@
   max-width: var(--cMaxWidth);
   width: var(--cWidth);
   justify-content: space-between;
+  align-items: center;
   padding: 15px 0px;
   margin-bottom: -80px;
   box-sizing: border-box;
@@ -15,13 +16,39 @@
 .header ul {
   font-size: 11px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   margin: 0;
   padding: 0;
   list-style: none;
-  column-gap: 20px;
+  column-gap: 14px;
   row-gap: 6px;
-  align-items: end;
+  align-items: center;
+}
+
+/* Mobile: a readable top bar so the links never blend into content behind. */
+@media only screen and (max-width: 499px) {
+  .header {
+    width: 100%;
+    max-width: 100%;
+    left: 0;
+    transform: none;
+    padding: 10px 14px;
+    gap: 8px;
+    background: rgba(11, 10, 20, 0.72);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(194, 164, 255, 0.12);
+  }
+  .header ul {
+    column-gap: 11px;
+    font-size: 10px;
+    flex-wrap: nowrap;
+  }
+  .header ul li {
+    color: #eae5ec;
+  }
 }
 .header ul li {
   margin-left: 0px;

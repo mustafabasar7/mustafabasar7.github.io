@@ -1,7 +1,6 @@
 import { PropsWithChildren } from "react";
 import "./styles/Landing.css";
 import { useLang } from "../i18n/LanguageProvider";
-import AgentGraph from "./AgentGraph";
 
 const Landing = ({ children }: PropsWithChildren) => {
   const { c, t } = useLang();
@@ -38,8 +37,6 @@ const Landing = ({ children }: PropsWithChildren) => {
               })()}
             </h2>
           </div>
-          {/* Mobile hero - animated agent graph, shows only where the 3D character is hidden */}
-          <AgentGraph />
         </div>
         {children}
       </div>

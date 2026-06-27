@@ -42,6 +42,15 @@
   min-height: 680px;
 }
 
+/* Mustafa bust overseeing the agent team (top-right, watches the cursor). */
+.robot-overseer {
+  position: absolute;
+  top: 6px;
+  right: 36px;
+  z-index: 5;
+  pointer-events: none;
+}
+
 .robot-canvas {
   position: absolute;
   inset: 0;
@@ -296,4 +305,16 @@
 @keyframes robotChatIn {
   from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* Mobile/tablet: the agent scene (no bust) shows, scaled down to fit. */
+@media (max-width: 1024px) {
+  .robot-section { padding: 3.5rem 0 2.5rem; }
+  .robot-section-stage { height: 52vh; min-height: 360px; }
+  .robot-controls { margin-top: -0.5rem; }
+}
+@media (max-width: 600px) {
+  .robot-section-stage { height: 46vh; min-height: 300px; }
+  .robot-section-head p { font-size: 0.9rem; padding: 0 1rem; }
+  .robot-cue { top: 28%; left: 50%; }
 }

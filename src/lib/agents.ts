@@ -112,7 +112,7 @@ export const PROJECTS: ProjectMeta[] = [
     clips: ["Wave", "Running", "ThumbsUp"],
     defaultTask: "Decompose 'publish a vetted breaking-news article' across the agent team.",
     fallback:
-      "I'm the orchestration layer. A central supervisor coordinates specialized agents, delegating through tool-based handoff - a handoff tool returns a Command that routes to the target agent with a task description, and Send dispatches multiple workers in parallel. For your task: the supervisor splits 'publish a vetted breaking-news article' into research, drafting, fact-check and compliance, hands each to the right worker, runs the independent ones in parallel, then merges results - the supervisor pattern Mustafa ships for multi-step agent workflows.",
+      "I'm the orchestration layer Mustafa built at Turkuvaz Media. A central supervisor coordinates specialized agents, delegating through tool-based handoff - a handoff tool returns a Command that routes to the target agent with a task description, and Send dispatches multiple workers in parallel. For your task: the supervisor splits 'publish a vetted breaking-news article' into research, drafting, fact-check and compliance, hands each to the right worker, runs the independent ones in parallel, then merges results - the supervisor pattern behind the newsroom's multi-step editorial workflows.",
     suggestions: [
       "Plan a product launch across research, copy, and legal.",
       "Split 'migrate 2TB of media' into parallel worker jobs.",
@@ -154,7 +154,7 @@ export const PROJECTS: ProjectMeta[] = [
     clips: ["Walking", "Yes", "Running"],
     defaultTask: "Route a mixed request: summarize a PDF, then check it for policy violations.",
     fallback:
-      "I'm the dynamic router. Instead of a fixed toolchain, an LLM inspects the current state and user intent and routes each step to the right capability, then invokes agents in parallel - about 5 model calls and ~9K tokens, more efficient than sequential handoffs. For your task: I'd recognize two intents, route the PDF to the summarizer and the result to the policy checker, run what I can in parallel, and return one merged answer - real-time routing driven by latent context, not a hardcoded pipeline.",
+      "I'm the dynamic router Mustafa built at Turkuvaz Media. Instead of a fixed toolchain, an LLM inspects the current state and user intent and routes each step to the right capability, then invokes agents in parallel - about 5 model calls and ~9K tokens, more efficient than sequential handoffs. For your task: I'd recognize two intents, route the PDF to the summarizer and the result to the policy checker, run what I can in parallel, and return one merged answer - real-time routing driven by latent context, not a hardcoded pipeline.",
     suggestions: [
       "Summarize a contract, then flag any policy violations.",
       "Translate this email and check it for sensitive data.",
@@ -196,7 +196,7 @@ export const PROJECTS: ProjectMeta[] = [
     clips: ["Sitting", "Standing", "Yes"],
     defaultTask: "Resume a 3-day ingestion workflow exactly where it was interrupted.",
     fallback:
-      "I'm the persistence layer. The graph is compiled with a checkpointer and run under a thread_id, so state is saved at every step and a long-running task can pause and resume cleanly while retaining memory. For your task: the 3-day ingestion run is checkpointed continuously; after an interruption I reload the saved state for its thread_id and continue from the exact step it stopped on - no re-processing, no lost context. This is how Mustafa keeps long-horizon agents durable.",
+      "I'm the persistence layer Mustafa built at Turkuvaz Media. The graph is compiled with a checkpointer and run under a thread_id, so state is saved at every step and a long-running task can pause and resume cleanly while retaining memory. For your task: the 3-day ingestion run is checkpointed continuously; after an interruption I reload the saved state for its thread_id and continue from the exact step it stopped on - no re-processing, no lost context. This is how the system keeps long-horizon agents durable.",
     suggestions: [
       "Resume a crawl that died at document 4,000 of 12,000.",
       "Recover an agent run after a 2-day outage.",
@@ -237,7 +237,7 @@ export const PROJECTS: ProjectMeta[] = [
     clips: ["Running", "Jump", "Dance"],
     defaultTask: "Coordinate 20 agents indexing 50 media brands without collisions.",
     fallback:
-      "I'm the swarm coordinator. Specialized agents dynamically hand off control to one another and resume conversations through handoff tools; combined with multi-level supervisor hierarchies, this structures how a large, decentralized swarm divides and synchronizes work. For your task: I'd shard the 50 media brands across 20 agents under sub-supervisors, let agents hand off edge cases to specialists, and synchronize state so nobody double-indexes - coordination models for decentralized agent ecosystems.",
+      "I'm the swarm coordinator Mustafa built at Turkuvaz Media. Specialized agents dynamically hand off control to one another and resume conversations through handoff tools; combined with multi-level supervisor hierarchies, this structures how a large, decentralized swarm divides and synchronizes work. For your task: I'd shard the 50 media brands across 20 agents under sub-supervisors, let agents hand off edge cases to specialists, and synchronize state so nobody double-indexes - coordination models for decentralized agent ecosystems.",
     suggestions: [
       "Index 50 brands across 20 agents with zero collisions.",
       "Crawl 1M pages split over a 3-level agent hierarchy.",
@@ -278,7 +278,7 @@ export const PROJECTS: ProjectMeta[] = [
     clips: ["No", "ThumbsUp"],
     defaultTask: "Gate an automated mass-unpublish action behind human approval.",
     fallback:
-      "I'm the HITL safety protocol. Before a sensitive action runs, interrupt() pauses the graph and surfaces a payload for approval; the run only continues when you resume with Command(resume=...), routing to proceed or cancel - preserving human agency and auditability. For your task: the automated mass-unpublish hits my gate, freezes, and waits for a human to approve or reject with the full context shown - safety-focused interruption patterns that keep a person in control of irreversible steps.",
+      "I'm the HITL safety protocol Mustafa built at Turkuvaz Media. Before a sensitive action runs, interrupt() pauses the graph and surfaces a payload for approval; the run only continues when you resume with Command(resume=...), routing to proceed or cancel - preserving human agency and auditability. For your task: the automated mass-unpublish hits my gate, freezes, and waits for a human to approve or reject with the full context shown - safety-focused interruption patterns that keep a person in control of irreversible steps.",
 
     suggestions: [
       "Gate an automated mass-delete behind human approval.",
