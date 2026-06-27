@@ -143,4 +143,24 @@ export const PROJECTS_TR: Record<string, ProjectContent> = {
     fallback:
       "Ben HITL güvenlik protokolüyüm. Hassas bir aksiyon çalışmadan önce, interrupt() grafı duraklatır ve onay için bir yük (payload) sunar; çalışma yalnızca Command(resume=...) ile devam ettiğinde sürer, devam ya da iptale yönlenir - insan iradesini ve denetlenebilirliği korur. Senin görevin için: otomatik toplu yayından-kaldırma kapıma çarpar, donar ve tüm bağlam gösterilerek bir insanın onaylamasını ya da reddetmesini bekler - geri alınamaz adımlarda kişiyi kontrolde tutan güvenlik odaklı kesinti desenleri.",
   },
+  "rag-pipeline": {
+    name: "Dayanıklı RAG Doküman Zekâsı",
+    category: "Retrieval / RAG",
+    capability: "Dayanıklı bir hat, dağınık kurumsal dokümanları kaynak gösteren temellendirilmiş cevaplara çevirir.",
+    metrics: ["~12 kaynak", "resumable · ~%70 daha az yeniden işleme", "~%90+ grounding"],
+    flow: ["kaynakları alır", "dokümanları indeksler", "sana cevap verir", "hattı sahnede gösterir"],
+    subtitles: {
+      spec: "Cevabın dayandığı kaynak doküman",
+      terminal: "Çökme sonrası kaldığı yerden devam eden dayanıklı ingestion",
+      chat: "Dokümanlardan kaynak gösteren temellendirilmiş cevap",
+      scene: "Kaynaklar dayanıklı bir RAG hattından akıyor",
+    },
+    suggestions: [
+      "200 tedarikçi sözleşmesindeki tüm yenileme maddelerini bul.",
+      "Bu politikanın v3 ile v4'ü arasında ne değişti?",
+    ],
+    defaultTask: "'Sorumluluk üst sınırımız nedir?' sorusunu en güncel sözleşme kümesine dayanarak cevapla.",
+    fallback:
+      "Ben Mustafa'nın Neural Intelligence Labs'te kurduğu doküman-zekâsı hattıyım. Temporal tabanlı bir iş akışı, heterojen kaynaklardan dokümanları dayanıklı biçimde alır, parçalar ve gömer, sonra getirme için bir vektör deposuna indeksler. Her adım dayanıklı bir Temporal aktivitesi olduğu için, çöken bir çalışma her şeyi baştan işlemek yerine kaldığı yerden devam eder - ~12 kaynak genelinde yaklaşık %70 daha az yeniden işleme, iç değerlendirmede ~%90+ retrieval grounding. Senin görevin için: sözleşme kümesindeki en ilgili maddeleri getirir, cevabı tam pasajlara dayandırır ve kaynak gösteririm - uydurma terim yok, yalnızca dokümanların söylediği.",
+  },
 };

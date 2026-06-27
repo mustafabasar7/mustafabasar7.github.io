@@ -308,6 +308,47 @@ export const PROJECTS: ProjectMeta[] = [
       scene: "Flow waits at the approval gate",
     },
   },
+  {
+    slug: "rag-pipeline",
+    configId: 6,
+    name: "Durable RAG Document Intelligence",
+    category: "Retrieval / RAG",
+    capability: "A durable pipeline turns scattered enterprise documents into grounded, citable answers.",
+    metrics: ["~12 sources", "resumable · ~70% less reprocessing", "~90%+ grounding"],
+    steps: ["ingest from sources", "chunk + embed", "index to vector store", "retrieve + ground answer"],
+    clips: ["Idle", "Yes", "ThumbsUp"],
+    defaultTask: "Answer 'what's our liability cap?' grounded in the latest contract set.",
+    fallback:
+      "I'm the document-intelligence pipeline Mustafa built at Neural Intelligence Labs. A Temporal-backed workflow durably ingests documents from heterogeneous sources, chunks and embeds them, and indexes them into a vector store for retrieval. Because every step is a durable Temporal activity, a failed run resumes from where it stopped instead of reprocessing everything - about 70% less reprocessing across ~12 sources, with ~90%+ retrieval grounding on internal eval. For your task: I retrieve the most relevant clauses across the contract set, ground the answer in the exact passages, and cite them - no hallucinated terms, just what the documents say.",
+    suggestions: [
+      "Find every renewal clause across 200 vendor contracts.",
+      "What changed between v3 and v4 of this policy?",
+    ],
+    terminal: [
+      "$ temporal worker start --task-queue ingest",
+      "→ ingest: source 7/12   (resumable)",
+      "✗ worker crash @ doc 8,420",
+      "$ temporal workflow resume ingest-42",
+      "→ restored · continues at doc 8,420",
+      "✓ 0 docs reprocessed · index updated",
+    ],
+    document: {
+      title: "contract_msa.pdf",
+      lines: [
+        "Section 9 - Limitation of Liability",
+        "Each party's «liability cap» is «12 months of fees»",
+        "carve-outs: «confidentiality», «indemnity»",
+        "grounded: «retrieved passage, cited»",
+      ],
+    },
+    flow: ["ingests the sources", "indexes the docs", "answers you", "renders the pipeline"],
+    subtitles: {
+      spec: "The source document the answer is grounded in",
+      terminal: "Durable ingestion that resumes after a crash",
+      chat: "A grounded answer, cited from the docs",
+      scene: "Sources flow through a durable RAG pipeline",
+    },
+  },
 ];
 
 export type AgentSet = "agent" | "project";

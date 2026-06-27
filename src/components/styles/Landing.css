@@ -325,26 +325,6 @@
   left: 0;
 }
 
-/* Real portrait under the name in the hero — humanizes the playful 3D avatar. */
-.landing-portrait {
-  display: none;
-}
-@media only screen and (min-width: 1025px) {
-  .landing-portrait {
-    display: block;
-    margin-top: 22px;
-    width: 340px;
-    max-width: 90%;
-    height: 430px;
-    object-fit: cover;
-    object-position: 50% 100%; /* anchor the bottom (hands) and crop the top black */
-    filter: grayscale(0.15) contrast(1.05);
-    /* Feathered mask: soft top + sides, keep the hands at the bottom opaque. */
-    -webkit-mask-image: radial-gradient(ellipse 70% 88% at 50% 54%, #000 42%, rgba(0,0,0,0.35) 74%, transparent 94%);
-    mask-image: radial-gradient(ellipse 70% 88% at 50% 54%, #000 42%, rgba(0,0,0,0.35) 74%, transparent 94%);
-  }
-}
-
 .landing-intro h2 {
   margin: 0;
   color: var(--accentColor);
@@ -516,10 +496,10 @@ h2.landing-info-h2 {
   }
 
   .landing-intro {
-    top: 22%;
+    top: 40%;
     left: auto;
     right: 66%;
-    transform: none;
+    transform: translate(0%, -50%);
   }
 
   .landing-info {
@@ -535,10 +515,10 @@ h2.landing-info-h2 {
 
 @media screen and (min-width: 1200px) {
   .landing-intro {
-    top: 22%;
+    top: 40%;
     left: auto;
     right: 70%;
-    transform: none;
+    transform: translate(0%, -50%);
   }
 
   .landing-info {

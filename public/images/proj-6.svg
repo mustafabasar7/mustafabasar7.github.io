@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <linearGradient id="bg6" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0c1f24"/><stop offset="1" stop-color="#112b30"/>
+    </linearGradient>
+    <radialGradient id="glow6" cx="0.5" cy="0.4" r="0.6">
+      <stop offset="0" stop-color="#4fd6d6" stop-opacity="0.16"/><stop offset="1" stop-color="#4fd6d6" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg6)"/>
+  <rect width="1200" height="675" fill="url(#glow6)"/>
+  <!-- pipeline edges -->
+  <g stroke="#4fd6d6" stroke-width="2.5" opacity="0.5" fill="none">
+    <path d="M360 200 L520 270"/><path d="M360 270 L520 270"/><path d="M360 340 L520 270"/>
+    <path d="M580 270 L700 270"/><path d="M760 270 L880 270"/>
+  </g>
+  <!-- source docs -->
+  <g fill="#13313a" stroke="#86eed0" stroke-width="2.5">
+    <rect x="300" y="178" width="56" height="44" rx="6"/>
+    <rect x="300" y="248" width="56" height="44" rx="6"/>
+    <rect x="300" y="318" width="56" height="44" rx="6"/>
+  </g>
+  <text x="328" y="392" fill="#8fc7c0" font-size="18" text-anchor="middle">sources</text>
+  <!-- durable ingest -->
+  <circle cx="550" cy="270" r="34" fill="#10262c" stroke="#4fd6d6" stroke-width="3"/>
+  <text x="550" y="276" fill="#bdf3ec" font-size="15" font-weight="700" text-anchor="middle">ingest</text>
+  <text x="550" y="332" fill="#8fc7c0" font-size="17" text-anchor="middle">durable · resumable</text>
+  <!-- vector index (cylinder) -->
+  <g>
+    <ellipse cx="730" cy="248" rx="44" ry="14" fill="#15343c" stroke="#4fd6d6" stroke-width="2.5"/>
+    <path d="M686 248 v44 a44 14 0 0 0 88 0 v-44" fill="#15343c" stroke="#4fd6d6" stroke-width="2.5"/>
+    <ellipse cx="730" cy="292" rx="44" ry="14" fill="#1a3f48" stroke="#4fd6d6" stroke-width="2"/>
+    <text x="730" y="276" fill="#bdf3ec" font-size="14" font-weight="700" text-anchor="middle">index</text>
+  </g>
+  <!-- grounded answer -->
+  <circle cx="910" cy="270" r="30" fill="#10262c" stroke="#7df0b8" stroke-width="2.5"/>
+  <path d="M897 270 l9 10 16 -19" stroke="#7df0b8" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="910" y="328" fill="#8fc7c0" font-size="17" text-anchor="middle">grounded answer</text>
+  <text x="80" y="560" fill="#ffffff" font-size="46" font-weight="800">Durable RAG Document Intelligence</text>
+  <rect x="80" y="92" width="240" height="40" rx="20" fill="#4fd6d6" opacity="0.15"/>
+  <text x="100" y="119" fill="#bdf3ec" font-size="20" font-weight="600">Retrieval / RAG</text>
+  <text x="80" y="600" fill="#8aa8a4" font-size="24">Durable ingestion to grounded, cited answers</text>
+</svg>

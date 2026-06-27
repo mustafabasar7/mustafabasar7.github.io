@@ -44,6 +44,17 @@ const NODES_3D: Record<string, GNode3D[]> = {
     { x: 64, y: 288, r: 15, kind: "x" },
     { x: 236, y: 288, r: 15, kind: "play" },
   ],
+  // RAG pipeline (Neural Intelligence Labs): sources fan into a durable Temporal
+  // ingest (with a resume loop), then embed → vector index → grounded answer.
+  "rag-pipeline": [
+    { x: 64, y: 44, r: 14, kind: "doc" },
+    { x: 150, y: 44, r: 14, kind: "doc" },
+    { x: 236, y: 44, r: 14, kind: "doc" },
+    { x: 150, y: 116, r: 22, kind: "gear" }, // durable Temporal ingest
+    { x: 150, y: 186, r: 15, kind: "box" }, // chunk + embed
+    { x: 150, y: 252, r: 21, kind: "disk" }, // vector index
+    { x: 150, y: 320, r: 16, kind: "check" }, // grounded, cited answer
+  ],
 };
 
 // A per-project LangGraph-style topology - pure SVG/CSS, no three.js. Replaces
@@ -228,12 +239,47 @@ const HitlSafety = () => (
   </svg>
 );
 
+// --- 6. rag-pipeline: sources fan into a durable ingest (resume loop), then
+// embed → vector index → grounded answer. A pipeline/DAG, not an agent fan-out.
+const RagPipeline = () => (
+  <svg viewBox="0 0 300 372" xmlns="http://www.w3.org/2000/svg">
+    <g className="pg-edges">
+      <path id="g-s1" d="M72,58 L138,100" />
+      <path id="g-s2" d="M150,58 L150,94" />
+      <path id="g-s3" d="M228,58 L162,100" />
+      <path id="g-in" d="M150,138 L150,171" />
+      <path id="g-ix" d="M150,201 L150,231" />
+      <path id="g-xa" d="M150,273 L150,304" />
+      <path id="g-cyc" className="pg-cycle" d="M172,102 C228,80 230,142 172,128" />
+    </g>
+    <Pulses pulses={[
+      { path: "#g-s1", dur: "1.5s", begin: "0s" },
+      { path: "#g-s2", dur: "1.5s", begin: "0.25s" },
+      { path: "#g-s3", dur: "1.5s", begin: "0.5s" },
+      { path: "#g-cyc", dur: "2.4s", begin: "0.7s" },
+      { path: "#g-in", dur: "1.5s", begin: "0.9s" },
+      { path: "#g-ix", dur: "1.5s", begin: "1.2s" },
+      { path: "#g-xa", dur: "1.5s", begin: "1.5s" },
+    ]} />
+    <g className="pg-nodes">
+      <Node x={64} y={44} r={14} label="source" cls="tool" />
+      <Node x={150} y={44} r={14} label="source" cls="tool" />
+      <Node x={236} y={44} r={14} label="source" cls="tool" />
+      <Node x={150} y={116} r={22} label="durable ingest" cls="key" />
+      <Node x={150} y={186} r={15} label="embed" />
+      <Node x={150} y={252} r={21} label="vector index" cls="key" />
+      <Node x={150} y={320} r={16} label="grounded answer" cls="sm ok" />
+    </g>
+  </svg>
+);
+
 const VARIANTS: Record<string, () => JSX.Element> = {
   orchestration: Orchestration,
   "tool-routing": ToolRouting,
   "persistent-state": PersistentState,
   swarm: Swarm,
   "hitl-safety": HitlSafety,
+  "rag-pipeline": RagPipeline,
 };
 
 const ProjectGraph = ({ variant, running, caption }: { variant: string; running?: boolean; caption?: string }) => {

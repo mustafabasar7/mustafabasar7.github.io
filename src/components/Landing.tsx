@@ -21,7 +21,6 @@ const Landing = ({ children }: PropsWithChildren) => {
               <br />
               {lastName && <span>{lastName.toUpperCase()}</span>}
             </h1>
-            <img className="landing-portrait" src="/images/mustafa-portrait.png" alt={c.developer.fullName} />
           </div>
           <div className="landing-info">
             <h3>{t("hero.an")}</h3>

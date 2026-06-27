@@ -20,6 +20,7 @@ export const UI = {
     "hero.viewWork": "View Work",
     "hero.getInTouch": "Get in Touch",
     // section headings
+    "about.caption": "Istanbul-based — turning agent chaos into dependable orchestration.",
     "whatido.heading": "What I Do",
     "whatido.skillset": "Skillset & tools",
     "robot.headPre": "How I",
@@ -100,6 +101,7 @@ export const UI = {
     "hero.role": "Yapay Zeka Mühendisi",
     "hero.viewWork": "Projeleri Gör",
     "hero.getInTouch": "İletişime Geç",
+    "about.caption": "İstanbul merkezli — ajan kaosunu güvenilir orkestrasyona çeviriyorum.",
     "whatido.heading": "Ne Yapıyorum",
     "whatido.skillset": "Yetenekler & araçlar",
     "robot.headPre": "Nasıl",

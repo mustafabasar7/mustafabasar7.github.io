@@ -20,25 +20,26 @@ export const config = {
             company: "Turkuvaz Medya Grubu",
             period: "2023 - Present",
             location: "Istanbul, TR",
-            description: "Building an interactive knowledge layer across multiple media brands through a LangGraph-based multi-agent ecosystem, with governance and cost optimization at the core.",
+            description: "Building an interactive knowledge layer across 6+ national news & broadcast brands through a LangGraph-based multi-agent ecosystem, with governance and cost optimization at the core.",
             responsibilities: [
-                "Built an interactive knowledge layer across multiple media brands via a LangGraph multi-agent ecosystem",
-                "Delivered production-grade state-machine orchestration for multi-step agent workflows",
-                "Implemented HITL governance nodes to enforce auditability in autonomous workflows",
-                "Improved cost efficiency with prompt caching and SLM offloading"
+                "Built an interactive knowledge layer across 6+ national news & broadcast brands via a LangGraph multi-agent ecosystem",
+                "Cut editorial research and lookup time ~65% across newsrooms with state-aware agent orchestration",
+                "Implemented HITL governance nodes to enforce editor approval before publish",
+                "Reduced token cost ~60% with prompt caching and SLM offloading - calling the frontier model only when truly needed"
             ],
             technologies: ["LangGraph", "Multi-Agent Systems", "HITL Governance", "State Machines", "Prompt Caching"]
         },
         {
-            position: "AI Solutions Engineer",
+            position: "Founding AI Engineer",
             company: "Neural Intelligence Labs",
             period: "2021 - 2023",
             location: "Istanbul, TR",
-            description: "Built retrieval-augmented architectures and state-aware agent components for enterprise document intelligence, with durable distributed pipelines.",
+            description: "Early engineer at a pre-seed AI startup building enterprise document intelligence: durable RAG pipelines that turn scattered documents into grounded, citable answers.",
             responsibilities: [
-                "Built retrieval-augmented architectures and semantic indexing for document intelligence",
-                "Designed state-aware agent components for complex reasoning at production scale",
-                "Deployed durable ingestion pipelines with Temporal for cross-source consistency"
+                "Built a Temporal-backed durable RAG ingestion pipeline; resumable runs cut reprocessing time ~70% after failures",
+                "Indexed ~12 heterogeneous document sources with semantic search for cross-source consistency",
+                "Reached ~90%+ retrieval grounding accuracy (internal eval), serving answers through FastAPI",
+                "Owned the retrieval architecture end-to-end as an early engineer before the team wound down in 2023"
             ],
             technologies: ["RAG", "Semantic Search", "LangChain", "Temporal", "FastAPI"]
         }
@@ -83,6 +84,14 @@ export const config = {
             technologies: "HITL Governance, LangGraph, Python",
             image: "/images/proj-5.svg",
             description: "Safety-focused interruption patterns that preserve human agency inside complex automated systems, enforcing auditability and control."
+        },
+        {
+            id: 6,
+            title: "Durable RAG Document Intelligence",
+            category: "Retrieval / RAG",
+            technologies: "RAG, Temporal, LangChain, FastAPI",
+            image: "/images/proj-6.svg",
+            description: "A Temporal-backed pipeline that durably ingests scattered enterprise documents, indexes them for retrieval, and answers grounded in the source passages - resumable, so a failed run continues instead of reprocessing."
         }
     ],
     contact: {

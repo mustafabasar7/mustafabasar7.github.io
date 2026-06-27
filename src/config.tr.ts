@@ -27,26 +27,27 @@ export const configTR: typeof ConfigEN = {
       period: "2023 - Günümüz",
       location: "İstanbul, TR",
       description:
-        "LangGraph tabanlı bir çoklu-ajan ekosistemiyle, birden çok medya markası genelinde etkileşimli bir bilgi katmanı kuruyorum; merkezde yönetişim ve maliyet optimizasyonu var.",
+        "LangGraph tabanlı bir çoklu-ajan ekosistemiyle, 6+ ulusal haber ve yayın markası genelinde etkileşimli bir bilgi katmanı kuruyorum; merkezde yönetişim ve maliyet optimizasyonu var.",
       responsibilities: [
-        "LangGraph çoklu-ajan ekosistemiyle birden çok medya markası genelinde etkileşimli bilgi katmanı kurdum",
-        "Çok adımlı ajan iş akışları için üretim seviyesinde durum-makinesi orkestrasyonu sağladım",
-        "Otonom iş akışlarında denetlenebilirliği zorunlu kılmak için HITL yönetişim düğümleri uyguladım",
-        "Prompt önbellekleme ve küçük model yönlendirmesiyle maliyet verimliliğini iyileştirdim",
+        "LangGraph çoklu-ajan ekosistemiyle 6+ ulusal haber ve yayın markası genelinde etkileşimli bilgi katmanı kurdum",
+        "Durum-farkında ajan orkestrasyonuyla haber odalarında editöryel araştırma ve arama süresini ~%65 kısalttım",
+        "Yayın öncesi editör onayını zorunlu kılmak için HITL yönetişim düğümleri uyguladım",
+        "Prompt önbellekleme ve SLM yönlendirmesiyle token maliyetini ~%60 düşürdüm - sınır modeli yalnızca gerçekten gerektiğinde çağırarak",
       ],
       technologies: ["LangGraph", "Multi-Agent Systems", "HITL Governance", "State Machines", "Prompt Caching"],
     },
     {
-      position: "Yapay Zeka Çözüm Mühendisi",
+      position: "Kurucu Yapay Zeka Mühendisi",
       company: "Neural Intelligence Labs",
       period: "2021 - 2023",
       location: "İstanbul, TR",
       description:
-        "Kurumsal doküman zekası için retrieval-augmented mimariler ve durum-farkında ajan bileşenleri kurdum; dayanıklı dağıtık veri hatlarıyla.",
+        "Pre-seed bir YZ startup'ında erken mühendis: dağınık dokümanları kaynak göstererek temellendirilmiş cevaplara çeviren dayanıklı RAG hatları kurdum.",
       responsibilities: [
-        "Doküman zekası için retrieval-augmented mimariler ve semantik indeksleme kurdum",
-        "Üretim ölçeğinde karmaşık akıl yürütme için durum-farkında ajan bileşenleri tasarladım",
-        "Kaynaklar arası tutarlılık için Temporal ile dayanıklı veri alım hatları konuşlandırdım",
+        "Temporal tabanlı dayanıklı bir RAG ingestion hattı kurdum; resumable çalışmalar hata sonrası yeniden işleme süresini ~%70 azalttı",
+        "Kaynaklar arası tutarlılık için ~12 heterojen doküman kaynağını semantik aramayla indeksledim",
+        "İç değerlendirmede ~%90+ retrieval grounding doğruluğuna ulaştım, cevapları FastAPI ile sundum",
+        "Erken mühendis olarak retrieval mimarisini uçtan uca sahiplendim; ekip 2023'te dağıldı",
       ],
       technologies: ["RAG", "Semantic Search", "LangChain", "Temporal", "FastAPI"],
     },
@@ -96,6 +97,15 @@ export const configTR: typeof ConfigEN = {
       image: "/images/proj-5.svg",
       description:
         "Karmaşık otomatik sistemlerin içinde insan iradesini koruyan, güvenlik odaklı kesinti desenleri; denetlenebilirliği ve kontrolü zorunlu kılar.",
+    },
+    {
+      id: 6,
+      title: "Dayanıklı RAG Doküman Zekâsı",
+      category: "Retrieval / RAG",
+      technologies: "RAG, Temporal, LangChain, FastAPI",
+      image: "/images/proj-6.svg",
+      description:
+        "Dağınık kurumsal dokümanları dayanıklı biçimde alıp indeksleyen ve cevabı kaynak pasajlara dayandıran Temporal tabanlı bir hat - resumable, yani çöken bir çalışma baştan işlemek yerine kaldığı yerden devam eder.",
     },
   ],
   contact: {

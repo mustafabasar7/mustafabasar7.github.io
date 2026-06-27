@@ -16,6 +16,32 @@
   max-width: calc(100% - 15px);
 }
 
+/* Personal photo + short caption — full width above the text on mobile. */
+.about-portrait {
+  width: 100%;
+  max-width: calc(100% - 15px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+.about-portrait img {
+  width: min(100%, 420px);
+  height: auto;
+  border-radius: 16px;
+  filter: contrast(1.03);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+}
+.about-portrait-caption {
+  font-size: 14px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+  text-align: center;
+  max-width: 420px;
+}
+
 .about-me h3 {
   font-size: 18px;
   text-transform: uppercase;
@@ -77,21 +103,39 @@
   }
 }
 @media only screen and (min-width: 1025px) {
+  /* Stacked on the right: photo on top, the about-me text below it. */
   .about-section {
     width: var(--cWidth);
-    justify-content: right;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
     max-width: 1920px;
     height: var(--vh);
     padding: 0px;
     opacity: 1;
+    gap: 28px;
   }
   .about-me {
     padding: 0px;
-    width: 50%;
+    width: 46%;
+    max-width: 46%;
   }
   .about-me p {
-    font-size: 1.9vw;
-    line-height: 2.3vw;
+    font-size: 1.5vw;
+    line-height: 1.9vw;
+  }
+  .about-portrait {
+    width: 46%;
+    max-width: 46%;
+    margin-bottom: 0;
+    align-items: flex-start;
+  }
+  .about-portrait img {
+    width: 100%;
+    max-width: 360px;
+  }
+  .about-portrait-caption {
+    text-align: left;
   }
 }
 @media only screen and (min-width: 1950px) {
