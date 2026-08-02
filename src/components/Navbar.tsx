@@ -14,6 +14,21 @@ const Navbar = () => {
   const { t } = useLang();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   useEffect(() => {
+    // Mobile uses the browser's native touch scrolling. Creating Lenis and
+    // stopping it here races LoadingProvider's initialFX() start call, which
+    // can leave <html> in `lenis-stopped` and lock the page after a reload.
+    if (window.innerWidth <= 768) {
+      lenis?.destroy();
+      lenis = null;
+      document.documentElement.classList.remove(
+        "lenis",
+        "lenis-smooth",
+        "lenis-stopped",
+        "lenis-scrolling"
+      );
+      return;
+    }
+
     // Initialize Lenis smooth scroll
     lenis = new Lenis({
       duration: 0.8,
