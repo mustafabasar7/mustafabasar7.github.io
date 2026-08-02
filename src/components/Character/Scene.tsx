@@ -109,15 +109,18 @@ const Scene = () => {
       const onMouseMove = (event: MouseEvent) => {
         handleMouseMove(event, (x, y) => (mouse = { x, y }));
       };
+      let touchStartX: number | null = null;
       const onTouchStart = (event: TouchEvent) => {
-        handleTouchMove(event, (x, y) => (mouse = { x, y }));
+        touchStartX = event.touches[0]?.clientX ?? null;
       };
 
       const onTouchMove = (event: TouchEvent) => {
-        handleTouchMove(event, (x, y) => (mouse = { x, y }));
+        if (touchStartX === null) return;
+        handleTouchMove(event, touchStartX, (x, y) => (mouse = { x, y }));
       };
 
       const onTouchEnd = () => {
+        touchStartX = null;
         handleTouchEnd((x, y, interpolationX, interpolationY) => {
           mouse = { x, y };
           interpolation = { x: interpolationX, y: interpolationY };

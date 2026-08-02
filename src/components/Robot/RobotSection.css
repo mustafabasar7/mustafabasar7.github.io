@@ -336,7 +336,7 @@
     letter-spacing: 0.04em;
   }
   .robot-section-head p { font-size: 1rem; line-height: 1.6; padding: 0; }
-  .robot-cue { top: 28%; left: 50%; }
+  .robot-cue { top: 38%; left: 25%; }
   .robot-cue-text { font-size: 0.8rem; padding: 7px 12px; }
   .robot-controls { padding: 0 18px; }
   .robot-chip { min-height: 44px; padding: 0.55rem 0.9rem; font-size: 0.82rem; }

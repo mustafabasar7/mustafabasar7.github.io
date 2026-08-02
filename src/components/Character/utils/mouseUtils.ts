@@ -11,11 +11,18 @@ export const handleMouseMove = (
 
 export const handleTouchMove = (
   event: TouchEvent,
+  startX: number,
   setMousePosition: (x: number, y: number) => void
 ) => {
-  const mouseX = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
-  const mouseY = -(event.touches[0].clientY / window.innerHeight) * 2 + 1;
-  setMousePosition(mouseX, mouseY);
+  const dragDistance = event.touches[0].clientX - startX;
+  const mouseX = THREE.MathUtils.clamp(
+    dragDistance / (window.innerWidth * 0.45),
+    -1,
+    1
+  );
+  // Vertical movement belongs to native page scrolling; only horizontal drag
+  // controls the character so the model does not bob during a swipe.
+  setMousePosition(mouseX, 0);
 };
 
 export const handleTouchEnd = (
@@ -26,12 +33,7 @@ export const handleTouchEnd = (
     interpolationY: number
   ) => void
 ) => {
-  setTimeout(() => {
-    setMousePosition(0, 0, 0.03, 0.03);
-    setTimeout(() => {
-      setMousePosition(0, 0, 0.1, 0.2);
-    }, 1000);
-  }, 2000);
+  setMousePosition(0, 0, 0.05, 0.05);
 };
 
 export const handleHeadRotation = (
