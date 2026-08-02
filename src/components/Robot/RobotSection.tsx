@@ -128,6 +128,12 @@ const RobotSection = () => {
         )}
       </div>
 
+      {!dispatched && (
+        <div className="robot-mobile-cue" aria-hidden="true">
+          {t("robot.cue")}
+        </div>
+      )}
+
       <div className="robot-controls">
         <div className="robot-chips">
           {agents.map((a, i) => (

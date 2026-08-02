@@ -95,6 +95,10 @@
   color: #c2a4ff;
   animation: robot-cue-bounce 1.4s ease-in-out infinite;
 }
+
+.robot-mobile-cue {
+  display: none;
+}
 @keyframes robot-cue-bounce {
   0%, 100% { transform: translate(0, 0); opacity: 0.7; }
   50% { transform: translate(6px, 6px); opacity: 1; }
@@ -336,9 +340,25 @@
     letter-spacing: 0.04em;
   }
   .robot-section-head p { font-size: 1rem; line-height: 1.6; padding: 0; }
-  .robot-cue { top: 4%; left: 50%; }
-  .robot-cue-text { font-size: 0.8rem; padding: 7px 12px; }
-  .robot-cue-arrow { display: none; }
+  .robot-cue { display: none; }
+  .robot-mobile-cue {
+    width: calc(100% - 36px);
+    max-width: 360px;
+    min-height: 46px;
+    margin: 12px auto 18px;
+    padding: 8px 16px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(194, 164, 255, 0.35);
+    border-radius: 14px;
+    background: rgba(31, 27, 56, 0.72);
+    color: #d9caff;
+    font-size: 0.84rem;
+    font-weight: 700;
+    text-align: center;
+  }
   .robot-controls { padding: 0 18px; }
   .robot-chip { min-height: 44px; padding: 0.55rem 0.9rem; font-size: 0.82rem; }
   .robot-chat { max-height: 280px; padding: 1rem; }
