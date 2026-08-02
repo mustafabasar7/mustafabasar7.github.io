@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import HoverLinks from "./HoverLinks";
 import { gsap } from "gsap";
@@ -12,6 +12,7 @@ export let lenis: Lenis | null = null;
 
 const Navbar = () => {
   const { t } = useLang();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   useEffect(() => {
     // Initialize Lenis smooth scroll
     lenis = new Lenis({
@@ -89,24 +90,27 @@ const Navbar = () => {
             mustafa.r.basar@gmail.com
           </a>
         </div>
-        <ul>
+        <ul
+          id="mobile-navigation"
+          className={mobileMenuOpen ? "nav-links nav-links-open" : "nav-links"}
+        >
           <li>
-            <a data-href="#landingDiv" href="#landingDiv">
+            <a data-href="#landingDiv" href="#landingDiv" onClick={() => setMobileMenuOpen(false)}>
               <HoverLinks text={t("nav.home").toUpperCase()} />
             </a>
           </li>
           <li>
-            <a data-href="#about" href="#about">
+            <a data-href="#about" href="#about" onClick={() => setMobileMenuOpen(false)}>
               <HoverLinks text={t("nav.about").toUpperCase()} />
             </a>
           </li>
           <li>
-            <a data-href="#work" href="#work">
+            <a data-href="#work" href="#work" onClick={() => setMobileMenuOpen(false)}>
               <HoverLinks text={t("nav.work").toUpperCase()} />
             </a>
           </li>
           <li>
-            <a data-href="#contact" href="#contact">
+            <a data-href="#contact" href="#contact" onClick={() => setMobileMenuOpen(false)}>
               <HoverLinks text={t("nav.contact").toUpperCase()} />
             </a>
           </li>
@@ -114,6 +118,23 @@ const Navbar = () => {
             <LangToggle />
           </li>
         </ul>
+        <div className="mobile-nav-actions">
+          <a className="mobile-nav-cv" href="/Mustafa-Basar-CV.pdf" download>
+            CV
+          </a>
+          <LangToggle />
+          <button
+            type="button"
+            className={mobileMenuOpen ? "mobile-menu-toggle is-open" : "mobile-menu-toggle"}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-navigation"
+            aria-label={mobileMenuOpen ? t("nav.closeMenu") : t("nav.openMenu")}
+            onClick={() => setMobileMenuOpen((open) => !open)}
+          >
+            <span />
+            <span />
+          </button>
+        </div>
       </div>
 
       <div className="landing-circle1"></div>

@@ -434,7 +434,7 @@
   }
 }
 
-@media only screen and (max-width: 550px) {
+@media only screen and (max-width: 768px) {
   .whatIDO {
     place-items: inherit;
     align-items: start;
@@ -444,6 +444,16 @@
   .what-box {
     max-width: calc(100% - 25px);
     margin: 0;
+  }
+
+  .what-content p {
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .what-tags {
+    font-size: 12px;
+    line-height: 1.45;
   }
 }
 

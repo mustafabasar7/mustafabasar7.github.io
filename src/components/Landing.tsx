@@ -1,12 +1,21 @@
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, useEffect, useState } from "react";
 import "./styles/Landing.css";
 import { useLang } from "../i18n/LanguageProvider";
 
 const Landing = ({ children }: PropsWithChildren) => {
-  const { c, t } = useLang();
+  const { c, lang, t } = useLang();
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 768);
   const nameParts = c.developer.fullName.split(" ");
   const firstName = nameParts[0] || c.developer.name;
   const lastName = nameParts.slice(1).join(" ") || "";
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 768px)");
+    const update = () => setIsMobile(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
 
   return (
     <>
@@ -21,6 +30,16 @@ const Landing = ({ children }: PropsWithChildren) => {
               {lastName && <span>{lastName.toUpperCase()}</span>}
             </h1>
           </div>
+          {isMobile && children && (
+            <div className="landing-mobile-3d">
+              <div className="landing-mobile-3d-badge">
+                <span className="landing-mobile-3d-dot" />
+                {t("hero.interactive3d")}
+              </div>
+              <div className="landing-mobile-3d-hint">↔ {t("hero.control3d")}</div>
+              {children}
+            </div>
+          )}
           <div className="landing-info">
             <h3>{t("hero.an")}</h3>
             <h2 className="landing-info-h2">
@@ -37,8 +56,17 @@ const Landing = ({ children }: PropsWithChildren) => {
               })()}
             </h2>
           </div>
+          {isMobile && (
+            <div className="landing-mobile-actions">
+              <a className="landing-mobile-primary" href={`/${lang}/myworks`}>
+                {t("hero.viewWork")}
+              </a>
+              <a className="landing-mobile-secondary" href="/Mustafa-Basar-CV.pdf" download>
+                CV ↓
+              </a>
+            </div>
+          )}
         </div>
-        {children}
       </div>
     </>
   );

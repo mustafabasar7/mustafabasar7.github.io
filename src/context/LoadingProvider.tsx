@@ -29,7 +29,7 @@ export const LoadingProvider = ({ children }: PropsWithChildren) => {
     setLoading,
   };
   useEffect(() => {
-    // Auto-start animations on mobile since there's no 3D model
+    // Auto-start the UI on mobile; the 3D model loads progressively in-place.
     if (window.innerWidth <= 768) {
       import("../components/utils/initialFX").then((module) => {
         if (module.initialFX) {

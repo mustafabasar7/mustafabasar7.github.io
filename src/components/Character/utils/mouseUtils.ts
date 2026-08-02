@@ -36,14 +36,20 @@ export const handleTouchEnd = (
 
 export const handleHeadRotation = (
   headBone: THREE.Object3D,
-  _mouseX: number,
-  _mouseY: number,
+  mouseX: number,
+  mouseY: number,
   interpolationX: number,
   interpolationY: number,
   lerp: (x: number, y: number, t: number) => number
 ) => {
   if (!headBone) return;
-  // No cursor tracking — hold a fixed pose looking to the right.
+  if (window.innerWidth <= 768 && window.scrollY < 200) {
+    headBone.rotation.y = lerp(headBone.rotation.y, mouseX * 0.5, 0.09);
+    headBone.rotation.x = lerp(headBone.rotation.x, mouseY * 0.22, 0.09);
+    return;
+  }
+
+  // Preserve the established fixed desktop pose.
   if (window.scrollY < 200) {
     headBone.rotation.y = lerp(headBone.rotation.y, 0.5, interpolationY);
     headBone.rotation.x = lerp(headBone.rotation.x, 0, interpolationX);

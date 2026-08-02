@@ -15,6 +15,10 @@
   margin-bottom: 1.5rem;
 }
 
+.robot-mobile-three-badge {
+  display: none;
+}
+
 .robot-section-head h2 {
   font-size: clamp(2.2rem, 5vw, 4rem);
   font-weight: 700;
@@ -313,8 +317,32 @@
   .robot-section-stage { height: 52vh; min-height: 360px; }
   .robot-controls { margin-top: -0.5rem; }
 }
-@media (max-width: 600px) {
+@media (max-width: 768px) {
+  .robot-section { padding: 4.5rem 0 3.5rem; }
   .robot-section-stage { height: 46vh; min-height: 300px; }
-  .robot-section-head p { font-size: 0.9rem; padding: 0 1rem; }
+  .robot-section-head { padding: 0 20px; }
+  .robot-mobile-three-badge {
+    min-height: 32px;
+    margin: 0 auto 14px;
+    padding: 0 12px;
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid rgba(194, 164, 255, 0.28);
+    border-radius: 999px;
+    background: rgba(194, 164, 255, 0.07);
+    color: #cab8f7;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+  }
+  .robot-section-head p { font-size: 1rem; line-height: 1.6; padding: 0; }
   .robot-cue { top: 28%; left: 50%; }
+  .robot-cue-text { font-size: 0.8rem; padding: 7px 12px; }
+  .robot-controls { padding: 0 18px; }
+  .robot-chip { min-height: 44px; padding: 0.55rem 0.9rem; font-size: 0.82rem; }
+  .robot-chat { max-height: 280px; padding: 1rem; }
+  .robot-msg-name { font-size: 0.86rem; }
+  .robot-status, .robot-msg-task { font-size: 0.75rem; }
+  .robot-metric { font-size: 0.72rem; }
+  .robot-msg-body { font-size: 0.92rem; line-height: 1.6; }
 }

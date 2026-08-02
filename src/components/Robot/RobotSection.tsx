@@ -19,7 +19,8 @@ interface Msg {
 
 // A titled, interactive mid-page section showcasing multi-agent orchestration.
 // Each agent, when dispatched, explains (doc-grounded) how Mustafa actually
-// built that capability. Desktop-only - the 3D scene is heavy.
+// built that capability. The 3D scene remains interactive on mobile; only the
+// larger overseer bust is desktop-only.
 const RobotSection = () => {
   const { lang, t } = useLang();
   // Localized agent roster (name/short/metrics) for display.
@@ -100,6 +101,7 @@ const RobotSection = () => {
   return (
     <section className="robot-section" ref={ref}>
       <div className="robot-section-head">
+        <div className="robot-mobile-three-badge">THREE.JS · {t("robot.interactive3d")}</div>
         <h2>
           {t("robot.headPre")} <span>{t("robot.headWord")}</span>
         </h2>

@@ -5,6 +5,7 @@ interface TechItem {
   name: string;
   icon: string;
   url: string;
+  mobileCore?: boolean;
 }
 
 // Agentic AI engineering stack - icon-backed tools.
@@ -13,26 +14,26 @@ interface TechItem {
 const techStack: TechItem[][] = [
   // Row 1 - languages & agentic core
   [
-    { name: "Python", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg", url: "https://python.org" },
-    { name: "TypeScript", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg", url: "https://typescriptlang.org" },
-    { name: "LangChain", icon: "https://cdn.simpleicons.org/langchain/white", url: "https://langchain.com" },
-    { name: "OpenAI", icon: "https://cdn.simpleicons.org/openai/white", url: "https://openai.com" },
-    { name: "FastAPI", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/fastapi/fastapi-original.svg", url: "https://fastapi.tiangolo.com" },
+    { name: "Python", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg", url: "https://python.org", mobileCore: true },
+    { name: "TypeScript", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg", url: "https://typescriptlang.org", mobileCore: true },
+    { name: "LangChain", icon: "https://cdn.simpleicons.org/langchain/white", url: "https://langchain.com", mobileCore: true },
+    { name: "OpenAI", icon: "https://cdn.simpleicons.org/openai/white", url: "https://openai.com", mobileCore: true },
+    { name: "FastAPI", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/fastapi/fastapi-original.svg", url: "https://fastapi.tiangolo.com", mobileCore: true },
     { name: "Next.js", icon: "https://cdn.simpleicons.org/nextdotjs/white", url: "https://nextjs.org" },
   ],
   // Row 2 - AI / ML
   [
     { name: "Node.js", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg", url: "https://nodejs.org" },
-    { name: "PyTorch", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pytorch/pytorch-original.svg", url: "https://pytorch.org" },
-    { name: "Hugging Face", icon: "https://huggingface.co/front/assets/huggingface_logo-noborder.svg", url: "https://huggingface.co" },
+    { name: "PyTorch", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pytorch/pytorch-original.svg", url: "https://pytorch.org", mobileCore: true },
+    { name: "Hugging Face", icon: "https://huggingface.co/front/assets/huggingface_logo-noborder.svg", url: "https://huggingface.co", mobileCore: true },
     { name: "Pandas", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pandas/pandas-original.svg", url: "https://pandas.pydata.org" },
     { name: "NumPy", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/numpy/numpy-original.svg", url: "https://numpy.org" },
   ],
   // Row 3 - data & infra
   [
-    { name: "PostgreSQL", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg", url: "https://postgresql.org" },
+    { name: "PostgreSQL", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg", url: "https://postgresql.org", mobileCore: true },
     { name: "Redis", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redis/redis-original.svg", url: "https://redis.io" },
-    { name: "Docker", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg", url: "https://docker.com" },
+    { name: "Docker", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg", url: "https://docker.com", mobileCore: true },
     { name: "Kubernetes", icon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kubernetes/kubernetes-original.svg", url: "https://kubernetes.io" },
   ],
   // Row 4 - tooling & cloud
@@ -96,7 +97,7 @@ const TechStackNew = () => {
                   href={tech.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="techstack-item"
+                  className={`techstack-item${tech.mobileCore ? " techstack-mobile-core" : ""}`}
                   title={tech.name}
                   data-cursor="disable"
                 >

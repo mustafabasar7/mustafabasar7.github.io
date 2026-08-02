@@ -208,34 +208,50 @@
   }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 768px) {
+  .techstack-new {
+    min-height: auto;
+    padding: 72px 0;
+  }
+
+  .techstack-content {
+    padding: 0 18px;
+  }
+
   .techstack-content h2 {
     font-size: 36px;
+    margin-bottom: 28px;
   }
   
   .techstack-pyramid {
-    gap: 6px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
   }
   
   .techstack-row {
-    gap: 6px;
+    display: contents;
+  }
+
+  .techstack-item:not(.techstack-mobile-core) {
+    display: none;
   }
   
   .techstack-item {
-    width: 40px;
-    height: 50px;
-    padding: 5px;
-    border-radius: 8px;
+    width: auto;
+    height: 72px;
+    padding: 9px 6px;
+    border-radius: 10px;
   }
   
   .techstack-item img {
-    width: 20px;
-    height: 20px;
+    width: 28px;
+    height: 28px;
   }
   
   .techstack-item span {
-    font-size: 6px;
-    max-width: 38px;
-    margin-top: 3px;
+    font-size: 12px;
+    max-width: 100%;
+    margin-top: 6px;
   }
 }
