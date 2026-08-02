@@ -140,7 +140,8 @@ const Scene = () => {
       let running = false;
       const animate = () => {
         rafId = requestAnimationFrame(animate);
-        if (headBone) {
+        const isMobile = window.innerWidth <= 768;
+        if (headBone && !isMobile) {
           handleHeadRotation(
             headBone,
             mouse.x,
@@ -149,12 +150,25 @@ const Scene = () => {
             interpolation.y,
             THREE.MathUtils.lerp
           );
-          light.setPointLight(screenLight);
         }
         const delta = clock.getDelta();
         if (mixer) {
           mixer.update(delta);
         }
+        // On mobile, apply the gesture after the animation mixer has
+        // established the frame pose. This prevents two systems from taking
+        // turns writing the head rotation during the first drag.
+        if (headBone && isMobile) {
+          handleHeadRotation(
+            headBone,
+            mouse.x,
+            mouse.y,
+            interpolation.x,
+            interpolation.y,
+            THREE.MathUtils.lerp
+          );
+        }
+        if (headBone) light.setPointLight(screenLight);
         composer.render();
       };
 

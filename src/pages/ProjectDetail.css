@@ -465,3 +465,64 @@
   opacity: 0.6;
 }
 .pd-nav-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+
+/* Mobile detail header: compact, square-edged project navigation and a title
+   scale that stays inside the viewport. Desktop styling remains unchanged. */
+@media (max-width: 600px) {
+  .pd-page {
+    padding: 0.9rem 0.85rem 3rem;
+  }
+
+  .pd-topbar {
+    min-height: 2.4rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .pd-back {
+    font-size: 1rem;
+    white-space: nowrap;
+  }
+
+  .pd-tag {
+    display: none;
+  }
+
+  .pd-nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.35rem;
+    margin-bottom: 1.1rem;
+  }
+
+  .pd-nav-item {
+    min-width: 0;
+    max-width: none;
+    gap: 0.35rem;
+    padding: 0.42rem 0.5rem;
+    border-radius: 2px;
+    font-size: 0.74rem;
+    line-height: 1.2;
+  }
+
+  .pd-nav-num {
+    font-size: 0.68rem;
+  }
+
+  .pd-nav-name {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
+
+  .pd-title {
+    max-width: 100%;
+    font-size: clamp(1.7rem, 8vw, 2.15rem);
+    line-height: 1.08;
+    overflow-wrap: anywhere;
+  }
+
+  .pd-capability {
+    font-size: 1rem;
+    line-height: 1.42;
+  }
+}

@@ -11,7 +11,9 @@
   .landing-section,
   .landing-container {
     height: auto !important;
-    min-height: 100dvh;
+    /* Keep the first touch from resizing the hero as mobile browser chrome
+       expands/collapses. The small viewport is stable for the whole visit. */
+    min-height: 100svh;
     max-width: 100vw;
     box-sizing: border-box;
     display: flex;
@@ -127,7 +129,9 @@
     display: block;
     position: relative;
     width: min(100%, 430px);
-    height: clamp(300px, 48vh, 420px);
+    /* Width-based sizing stays stable when the browser toolbar changes the
+       visual viewport height on the first touch. */
+    height: clamp(320px, 104vw, 405px);
     margin: 0 auto;
     z-index: 1;
     order: 2;
