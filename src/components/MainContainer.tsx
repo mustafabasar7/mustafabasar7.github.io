@@ -40,8 +40,8 @@ const MainContainer = ({ children }: PropsWithChildren) => {
         <Landing>{isMobile ? children : null}</Landing>
         {isMobile ? (
           <>
-            <Work />
             <RobotSection />
+            <Work />
             <About />
             <WhatIDo />
             <Career />

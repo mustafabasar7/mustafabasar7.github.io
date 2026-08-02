@@ -82,7 +82,7 @@
     /* Force auto height */
     width: 100% !important;
     order: 3;
-    /* Third: Subtitles */
+    /* Role follows the interactive 3D model. */
   }
 
   .landing-info h3 {
@@ -221,7 +221,7 @@
   }
 
   .landing-mobile-actions {
-    display: grid;
+    display: none;
     grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
     gap: 10px;
     order: 4;
