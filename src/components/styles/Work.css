@@ -537,3 +537,30 @@
 @media (prefers-reduced-motion: reduce) {
   .work-cta-dash, .work-cta-tap { animation: none; }
 }
+
+/* Keep the mobile heading and live-demo CTA centered as one visual cluster.
+   This must follow the desktop attention-cluster rules above so their upward
+   transform cannot leak into the phone layout. */
+@media only screen and (max-width: 768px) {
+  .work-heading-row {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .work-section h2 {
+    margin-bottom: 0;
+    text-align: center;
+  }
+
+  .work-cta-wrap {
+    width: min(100%, 420px);
+    justify-content: center;
+    transform: none;
+  }
+
+  .work-interactive-cta {
+    box-sizing: border-box;
+  }
+}
