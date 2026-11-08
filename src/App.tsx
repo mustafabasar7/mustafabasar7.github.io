@@ -1,10 +1,9 @@
 import { lazy, Suspense } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import "./App.css";
 
-const CharacterModel = lazy(() => import("./components/Hero"));
 const MainContainer = lazy(() => import("./components/MainContainer"));
 const MyWorks = lazy(() => import("./pages/MyWorks"));
 const ProjectDetail = lazy(() => import("./pages/ProjectDetail"));
@@ -14,11 +13,7 @@ import { LanguageProvider, useLang, storedLang } from "./i18n/LanguageProvider";
 const Home = () => (
   <LoadingProvider>
     <Suspense>
-      <MainContainer>
-        <Suspense>
-          <CharacterModel />
-        </Suspense>
-      </MainContainer>
+      <MainContainer />
     </Suspense>
   </LoadingProvider>
 );
@@ -60,7 +55,6 @@ const AppRoutes = () => {
 };
 
 // Old /myworks/:slug links → /:lang/myworks/:slug
-import { useParams } from "react-router-dom";
 const LegacyProjectRedirect = () => {
   const { slug } = useParams();
   return <Navigate to={`/${storedLang()}/myworks/${slug}`} replace />;

@@ -1,124 +1,103 @@
-import { isPhone } from "../lib/viewport";
-import "./styles/Work.css";
-import WorkImage from "./WorkImage";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useEffect } from "react";
-import { useLang } from "../i18n/LanguageProvider";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { config } from "../config";
+import { useLang } from "../i18n/LanguageProvider";
+import { PROJECTS, type ProjectMeta } from "../lib/agents";
+import "./styles/Work.css";
 
-gsap.registerPlugin(ScrollTrigger);
+type Project = (typeof config.projects)[number];
+
+const WorkCard = ({ project, demo }: { project: Project; demo?: ProjectMeta }) => {
+  const { t, p } = useLang();
+  const [hover, setHover] = useState(false);
+  const [typed, setTyped] = useState("");
+  const line = demo?.terminal[1] ?? demo?.terminal[0] ?? "";
+
+  useEffect(() => {
+    if (!hover || !line) {
+      setTyped("");
+      return;
+    }
+    let i = 0;
+    const id = window.setInterval(() => {
+      i += 1;
+      setTyped(line.slice(0, i));
+      if (i >= line.length) window.clearInterval(id);
+    }, 26);
+    return () => window.clearInterval(id);
+  }, [hover, line]);
+
+  const inner = (
+    <>
+      <div className="work-card-image">
+        <img src={project.image} alt={project.title} loading="lazy" />
+        {demo && (
+          <div className="work-card-peek" aria-hidden={!hover}>
+            <code className="work-card-peek-line">
+              {typed}
+              <span className="work-card-peek-caret" />
+            </code>
+          </div>
+        )}
+      </div>
+      <div className="work-card-body">
+        <div className="work-card-top">
+          <span className="work-card-category">{project.category}</span>
+          {demo?.metrics?.[0] && (
+            <span className="work-card-metric">{demo.metrics[0]}</span>
+          )}
+        </div>
+        <h3 className="work-card-title">{project.title}</h3>
+        <p className="work-card-desc">{project.description}</p>
+        <div className="work-card-foot">
+          <span className="work-card-tech">{project.technologies}</span>
+          {demo && <span className="work-card-cta">{t("myworks.cta")}</span>}
+        </div>
+      </div>
+    </>
+  );
+
+  return demo ? (
+    <Link
+      to={p(`/myworks/${demo.slug}`)}
+      className={`work-card${hover ? " is-peeking" : ""}`}
+      data-cursor="disable"
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
+      {inner}
+    </Link>
+  ) : (
+    <div className="work-card" data-cursor="disable">
+      {inner}
+    </div>
+  );
+};
 
 const Work = () => {
-  const { c, t, p } = useLang();
-  useEffect(() => {
-    // Disable pinning on mobile to allow scrolling
-    if (isPhone()) return;
+  const { c, t } = useLang();
 
-    let translateX: number = 0;
-
-    function setTranslateX() {
-      const box = document.getElementsByClassName("work-box");
-      if (box.length === 0) return;
-      const rectLeft = document
-        .querySelector(".work-container")!
-        .getBoundingClientRect().left;
-      const rect = box[0].getBoundingClientRect();
-      const parentWidth = box[0].parentElement!.getBoundingClientRect().width;
-      const padding: number =
-        parseInt(window.getComputedStyle(box[0]).padding) / 2;
-      translateX = rect.width * box.length - (rectLeft + parentWidth) + padding;
-    }
-
-    setTranslateX();
-
-    const timeline = gsap.timeline({
-      scrollTrigger: {
-        trigger: ".work-section",
-        start: "top top",
-        end: `+=${translateX}`,
-        scrub: 1,
-        pin: true,
-        pinSpacing: true,
-        anticipatePin: 1,
-        id: "work",
-        invalidateOnRefresh: true,
-      },
-    });
-
-    timeline.to(".work-flex", {
-      x: -translateX,
-      ease: "none",
-    });
-
-    // Refresh ScrollTrigger after layout settles
-    ScrollTrigger.refresh();
-
-    // Clean up
-    return () => {
-      timeline.kill();
-      ScrollTrigger.getById("work")?.kill();
-    };
-  }, []);
   return (
-    <div className="work-section" id="work">
+    <section className="work-section" id="work">
       <div className="work-container section-container">
-        <div className="work-heading-row">
+        <div className="work-header">
           <h2>
             {t("work.my")} <span>{t("work.word")}</span>
           </h2>
-          <div className="work-cta-wrap">
-            {/* Dashed arrow (graph-style) pointing at the CTA. */}
-            <svg className="work-cta-pointer" viewBox="0 0 120 90" aria-hidden="true">
-              <path className="work-cta-dash" d="M8,8 C70,4 104,28 108,72" />
-              <path className="work-cta-head" d="M98,60 L108,74 L118,58" />
-            </svg>
-            <Link to={p("/myworks")} className="work-interactive-cta" data-cursor="disable">
-              <span className="work-cta-pulse" />
-              <span className="work-cta-text">
-                <strong>{t("work.tryLive")}</strong>
-                <em>{t("work.realAgents")}</em>
-              </span>
-              <span className="work-cta-arrow">→</span>
-            </Link>
-            {/* Animated tapping cursor, "click me" — outside the Link so the
-                button's overflow:hidden doesn't clip it. */}
-            <svg className="work-cta-tap" viewBox="0 0 28 32" aria-hidden="true">
-              <path d="M4,2 L4,24 L10,19 L14,29 L18,27 L14,17 L22,17 Z" />
-            </svg>
-          </div>
+          <p>{t("myworks.intro")}</p>
         </div>
-        <div className="work-flex">
-          {c.projects.slice(0, 5).map((project, index) => (
-            <div className="work-box" key={project.id}>
-              <div className="work-info">
-                <div className="work-title">
-                  <h3>0{index + 1}</h3>
 
-                  <div>
-                    <h4>{project.title}</h4>
-                    <p>{project.category}</p>
-                  </div>
-                </div>
-                <h4>{t("work.tools")}</h4>
-                <p>{project.technologies}</p>
-              </div>
-              <WorkImage image={project.image} alt={project.title} />
-            </div>
+        <div className="work-grid">
+          {c.projects.map((project, index) => (
+            <WorkCard
+              key={project.id}
+              project={project}
+              demo={PROJECTS[index]}
+            />
           ))}
-          {/* See All Works Button */}
-          <div className="work-box work-box-cta">
-            <div className="see-all-works">
-              <h3>{t("work.seeMore")}</h3>
-              <p>{t("work.exploreAll")}</p>
-              <Link to={p("/myworks")} className="see-all-btn" data-cursor="disable">
-                {t("work.seeAllBtn")}
-              </Link>
-            </div>
-          </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

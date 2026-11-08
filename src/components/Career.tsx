@@ -4,40 +4,38 @@ import { useLang } from "../i18n/LanguageProvider";
 const Career = () => {
   const { c, t } = useLang();
 
-  const getDisplayYear = (period: string) => {
-    if (period.includes("Present") || period.includes("Günümüz")) return t("career.now");
-    if (period.includes(" - ")) {
-      return period.split(" - ")[0]; // Show start year for ranges
-    }
-    return period; // Single year like "2021"
-  };
-
   return (
-    <div className="career-section section-container">
-      <div className="career-container">
+    <section className="career-section section-container" id="career">
+      <div className="career-header">
         <h2>
-          {t("career.my")} <span>{t("career.amp")}</span>
-          <br /> {t("career.experience")}
+          {t("career.my")} <span>{t("career.amp")}</span> {t("career.experience")}
         </h2>
-        <div className="career-info">
-          <div className="career-timeline">
-            <div className="career-dot"></div>
-          </div>
-          {c.experiences.map((exp, index) => (
-            <div key={index} className="career-info-box">
-              <div className="career-info-in">
-                <div className="career-role">
-                  <h4>{exp.position}</h4>
-                  <h5>{exp.company}</h5>
-                </div>
-                <h3>{getDisplayYear(exp.period)}</h3>
-              </div>
-              <p>{exp.description}</p>
-            </div>
-          ))}
-        </div>
       </div>
-    </div>
+
+      <div className="career-grid">
+        {c.experiences.map((exp, index) => (
+          <article key={index} className="career-card">
+            <div className="career-card-top">
+              <div>
+                <h3 className="career-role">{exp.position}</h3>
+                <p className="career-company">{exp.company}</p>
+              </div>
+              <span className="career-period">{exp.period}</span>
+            </div>
+
+            <p className="career-desc">{exp.description}</p>
+
+            <div className="career-tags">
+              {exp.technologies.map((tech) => (
+                <span key={tech} className="career-tag">
+                  {tech}
+                </span>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
   );
 };
 

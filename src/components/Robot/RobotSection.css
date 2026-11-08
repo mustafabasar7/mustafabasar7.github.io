@@ -1,7 +1,7 @@
 .robot-section {
   position: relative;
   width: 100%;
-  padding: var(--space-xl) 0 var(--space-lg);
+  padding: var(--space-md) 0 var(--space-lg);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -42,8 +42,8 @@
 .robot-section-stage {
   position: relative;
   width: 100%;
-  height: calc(var(--vh-full) * 0.82);
-  min-height: 680px;
+  height: clamp(380px, 58vh, 560px);
+  min-height: 360px;
 }
 
 /* Mustafa bust overseeing the agent team (top-right, watches the cursor). */

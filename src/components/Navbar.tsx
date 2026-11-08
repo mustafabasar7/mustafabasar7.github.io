@@ -1,142 +1,46 @@
-import { isPhone, isDesktop } from "../lib/viewport";
-import { useEffect, useState } from "react";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import HoverLinks from "./HoverLinks";
-import { gsap } from "gsap";
-import Lenis from "lenis";
+import { useState } from "react";
+import type Lenis from "lenis";
 import { useLang } from "../i18n/LanguageProvider";
 import LangToggle from "../i18n/LangToggle";
 import "./styles/Navbar.css";
 
-gsap.registerPlugin(ScrollTrigger);
-export let lenis: Lenis | null = null;
+export const lenis: Lenis | null = null;
 
 const Navbar = () => {
-  const { t } = useLang();
+  const { c, t } = useLang();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  useEffect(() => {
-    // Mobile uses the browser's native touch scrolling. Creating Lenis and
-    // stopping it here races LoadingProvider's initialFX() start call, which
-    // can leave <html> in `lenis-stopped` and lock the page after a reload.
-    if (isPhone()) {
-      lenis?.destroy();
-      lenis = null;
-      document.documentElement.classList.remove(
-        "lenis",
-        "lenis-smooth",
-        "lenis-stopped",
-        "lenis-scrolling"
-      );
-      return;
-    }
 
-    // Initialize Lenis smooth scroll
-    lenis = new Lenis({
-      duration: 0.8,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: "vertical",
-      gestureOrientation: "vertical",
-      smoothWheel: true,
-      wheelMultiplier: 1.5,
-      touchMultiplier: 2,
-      infinite: false,
-    });
-
-    // Start paused
-    lenis.stop();
-
-    // Handle smooth scroll animation frame
-    function raf(time: number) {
-      lenis?.raf(time);
-      requestAnimationFrame(raf);
-    }
-    requestAnimationFrame(raf);
-
-    // Handle navigation links
-    const links = document.querySelectorAll(".header ul a");
-    links.forEach((elem) => {
-      const element = elem as HTMLAnchorElement;
-      element.addEventListener("click", (e) => {
-        if (isDesktop()) {
-          e.preventDefault();
-          const elem = e.currentTarget as HTMLAnchorElement;
-          const section = elem.getAttribute("data-href");
-          if (section && lenis) {
-            const target = document.querySelector(section) as HTMLElement;
-            if (target) {
-              lenis.scrollTo(target, {
-                offset: 0,
-                duration: 1.5,
-              });
-            }
-          }
-        }
-      });
-    });
-
-    // Handle resize
-    window.addEventListener("resize", () => {
-      lenis?.resize();
-    });
-
-    return () => {
-      lenis?.destroy();
-    };
-  }, []);
   return (
-    <>
-      <div className="header">
-        <a href="/#" className="navbar-title" data-cursor="disable">
-          MB
+    <header className="site-header">
+      <div className="site-header-inner">
+        <a href="#landingDiv" className="navbar-brand" data-cursor="disable">
+          <span className="navbar-brand-mark">MB</span>
+          <span className="navbar-brand-name">{c.developer.fullName}</span>
         </a>
-        <div className="navbar-center">
+
+        <nav
+          id="mobile-navigation"
+          className={mobileMenuOpen ? "site-nav site-nav-open" : "site-nav"}
+        >
+          <a href="#work" onClick={() => setMobileMenuOpen(false)}>
+            {t("nav.work")}
+          </a>
+          <a href="#career" onClick={() => setMobileMenuOpen(false)}>
+            {t("nav.career")}
+          </a>
+          <a href="#contact" onClick={() => setMobileMenuOpen(false)}>
+            {t("nav.contact")}
+          </a>
+        </nav>
+
+        <div className="site-header-actions">
           <a
-            href="/Mustafa_Basar.docx"
+            href="/Mustafa-Basar-CV.pdf"
             className="navbar-cv"
             data-cursor="disable"
             download
           >
-            CV ↗
-          </a>
-          <a
-            href="mailto:mustafa.r.basar@gmail.com"
-            className="navbar-connect"
-            data-cursor="disable"
-          >
-            mustafa.r.basar@gmail.com
-          </a>
-        </div>
-        <ul
-          id="mobile-navigation"
-          className={mobileMenuOpen ? "nav-links nav-links-open" : "nav-links"}
-        >
-          <li>
-            <a data-href="#landingDiv" href="#landingDiv" onClick={() => setMobileMenuOpen(false)}>
-              <HoverLinks text={t("nav.home").toUpperCase()} />
-            </a>
-          </li>
-          <li>
-            <a data-href="#about" href="#about" onClick={() => setMobileMenuOpen(false)}>
-              <HoverLinks text={t("nav.about").toUpperCase()} />
-            </a>
-          </li>
-          <li>
-            <a data-href="#work" href="#work" onClick={() => setMobileMenuOpen(false)}>
-              <HoverLinks text={t("nav.work").toUpperCase()} />
-            </a>
-          </li>
-          <li>
-            <a data-href="#contact" href="#contact" onClick={() => setMobileMenuOpen(false)}>
-              <HoverLinks text={t("nav.contact").toUpperCase()} />
-            </a>
-          </li>
-          <li>
-            <LangToggle />
-          </li>
-        </ul>
-        <div className="mobile-nav-actions">
-          <a className="mobile-nav-cv" href="/Mustafa-Basar-CV.pdf" download>
-            CV
+            CV ↓
           </a>
           <LangToggle />
           <button
@@ -152,11 +56,7 @@ const Navbar = () => {
           </button>
         </div>
       </div>
-
-      <div className="landing-circle1"></div>
-      <div className="landing-circle2"></div>
-      <div className="nav-fade"></div>
-    </>
+    </header>
   );
 };
 

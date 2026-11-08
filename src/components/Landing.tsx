@@ -3,42 +3,44 @@ import { useLang } from "../i18n/LanguageProvider";
 
 const Landing = () => {
   const { c, t } = useLang();
-  const nameParts = c.developer.fullName.split(" ");
-  const firstName = nameParts[0] || c.developer.name;
-  const lastName = nameParts.slice(1).join(" ") || "";
 
   return (
-    <>
-      <div className="landing-section" id="landingDiv">
-        <div className="landing-container">
-          <div className="landing-intro">
-            <h2>{t("hero.hello")}</h2>
-            <h1>
-              {firstName.toUpperCase()}
-              {" "}
-              <br />
-              {lastName && <span>{lastName.toUpperCase()}</span>}
-            </h1>
-          </div>
-          <div className="landing-info">
-            <h3>{t("hero.an")}</h3>
-            <h2 className="landing-info-h2">
-              {(() => {
-                const words = t("hero.role").split(" ");
-                const lead = words.slice(0, -1).join(" ");
-                const last = words[words.length - 1];
-                return (
-                  <>
-                    <div className="landing-h2-1">{lead}</div>
-                    <div className="landing-h2-1 landing-h2-line2">{last}</div>
-                  </>
-                );
-              })()}
-            </h2>
-          </div>
+    <section className="landing-section" id="landingDiv">
+      <div className="landing-glow" aria-hidden="true" />
+      <div className="landing-container">
+        <div className="landing-role-pill">
+          <span className="landing-role-dot" />
+          <span>{t("hero.role")} · LangGraph &amp; Multi-Agent Systems</span>
+        </div>
+
+        <h1 className="landing-title">{c.developer.fullName}</h1>
+
+        <p className="landing-subtitle">{c.about.description}</p>
+
+        <div className="landing-actions">
+          <a className="landing-btn-primary" href="#work" data-cursor="disable">
+            {t("work.tryLive")}
+          </a>
+          <a
+            className="landing-btn-secondary"
+            href="/Mustafa-Basar-CV.pdf"
+            download
+            data-cursor="disable"
+          >
+            CV ↓
+          </a>
+          <a
+            className="landing-btn-secondary"
+            href={c.contact.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-cursor="disable"
+          >
+            GitHub ↗
+          </a>
         </div>
       </div>
-    </>
+    </section>
   );
 };
 
