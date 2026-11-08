@@ -1,3 +1,4 @@
+import { isPhone, isDesktop } from "../../../lib/viewport";
 import * as THREE from "three";
 
 export const handleMouseMove = (
@@ -45,7 +46,7 @@ export const handleHeadRotation = (
   lerp: (x: number, y: number, t: number) => number
 ) => {
   if (!headBone) return;
-  if (window.innerWidth <= 768 && window.scrollY < 200) {
+  if (isPhone() && window.scrollY < 200) {
     headBone.rotation.y = lerp(headBone.rotation.y, mouseX * 0.5, 0.09);
     headBone.rotation.x = lerp(headBone.rotation.x, mouseY * 0.22, 0.09);
     return;
@@ -56,7 +57,7 @@ export const handleHeadRotation = (
     headBone.rotation.y = lerp(headBone.rotation.y, 0.5, interpolationY);
     headBone.rotation.x = lerp(headBone.rotation.x, 0, interpolationX);
   } else {
-    if (window.innerWidth > 1024) {
+    if (isDesktop()) {
       headBone.rotation.x = lerp(headBone.rotation.x, -0.4, 0.03);
       headBone.rotation.y = lerp(headBone.rotation.y, -0.3, 0.03);
     }
