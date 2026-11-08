@@ -10,7 +10,7 @@ import Work from "./Work";
 import TechStackNew from "./TechStackNew";
 import CallToAction from "./CallToAction";
 import RobotSection from "./Robot/RobotSection";
-import setSplitText from "./utils/splitText";
+import mountTextReveals from "./utils/splitText";
 import { Tier, useTier } from "../lib/viewport";
 
 // Section manifest: the only place that knows which sections exist and in
@@ -34,9 +34,7 @@ const MainContainer = ({ children }: PropsWithChildren) => {
   const tier = useTier();
 
   useEffect(() => {
-    setSplitText();
-    window.addEventListener("resize", setSplitText);
-    return () => window.removeEventListener("resize", setSplitText);
+    return mountTextReveals();
   }, []);
 
   return (
@@ -58,3 +56,4 @@ const MainContainer = ({ children }: PropsWithChildren) => {
 };
 
 export default MainContainer;
+

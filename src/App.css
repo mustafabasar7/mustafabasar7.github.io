@@ -1,5 +1,5 @@
 .section-container {
-  width: 1300px;
+  width: min(1300px, calc(100% - 2 * var(--gutter)));
 }
 .title,
 .para {
@@ -10,20 +10,5 @@
   transform: translateZ(0);
   word-spacing: 0.15em;
 }
-@media only screen and (max-width: 1600px) {
-  .section-container {
-    width: 1200px;
-    max-width: calc(100% - 160px);
-  }
-}
-@media only screen and (max-width: 1400px) {
-  .section-container {
-    width: 900px;
-  }
-}
-@media only screen and (max-width: 900px) {
-  .section-container {
-    width: 500px;
-    max-width: var(--cWidth);
-  }
-}
+/* .section-container is fluid (min() + --gutter); the old fixed-px steps at
+   1600/1400/900px were replaced so it never overflows or leaves dead space. */

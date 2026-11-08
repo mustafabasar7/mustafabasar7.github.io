@@ -39,7 +39,7 @@
     left: 0;
     transform: none;
     min-height: 64px;
-    padding: 8px 14px;
+    padding: var(--space-xs) var(--gutter);
     gap: 8px;
     background: rgba(11, 10, 20, 0.72);
     backdrop-filter: blur(10px);
@@ -188,7 +188,17 @@
     font-size: 16px;
   }
 }
-@media only screen and (min-width: 900px) {
+/* Touch tablets: keep header links/CV pill at a 44px tap target without
+   changing the mouse/desktop look. */
+@media only screen and (min-width: 769px) and (pointer: coarse) {
+  .header ul li a,
+  .navbar-cv {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+}
+@media only screen and (min-width: 1025px) {
   .navbar-center {
     display: flex;
   }

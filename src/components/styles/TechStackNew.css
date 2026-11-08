@@ -2,11 +2,12 @@
   position: relative;
   width: 100%;
   min-height: 100vh;
+  min-height: var(--vh-full);
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  padding: 80px 0;
+  padding: var(--space-xl) 0;
 }
 
 /* Video Background */
@@ -69,15 +70,15 @@
   width: 100%;
   max-width: 1000px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 var(--gutter);
 }
 
 .techstack-content h2 {
-  font-size: 70px;
+  font-size: clamp(2.25rem, 1.2rem + 3.6vw, 4.375rem);
   text-align: center;
   font-weight: 400;
   text-transform: uppercase;
-  margin-bottom: 50px;
+  margin-bottom: var(--space-lg);
   background: linear-gradient(180deg, #ffffff 0%, #c2a4ff 100%);
   background-clip: text;
   -webkit-background-clip: text;
@@ -157,7 +158,7 @@
 }
 
 /* Responsive */
-@media screen and (max-width: 1200px) {
+@media screen and (max-width: 1024px) {
   .techstack-content {
     max-width: 900px;
   }
@@ -177,10 +178,9 @@
   }
 }
 
-@media screen and (max-width: 900px) {
+@media screen and (max-width: 1024px) {
   .techstack-content h2 {
-    font-size: 50px;
-    margin-bottom: 35px;
+    margin-bottom: var(--space-md);
   }
   
   .techstack-pyramid {
@@ -190,37 +190,20 @@
   .techstack-row {
     gap: 8px;
   }
-  
-  .techstack-item {
-    width: 45px;
-    height: 56px;
-    padding: 6px;
-  }
-  
-  .techstack-item img {
-    width: 22px;
-    height: 22px;
-  }
-  
-  .techstack-item span {
-    font-size: 7px;
-    max-width: 42px;
-  }
 }
 
 @media screen and (max-width: 768px) {
   .techstack-new {
     min-height: auto;
-    padding: 72px 0;
+    padding: var(--space-xl) 0;
   }
 
   .techstack-content {
-    padding: 0 18px;
+    padding: 0 var(--gutter);
   }
 
   .techstack-content h2 {
-    font-size: 36px;
-    margin-bottom: 28px;
+    margin-bottom: var(--space-md);
   }
   
   .techstack-pyramid {
@@ -239,7 +222,8 @@
   
   .techstack-item {
     width: auto;
-    height: 72px;
+    min-height: 72px;
+    height: auto;
     padding: 9px 6px;
     border-radius: 10px;
   }
@@ -250,7 +234,7 @@
   }
   
   .techstack-item span {
-    font-size: 12px;
+    font-size: var(--text-sm);
     max-width: 100%;
     margin-top: 6px;
   }

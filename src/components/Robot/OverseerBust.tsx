@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { GLTFLoader, DRACOLoader } from "three-stdlib";
 import { setRobotLighting } from "./utils/robotLighting";
+import { mountScene } from "../../lib/scene";
 
 // A reusable "overseer" bust (e.g. Mustafa) that watches the agents and gently
 // tracks the cursor. The model is a static bust (no rig) so the life comes from
@@ -42,91 +43,78 @@ const OverseerBust = ({ src = "/models/graph/mustafa.glb", size = 240, className
     if (!mount) return;
     let disposed = false;
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
-    camera.position.set(0, 0.08, 3.9);
-    camera.lookAt(0, 0.08, 0);
+    const handle = mountScene(
+      mount,
+      ({ renderer, pointer: mouse }) => {
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
+        camera.position.set(0, 0.08, 3.9);
+        camera.lookAt(0, 0.08, 0);
 
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: "high-performance" });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
-    renderer.setClearColor(0x000000, 0);
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.15;
-    mount.appendChild(renderer.domElement);
+        renderer.setClearColor(0x000000, 0);
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.15;
 
-    setRobotLighting(scene);
-    const fill = new THREE.DirectionalLight(0xc2a4ff, 0.5);
-    fill.position.set(-3, 2, 4);
-    scene.add(fill);
+        setRobotLighting(scene);
+        const fill = new THREE.DirectionalLight(0xc2a4ff, 0.5);
+        fill.position.set(-3, 2, 4);
+        scene.add(fill);
 
-    const pivot = new THREE.Group();
-    scene.add(pivot);
+        const pivot = new THREE.Group();
+        scene.add(pivot);
 
-    const mouse = { x: 0, y: 0 };
-    const onMove = (e: MouseEvent) => {
-      mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = (e.clientY / window.innerHeight) * 2 - 1;
-    };
-    document.addEventListener("mousemove", onMove);
+        const loader = new GLTFLoader();
+        const draco = new DRACOLoader();
+        draco.setDecoderPath("/draco/");
+        loader.setDRACOLoader(draco);
+        loader.load(
+          src,
+          (g) => {
+            if (disposed) return;
+            const obj = g.scene;
+            obj.traverse((o) => (o.frustumCulled = false));
+            const box = measure(obj);
+            const sz = box.getSize(new THREE.Vector3());
+            const center = box.getCenter(new THREE.Vector3());
+            const maxH = Math.max(sz.y, sz.x) || 1;
+            const s = 2.0 / maxH;
+            obj.position.sub(center);
+            obj.scale.setScalar(s);
+            // Keep it roughly centered (a touch low) so the head has top clearance.
+            obj.position.y -= sz.y * s * 0.02;
+            pivot.add(obj);
+          },
+          undefined,
+          () => {}
+        );
 
-    const loader = new GLTFLoader();
-    const draco = new DRACOLoader();
-    draco.setDecoderPath("/draco/");
-    loader.setDRACOLoader(draco);
-    loader.load(
-      src,
-      (g) => {
-        if (disposed) return;
-        const obj = g.scene;
-        obj.traverse((o) => (o.frustumCulled = false));
-        const box = measure(obj);
-        const sz = box.getSize(new THREE.Vector3());
-        const center = box.getCenter(new THREE.Vector3());
-        const maxH = Math.max(sz.y, sz.x) || 1;
-        const s = 2.0 / maxH;
-        obj.position.sub(center);
-        obj.scale.setScalar(s);
-        // Keep it roughly centered (a touch low) so the head has top clearance.
-        obj.position.y -= sz.y * s * 0.02;
-        pivot.add(obj);
+        return {
+          scenes: [scene],
+          onResize(w, h) {
+            camera.aspect = (w || size) / (h || size);
+            camera.updateProjectionMatrix();
+          },
+          update() {
+            // Track the cursor: turn toward it (yaw) and clearly look up/down (pitch).
+            // A small downward bias keeps it generally watching the agents below.
+            // Base yaw biased left so he generally faces the agents to his left.
+            pivot.rotation.y = THREE.MathUtils.lerp(pivot.rotation.y, -0.38 + mouse.x * 0.5, 0.06);
+            pivot.rotation.x = THREE.MathUtils.lerp(pivot.rotation.x, 0.12 + mouse.y * 0.5, 0.06);
+          },
+          render: () => renderer.render(scene, camera),
+          dispose: () => draco.dispose(),
+        };
       },
-      undefined,
-      () => {}
+      {
+        rendererOptions: { alpha: true, antialias: true, powerPreference: "high-performance" },
+        maxDpr: 1.75,
+        updateStyle: false,
+      }
     );
-
-    const fit = () => {
-      const r = mount.getBoundingClientRect();
-      const d = Math.max(1, Math.min(r.width, r.height));
-      renderer.setSize(r.width || size, r.height || size, false);
-      camera.aspect = (r.width || size) / (r.height || size);
-      camera.updateProjectionMatrix();
-      void d;
-    };
-    fit();
-    const ro = new ResizeObserver(fit);
-    ro.observe(mount);
-
-    let raf = 0;
-    const animate = () => {
-      raf = requestAnimationFrame(animate);
-      // Track the cursor: turn toward it (yaw) and clearly look up/down (pitch).
-      // A small downward bias keeps it generally watching the agents below.
-      // Base yaw biased left so he generally faces the agents to his left.
-      pivot.rotation.y = THREE.MathUtils.lerp(pivot.rotation.y, -0.38 + mouse.x * 0.5, 0.06);
-      pivot.rotation.x = THREE.MathUtils.lerp(pivot.rotation.x, 0.12 + mouse.y * 0.5, 0.06);
-      renderer.render(scene, camera);
-    };
-    animate();
 
     return () => {
       disposed = true;
-      cancelAnimationFrame(raf);
-      document.removeEventListener("mousemove", onMove);
-      draco.dispose();
-      ro.disconnect();
-      renderer.dispose();
-      if (renderer.domElement.parentNode === mount) mount.removeChild(renderer.domElement);
-      scene.clear();
+      handle.dispose();
     };
   }, [src, size]);
 

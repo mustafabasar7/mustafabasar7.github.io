@@ -1,6 +1,6 @@
 .cta-section {
   width: 100%;
-  padding: 80px 20px;
+  padding: var(--space-xl) var(--gutter);
   background-color: var(--backgroundColor);
   display: flex;
   justify-content: center;
@@ -10,15 +10,16 @@
 .cta-buttons {
   display: flex;
   justify-content: center;
-  gap: 25px;
+  gap: var(--space-md);
   flex-wrap: wrap;
 }
 
 .cta-btn {
   display: inline-flex;
   align-items: center;
-  padding: 14px 32px;
-  font-size: 15px;
+  padding: 14px var(--space-lg);
+  min-height: 44px;
+  font-size: var(--text-sm);
   font-weight: 500;
   text-decoration: none;
   border-radius: 8px;
@@ -52,16 +53,18 @@
 /* Responsive */
 @media only screen and (max-width: 768px) {
   .cta-section {
-    padding: 60px 20px;
+    padding: var(--space-xl) var(--gutter);
   }
 
   .cta-buttons {
     flex-direction: column;
-    gap: 15px;
+    gap: var(--space-sm);
+    width: 100%;
   }
 
   .cta-btn {
     justify-content: center;
-    padding: 12px 28px;
+    padding: 12px var(--space-md);
+    min-height: 48px;
   }
 }

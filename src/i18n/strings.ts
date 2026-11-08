@@ -180,3 +180,6 @@ export const UI = {
 } as const;
 
 export type UIKey = keyof (typeof UI)["en"];
+
+// Compile-time parity guard: a key missing from (or extra in) either language fails`tsc`.
+export const _uiParity: { en: Record<UIKey, string>; tr: Record<UIKey, string> } = UI;

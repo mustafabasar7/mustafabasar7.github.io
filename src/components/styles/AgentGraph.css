@@ -4,12 +4,13 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  margin-top: 1.5rem;
+  margin-top: var(--space-md);
   pointer-events: none;
+  max-width: 100%;
 }
 
 .agent-graph svg {
-  width: min(78vw, 340px);
+  width: min(78%, 340px);
   height: auto;
   overflow: visible;
 }

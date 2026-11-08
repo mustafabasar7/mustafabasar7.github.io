@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { GLTFLoader, SkeletonUtils } from "three-stdlib";
+import { mountScene } from "../../lib/scene";
 
 // Ready-made GLBs per node kind (CC0, from poly.pizza). Kinds without an entry
 // fall back to a procedural mesh, so the cast can grow one model at a time.
@@ -200,123 +201,110 @@ const ProjectGraph3D = ({ nodes, running }: { nodes: GNode3D[]; running?: boolea
     const mount = mountRef.current;
     if (!mount) return;
 
-    const scene = new THREE.Scene();
-    // Orthographic camera mapped to the SVG viewBox, but Y-up (top=VB_H) so the
-    // 3D models render upright. Node Y is flipped when placing (VB_H - y) to keep
-    // them aligned with the SVG, which is Y-down.
-    const camera = new THREE.OrthographicCamera(0, VB_W, VB_H, 0, -100, 100);
-    camera.position.z = 10;
+    const handle = mountScene(mount, ({ renderer }) => {
+      const scene = new THREE.Scene();
+      // Orthographic camera mapped to the SVG viewBox, but Y-up (top=VB_H) so the
+      // 3D models render upright. Node Y is flipped when placing (VB_H - y) to keep
+      // them aligned with the SVG, which is Y-down.
+      const camera = new THREE.OrthographicCamera(0, VB_W, VB_H, 0, -100, 100);
+      camera.position.z = 10;
 
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    mount.appendChild(renderer.domElement);
-    renderer.domElement.style.width = "100%";
-    renderer.domElement.style.height = "100%";
+      renderer.domElement.style.width = "100%";
+      renderer.domElement.style.height = "100%";
 
-    scene.add(new THREE.AmbientLight(0xffffff, 0.85));
-    const dir = new THREE.DirectionalLight(0xffffff, 1.1);
-    dir.position.set(60, -40, 120);
-    scene.add(dir);
-    const rim = new THREE.DirectionalLight(0xc2a4ff, 0.6);
-    rim.position.set(-80, 60, 40);
-    scene.add(rim);
+      scene.add(new THREE.AmbientLight(0xffffff, 0.85));
+      const dir = new THREE.DirectionalLight(0xffffff, 1.1);
+      dir.position.set(60, -40, 120);
+      scene.add(dir);
+      const rim = new THREE.DirectionalLight(0xc2a4ff, 0.6);
+      rim.position.set(-80, 60, 40);
+      scene.add(rim);
 
-    const objs: THREE.Object3D[] = [];
-    const mixers: THREE.AnimationMixer[] = [];
-    const timers: number[] = [];
-    let disposed = false;
+      const objs: THREE.Object3D[] = [];
+      const mixers: THREE.AnimationMixer[] = [];
+      const timers: number[] = [];
+      let disposed = false;
 
-    const place = (inner: THREE.Object3D, n: GNode3D, clips?: THREE.AnimationClip[]) => {
-      if (disposed) return;
-      const o = new THREE.Group();
-      o.add(inner);
-      o.position.set(n.x, VB_H - n.y, 0); // flip Y to match the SVG (Y-down)
-      // Per-kind size tweaks so small/dark models (e.g. tools) still read.
-      const KIND_SCALE: Record<string, number> = { tool: 1.5, tool2: 1.5, doc: 1.2, human: 0.9 };
-      o.scale.setScalar(n.r * 1.42 * (n.scale ?? KIND_SCALE[n.kind] ?? 1));
-      // The tall human spanned both labels — keep it small and centered so its
-      // head clears "risky step" above and its feet clear "interrupt" below.
-      if (n.kind === "human") o.position.y -= 2;
+      const place = (inner: THREE.Object3D, n: GNode3D, clips?: THREE.AnimationClip[]) => {
+        if (disposed) return;
+        const o = new THREE.Group();
+        o.add(inner);
+        o.position.set(n.x, VB_H - n.y, 0); // flip Y to match the SVG (Y-down)
+        // Per-kind size tweaks so small/dark models (e.g. tools) still read.
+        const KIND_SCALE: Record<string, number> = { tool: 1.5, tool2: 1.5, doc: 1.2, human: 0.9 };
+        o.scale.setScalar(n.r * 1.42 * (n.scale ?? KIND_SCALE[n.kind] ?? 1));
+        // The tall human spanned both labels — keep it small and centered so its
+        // head clears "risky step" above and its feet clear "interrupt" below.
+        if (n.kind === "human") o.position.y -= 2;
 
-      // Any model that ships animation clips stands still and plays Idle (so it
-      // feels alive); the human approver also waves every 5s. Others slowly spin.
-      const wave = clips?.find((c) => /\bWave\b/i.test(c.name));
-      const idle = clips?.find((c) => /Idle$/i.test(c.name)) ?? clips?.find((c) => /Idle/i.test(c.name));
-      if (clips && clips.length && (idle || wave)) {
-        o.userData.spin = 0;
-        o.rotation.x = 0;
-        const mixer = new THREE.AnimationMixer(inner);
-        mixers.push(mixer);
-        if (idle) mixer.clipAction(idle).play();
-        if (n.kind === "human" && wave) {
-          const waveAt = () => {
-            if (disposed) return;
-            const a = mixer.clipAction(wave);
-            a.setLoop(THREE.LoopOnce, 1);
-            a.reset();
-            a.play();
-          };
-          waveAt();
-          timers.push(window.setInterval(waveAt, 5000)); // wave every 5s
+        // Any model that ships animation clips stands still and plays Idle (so it
+        // feels alive); the human approver also waves every 5s. Others slowly spin.
+        const wave = clips?.find((c) => /\bWave\b/i.test(c.name));
+        const idle = clips?.find((c) => /Idle$/i.test(c.name)) ?? clips?.find((c) => /Idle/i.test(c.name));
+        if (clips && clips.length && (idle || wave)) {
+          o.userData.spin = 0;
+          o.rotation.x = 0;
+          const mixer = new THREE.AnimationMixer(inner);
+          mixers.push(mixer);
+          if (idle) mixer.clipAction(idle).play();
+          if (n.kind === "human" && wave) {
+            const waveAt = () => {
+              if (disposed) return;
+              const a = mixer.clipAction(wave);
+              a.setLoop(THREE.LoopOnce, 1);
+              a.reset();
+              a.play();
+            };
+            waveAt();
+            timers.push(window.setInterval(waveAt, 5000)); // wave every 5s
+          }
+        } else {
+          o.userData.spin = 0.3 + Math.random() * 0.3;
+          o.rotation.x = inner.userData.upright ? 0 : -0.18;
         }
-      } else {
-        o.userData.spin = 0.3 + Math.random() * 0.3;
-        o.rotation.x = inner.userData.upright ? 0 : -0.18;
-      }
-      // Gentle vertical bob so even the non-animated models feel alive.
-      o.userData.baseY = o.position.y;
-      o.userData.bob = n.kind === "human" ? 0 : 1.4 + Math.random();
-      o.userData.phase = Math.random() * Math.PI * 2;
-      scene.add(o);
-      objs.push(o);
-    };
+        // Gentle vertical bob so even the non-animated models feel alive.
+        o.userData.baseY = o.position.y;
+        o.userData.bob = n.kind === "human" ? 0 : 1.4 + Math.random();
+        o.userData.phase = Math.random() * Math.PI * 2;
+        scene.add(o);
+        objs.push(o);
+      };
 
-    nodes.forEach((n) => {
-      const url = n.glb || GLB_BY_KIND[n.kind];
-      if (url) {
-        loadGLB(url)
-          .then(({ object, clips }) => place(object, n, clips))
-          .catch(() => place(makeMesh(n.kind), n)); // fall back if the GLB fails
-      } else {
-        place(makeMesh(n.kind), n);
-      }
-    });
-
-    const size = () => {
-      const r = mount.getBoundingClientRect();
-      if (r.width && r.height) renderer.setSize(r.width, r.height, false);
-    };
-    size();
-    const ro = new ResizeObserver(size);
-    ro.observe(mount);
-
-    let raf = 0;
-    const clock = new THREE.Clock();
-    const animate = () => {
-      raf = requestAnimationFrame(animate);
-      const dt = clock.getDelta();
-      const t = clock.getElapsedTime();
-      const speed = running ? 1.8 : 1;
-      objs.forEach((o) => {
-        o.rotation.y += dt * (o.userData.spin as number) * speed;
-        const bob = o.userData.bob as number;
-        if (bob) o.position.y = (o.userData.baseY as number) + Math.sin(t * 1.6 + (o.userData.phase as number)) * bob * speed;
+      nodes.forEach((n) => {
+        const url = n.glb || GLB_BY_KIND[n.kind];
+        if (url) {
+          loadGLB(url)
+            .then(({ object, clips }) => place(object, n, clips))
+            .catch(() => place(makeMesh(n.kind), n)); // fall back if the GLB fails
+        } else {
+          place(makeMesh(n.kind), n);
+        }
       });
-      mixers.forEach((m) => m.update(dt));
-      renderer.render(scene, camera);
-    };
-    animate();
 
-    return () => {
-      disposed = true;
-      cancelAnimationFrame(raf);
-      timers.forEach((id) => clearInterval(id));
-      mixers.forEach((m) => m.stopAllAction());
-      ro.disconnect();
-      renderer.dispose();
-      if (renderer.domElement.parentNode === mount) mount.removeChild(renderer.domElement);
-      scene.clear();
-    };
+
+      const animate = (dt: number, t: number) => {
+        const speed = running ? 1.8 : 1;
+        objs.forEach((o) => {
+          o.rotation.y += dt * (o.userData.spin as number) * speed;
+          const bob = o.userData.bob as number;
+          if (bob) o.position.y = (o.userData.baseY as number) + Math.sin(t * 1.6 + (o.userData.phase as number)) * bob * speed;
+        });
+        mixers.forEach((m) => m.update(dt));
+      };
+
+      return {
+        update: animate,
+        render: () => renderer.render(scene, camera),
+        scenes: [scene],
+        dispose: () => {
+          disposed = true;
+          timers.forEach((id) => clearInterval(id));
+          mixers.forEach((m) => m.stopAllAction());
+        },
+      };
+    }, { rendererOptions: { alpha: true, antialias: true }, maxDpr: 2, updateStyle: false });
+
+    return () => handle.dispose();
   }, [nodes, running]);
 
   return <div className="pg-3d" ref={mountRef} aria-hidden="true" />;

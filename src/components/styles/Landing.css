@@ -23,7 +23,7 @@
   }
 
   .landing-container {
-    padding: 76px 20px 42px;
+    padding: 4.75rem var(--gutter) var(--space-lg);
   }
 
   /* Fix spacing between name and subtitle */
@@ -100,7 +100,7 @@
     display: block;
     width: auto;
     margin: 0 !important;
-    font-size: 20px !important;
+    font-size: var(--text-lg) !important;
     line-height: 1.15 !important;
     white-space: normal;
     text-align: center;
@@ -117,7 +117,7 @@
   }
 
   .landing-h2-info {
-    font-size: 18px !important;
+    font-size: var(--text-base) !important;
     color: rgba(255, 255, 255, 0.9);
   }
 
@@ -363,7 +363,7 @@
 
 .character-model {
   height: 80%;
-  height: 80vh;
+  height: calc(var(--vh-full) * 0.8);
   position: absolute;
   max-width: 1920px;
   max-height: 1080px;
@@ -528,7 +528,7 @@ h2.landing-info-h2 {
   display: none;
 }
 
-@media screen and (min-width: 500px) {
+@media screen and (min-width: 501px) {
   .landing-circle2 {
     display: block;
   }
@@ -560,9 +560,9 @@ h2.landing-info-h2 {
   }
 }
 
-@media screen and (min-width: 768px) {
+@media screen and (min-width: 769px) {
   .character-model {
-    height: 80vh;
+    height: calc(var(--vh-full) * 0.8);
   }
 
   .landing-intro h2 {
@@ -590,7 +590,7 @@ h2.landing-info-h2 {
 
 @media screen and (min-width: 1025px) {
   .character-model {
-    height: 100vh;
+    height: var(--vh-full);
     bottom: 0;
     z-index: 11;
     position: fixed;

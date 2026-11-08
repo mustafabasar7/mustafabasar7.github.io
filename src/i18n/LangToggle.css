@@ -20,9 +20,18 @@
 /* Fixed placement for pages without a navbar (myworks list + detail). */
 .lang-toggle-fixed {
   position: fixed;
-  top: 18px;
-  right: 18px;
+  top: var(--space-sm);
+  right: var(--space-sm);
   z-index: 50;
   background: rgba(20, 16, 38, 0.7);
   backdrop-filter: blur(6px);
+}
+
+/* Phones/touch: meet the 44px minimum tap target. */
+@media only screen and (max-width: 768px) {
+  .lang-toggle {
+    min-height: 44px;
+    min-width: 44px;
+    justify-content: center;
+  }
 }
