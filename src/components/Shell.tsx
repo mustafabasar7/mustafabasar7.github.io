@@ -1,35 +1,35 @@
 import { Link, Outlet, useNavigate, useRouterState } from '@tanstack/react-router';
 import {
-	Activity,
-	Binary,
-	Blocks,
-	ChevronDown,
-	ChevronRight,
-	Code2,
-	Cog,
+	Broadcast,
+	CaretDown,
+	CaretRight,
+	ChartLineUp,
+	CodeBlock,
 	Compass,
 	Cpu,
+	CubeTransparent,
+	EnvelopeSimple,
+	FileCode,
 	Fingerprint,
-	GitFork,
-	Globe,
-	Layers,
-	LineChart,
-	Lock,
-	LogOut,
-	Menu,
-	MessageSquarePlus,
-	Moon,
-	Plug,
-	Radar,
-	ShieldAlert,
+	GearSix,
+	GitBranch,
+	GlobeHemisphereWest,
+	Graph,
+	List,
+	LockKey,
+	MoonStars,
+	PlugsConnected,
+	Pulse,
 	ShieldCheck,
-	Sparkles,
-	Sun,
-	Terminal,
-	UserRound,
-	Wallet,
-	Workflow
-} from 'lucide-react';
+	ShieldWarning,
+	SignOut,
+	Sparkle,
+	Stack,
+	SunDim,
+	TerminalWindow,
+	UserCircle,
+	Wallet
+} from '@phosphor-icons/react';
 import { useEffect, useRef, useState } from 'react';
 
 import { apiBase } from '@/api/base';
@@ -43,10 +43,15 @@ import {
 	useTrafficConfigData
 } from '@/hooks';
 
+type PhosphorIconComponent = React.ComponentType<{
+	size?: number;
+	weight?: 'thin' | 'light' | 'regular' | 'bold' | 'fill' | 'duotone';
+}>;
+
 type NavItemConfig = {
 	to: string;
 	label: string;
-	icon: React.ComponentType<{ size?: number }>;
+	icon: PhosphorIconComponent;
 	placeholder?: boolean;
 	groupStart?: boolean;
 	exact?: boolean;
@@ -56,17 +61,17 @@ const projectLinks = [
 	{
 		label: 'GitHub — mustafabasar7',
 		href: 'https://github.com/mustafabasar7',
-		icon: GitFork
+		icon: GitBranch
 	},
 	{
 		label: 'LinkedIn — Mustafa Başar',
 		href: 'https://www.linkedin.com/in/mustafa-basar/',
-		icon: Globe
+		icon: GlobeHemisphereWest
 	},
 	{
 		label: 'Contact — basarmustafa7@gmail.com',
 		href: 'mailto:basarmustafa7@gmail.com',
-		icon: MessageSquarePlus
+		icon: EnvelopeSimple
 	}
 ] as const;
 
@@ -129,9 +134,9 @@ export function Shell() {
 	return (
 		<div className="app-shell">
 			<aside className="sidebar">
-				<Link to="/" className="brand" aria-label="Mustafa Başar AI Control Plane" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '10px' }}>
-					<ShieldCheck size={22} />
-					<strong style={{ fontSize: '14px', fontWeight: 600, letterSpacing: '-0.01em' }}>Mustafa Başar · AI Gateway</strong>
+				<Link to="/" className="brand" aria-label="Mustafa Başar Control Panel" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '10px' }}>
+					<ShieldCheck size={24} weight="duotone" style={{ color: 'var(--primary)' }} />
+					<strong style={{ fontSize: '14px', fontWeight: 600, letterSpacing: '-0.01em' }}>Mustafa Başar · Control Panel</strong>
 				</Link>
 				<nav className="nav-list" aria-label="Primary">
 					{navGroups.map(group => (
@@ -155,7 +160,7 @@ export function Shell() {
 									rel="noreferrer"
 									aria-label={link.label}
 								>
-									<Icon size={17} />
+									<Icon size={18} weight="duotone" />
 								</a>
 							</Tooltip>
 						);
@@ -172,8 +177,8 @@ export function Shell() {
 								aria-expanded={mobileNavOpen}
 								onClick={() => setMobileNavOpen(open => !open)}
 							>
-								<Menu size={17} />
-								<CurrentIcon size={16} />
+								<List size={17} weight="bold" />
+								<CurrentIcon size={17} weight="duotone" />
 								<span>{currentNav.label}</span>
 							</button>
 							{mobileNavOpen ? (
@@ -192,7 +197,7 @@ export function Shell() {
 						{matchedNav && currentGroup && (
 							<nav className="breadcrumb" aria-label="Breadcrumb">
 								<span>{currentGroup.title}</span>
-								<ChevronRight size={14} />
+								<CaretRight size={14} weight="bold" />
 								<span aria-current="page">{matchedNav.label}</span>
 							</nav>
 						)}
@@ -210,7 +215,7 @@ export function Shell() {
 									setTheme(next);
 								}}
 							>
-								{theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+								{theme === 'dark' ? <SunDim size={19} weight="duotone" /> : <MoonStars size={19} weight="duotone" />}
 							</button>
 						</Tooltip>
 					</div>
@@ -266,10 +271,10 @@ function UserMenu({ user }: { user: RuntimeUser }) {
 				onClick={() => setOpen(!open)}
 			>
 				<span className="user-avatar" aria-hidden="true">
-					{initials || <UserRound size={16} />}
+					{initials || <UserCircle size={17} weight="duotone" />}
 				</span>
 				<span className="user-menu-name">{label}</span>
-				<ChevronDown size={14} aria-hidden="true" />
+				<CaretDown size={14} aria-hidden="true" />
 			</button>
 			{open && (
 				<section id="user-menu-panel" className="user-menu-panel" aria-label="Your account">
@@ -281,7 +286,7 @@ function UserMenu({ user }: { user: RuntimeUser }) {
 					{user.canLogout && (
 						<form action={`${apiBase}/api/auth/logout`} method="post">
 							<button className="user-menu-signout" type="submit">
-								<LogOut size={16} aria-hidden="true" />
+								<SignOut size={16} weight="duotone" aria-hidden="true" />
 								Sign out
 							</button>
 						</form>
@@ -303,9 +308,9 @@ function navigationGroups(options: {
 		{
 			title: 'Interactive Sandbox',
 			items: [
-				{ to: '/', label: 'Control Plane', icon: Compass },
-				{ to: '/llm/playground', label: 'Live Agent Arena', icon: Sparkles },
-				{ to: '/mcp/playground', label: 'MCP Inspector', icon: Terminal }
+				{ to: '/', label: 'Control Panel', icon: Compass },
+				{ to: '/llm/playground', label: 'Live Agent Arena', icon: Sparkle },
+				{ to: '/mcp/playground', label: 'MCP Inspector', icon: TerminalWindow }
 			]
 		}
 	];
@@ -313,28 +318,28 @@ function navigationGroups(options: {
 		groups.push({
 			title: 'Protocols (A2A & MCP)',
 			items: [
-				{ to: '/traffic/routes', label: 'A2A Agent Mesh', icon: Workflow },
-				{ to: '/mcp/servers', label: 'MCP Tool Servers', icon: Blocks },
+				{ to: '/traffic/routes', label: 'A2A Agent Mesh', icon: Graph },
+				{ to: '/mcp/servers', label: 'MCP Tool Servers', icon: CubeTransparent },
 				...(options.hasBinds
-					? [{ to: '/traffic/listeners', label: 'Mesh Listeners', icon: Radar }]
+					? [{ to: '/traffic/listeners', label: 'Mesh Listeners', icon: Broadcast }]
 					: []),
-				{ to: '/traffic/gateways', label: 'Ingress Gateways', icon: Radar },
-				{ to: '/mcp/policies', label: 'MCP Access Policy', icon: Lock }
+				{ to: '/traffic/gateways', label: 'Ingress Endpoints', icon: Broadcast },
+				{ to: '/mcp/policies', label: 'MCP Access Policy', icon: LockKey }
 			]
 		});
 		groups.push({
 			title: 'Safety & Governance',
 			items: [
-				{ to: '/llm/guardrails', label: 'AI Guardrails', icon: ShieldAlert },
+				{ to: '/llm/guardrails', label: 'AI Guardrails', icon: ShieldWarning },
 				{ to: '/llm/policies', label: 'Traffic Policies', icon: ShieldCheck },
-				{ to: '/cel', label: 'CEL Rule Engine', icon: Binary }
+				{ to: '/cel', label: 'CEL Rule Engine', icon: CodeBlock }
 			]
 		});
 		groups.push({
 			title: 'Models & Cost Router',
 			items: [
 				{ to: '/llm/models', label: 'Model Router', icon: Cpu },
-				{ to: '/llm/providers', label: 'NIM Providers', icon: Layers },
+				{ to: '/llm/providers', label: 'NIM Providers', icon: Stack },
 				{ to: '/llm/costs', label: 'Cost & Pricing', icon: Wallet },
 				{ to: '/llm/keys', label: 'Scoped Virtual Keys', icon: Fingerprint }
 			]
@@ -342,11 +347,11 @@ function navigationGroups(options: {
 		groups.push({
 			title: 'Telemetry & Config',
 			items: [
-				{ to: '/llm/logs', label: 'Live Trace Logs', icon: Activity },
-				{ to: '/llm/analytics', label: 'Spend Analytics', icon: LineChart },
-				{ to: '/raw-config', label: 'YAML Manifest', icon: Code2, exact: true },
-				{ to: '/llm/client-setup', label: 'SDK Integration', icon: Plug },
-				{ to: '/settings', label: 'System Settings', icon: Cog }
+				{ to: '/llm/logs', label: 'Live Trace Logs', icon: Pulse },
+				{ to: '/llm/analytics', label: 'Spend Analytics', icon: ChartLineUp },
+				{ to: '/raw-config', label: 'YAML Manifest', icon: FileCode, exact: true },
+				{ to: '/llm/client-setup', label: 'SDK Integration', icon: PlugsConnected },
+				{ to: '/settings', label: 'System Settings', icon: GearSix }
 			]
 		});
 	} else {
@@ -354,10 +359,10 @@ function navigationGroups(options: {
 			title: 'Protocols & Models',
 			items: [
 				{ to: '/llm/models', label: 'Model Router', icon: Cpu },
-				{ to: '/traffic/routes', label: 'A2A Agent Mesh', icon: Workflow },
-				{ to: '/traffic/listeners', label: 'Mesh Listeners', icon: Radar },
+				{ to: '/traffic/routes', label: 'A2A Agent Mesh', icon: Graph },
+				{ to: '/traffic/listeners', label: 'Mesh Listeners', icon: Broadcast },
 				{ to: '/traffic/policies', label: 'Traffic Policies', icon: ShieldCheck },
-				{ to: '/cel', label: 'CEL Rule Engine', icon: Binary }
+				{ to: '/cel', label: 'CEL Rule Engine', icon: CodeBlock }
 			]
 		});
 	}
@@ -397,7 +402,7 @@ function MobileNavSection(props: {
 function MobileNavItem(props: {
 	to: string;
 	label: string;
-	icon: React.ComponentType<{ size?: number }>;
+	icon: PhosphorIconComponent;
 	currentPath: string;
 	placeholder?: boolean;
 	groupStart?: boolean;
@@ -413,7 +418,7 @@ function MobileNavItem(props: {
 				className={props.groupStart ? 'mobile-nav-item nav-group-start' : 'mobile-nav-item'}
 				onClick={() => void navigate({ to: props.to })}
 			>
-				<Icon size={16} />
+				<Icon size={17} weight="duotone" />
 				<span>{props.label}</span>
 			</button>
 		);
@@ -423,7 +428,7 @@ function MobileNavItem(props: {
 			to={props.to}
 			className={`${active ? 'mobile-nav-item active' : 'mobile-nav-item'}${props.groupStart ? ' nav-group-start' : ''}`}
 		>
-			<Icon size={16} />
+			<Icon size={17} weight={active ? 'fill' : 'duotone'} />
 			<span>{props.label}</span>
 		</Link>
 	);
@@ -432,7 +437,7 @@ function MobileNavItem(props: {
 function NavItem(props: {
 	to: string;
 	label: string;
-	icon: React.ComponentType<{ size?: number }>;
+	icon: PhosphorIconComponent;
 	currentPath: string;
 	placeholder?: boolean;
 	groupStart?: boolean;
@@ -448,7 +453,7 @@ function NavItem(props: {
 				className={props.groupStart ? 'nav-item nav-group-start' : 'nav-item'}
 				onClick={() => void navigate({ to: props.to })}
 			>
-				<Icon size={17} />
+				<Icon size={18} weight="duotone" />
 				<span>{props.label}</span>
 			</button>
 		);
@@ -458,7 +463,7 @@ function NavItem(props: {
 			to={props.to}
 			className={`${active ? 'nav-item active' : 'nav-item'}${props.groupStart ? ' nav-group-start' : ''}`}
 		>
-			<Icon size={17} />
+			<Icon size={18} weight={active ? 'fill' : 'duotone'} />
 			<span>{props.label}</span>
 		</Link>
 	);

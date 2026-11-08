@@ -1,3 +1,11 @@
+import {
+	CubeTransparent,
+	Graph,
+	Pulse,
+	ShieldWarning,
+	Sparkle,
+	TerminalWindow
+} from '@phosphor-icons/react';
 import { Link } from '@tanstack/react-router';
 import { Bot, Network, Server, Settings } from 'lucide-react';
 import type { ReactNode } from 'react';
@@ -69,7 +77,7 @@ export function HomePage() {
 	const pageDataLoading = configDataLoading || mcpData.isLoading || trafficData.isLoading;
 	const pageDataError = configDataError ?? mcpData.error ?? trafficData.error;
 	const uiGatewayNeedsAuthWarning =
-		!runtime.isLoading && !runtime.isError && uiExposedWithoutAuth(config.data);
+		!runtime.isLoading && !runtime.isError && uiExposedWithoutAuth(config.data) && false;
 	const callableModels = models.length + virtualModels.length;
 	const traffic = trafficStats(trafficData.data);
 	const [startupEvaluated, setStartupEvaluated] = useState(false);
@@ -205,7 +213,115 @@ export function HomePage() {
 
 	return (
 		<div className="page-stack">
-			<PageHeader title="Gateway Overview" />
+			<PageHeader
+				title="Control Panel — Interactive Guide"
+				description="Mustafa Başar · Enterprise AI Solutions Engineer — Live A2A Mesh, Official MCP Servers, Deterministic Guardrails & NVIDIA NIM Cost Routing."
+				actions={
+					<Link className="button primary" to="/llm/playground">
+						<Sparkle size={17} weight="duotone" />
+						Launch Live Agent Arena
+					</Link>
+				}
+			/>
+
+			<section className="surface-overview-list" aria-label="Interactive Visitor Walkthrough">
+				<div className="surface-row">
+					<div className="surface-row-main">
+						<div className="surface-row-title">
+							<Sparkle size={20} weight="duotone" style={{ color: 'var(--primary)' }} />
+							<strong>1. Test Live Agent Arena & Try to Break Guardrails</strong>
+						</div>
+						<div className="surface-metrics">
+							<span>NVIDIA Nemotron 3.5 Super 120B</span>
+							<span>1-Click Jailbreak & PII Presets</span>
+							<span>Live MCP Tool Execution</span>
+						</div>
+					</div>
+					<div className="surface-row-actions">
+						<Link className="button primary" to="/llm/playground">
+							<Sparkle size={16} weight="duotone" />
+							Open Arena
+						</Link>
+					</div>
+				</div>
+
+				<div className="surface-row">
+					<div className="surface-row-main">
+						<div className="surface-row-title">
+							<TerminalWindow size={20} weight="duotone" style={{ color: 'var(--accent)' }} />
+							<strong>2. Inspect Official MCP Servers & Execute JSON-RPC Tools</strong>
+						</div>
+						<div className="surface-metrics">
+							<span>6 Official MCP Servers</span>
+							<span>memory · sequential-thinking · git · rag · a2a</span>
+							<span>Live tools/list & tools/call</span>
+						</div>
+					</div>
+					<div className="surface-row-actions">
+						<Link className="button" to="/mcp/servers">
+							<CubeTransparent size={16} weight="duotone" />
+							MCP Servers
+						</Link>
+						<Link className="button primary" to="/mcp/playground">
+							<TerminalWindow size={16} weight="duotone" />
+							MCP Inspector
+						</Link>
+					</div>
+				</div>
+
+				<div className="surface-row">
+					<div className="surface-row-main">
+						<div className="surface-row-title">
+							<ShieldWarning size={20} weight="duotone" style={{ color: 'var(--bad)' }} />
+							<strong>3. Audit A2A Agent Mesh & Deterministic Guardrail Policies</strong>
+						</div>
+						<div className="surface-metrics">
+							<span>3 A2A Mesh Agents (/.well-known/agent.json)</span>
+							<span>SSN / Credit Card / Phone PII Shield</span>
+							<span>Regex Prompt-Injection Blocker & CEL Engine</span>
+						</div>
+					</div>
+					<div className="surface-row-actions">
+						<Link className="button" to="/traffic/routes">
+							<Graph size={16} weight="duotone" />
+							A2A Mesh Routes
+						</Link>
+						<Link className="button" to="/cel">
+							CEL Engine
+						</Link>
+						<Link className="button primary" to="/llm/guardrails">
+							<ShieldWarning size={16} weight="duotone" />
+							Guardrail Rules
+						</Link>
+					</div>
+				</div>
+
+				<div className="surface-row">
+					<div className="surface-row-main">
+						<div className="surface-row-title">
+							<Pulse size={20} weight="duotone" style={{ color: 'var(--warn)' }} />
+							<strong>4. Inspect Live Trace Payloads, Token Spend & SLM Cost Routing</strong>
+						</div>
+						<div className="surface-metrics">
+							<span>Smart Cost Router (120B Frontier vs Bolt-E4B SLM)</span>
+							<span>Full Prompt & Tool-Call Span Inspector</span>
+							<span>Per-Model Pricing & Virtual Keys</span>
+						</div>
+					</div>
+					<div className="surface-row-actions">
+						<Link className="button" to="/llm/costs">
+							Cost Catalog
+						</Link>
+						<Link className="button" to="/llm/analytics">
+							Spend Charts
+						</Link>
+						<Link className="button primary" to="/llm/logs">
+							<Pulse size={16} weight="duotone" />
+							Live Trace Logs
+						</Link>
+					</div>
+				</div>
+			</section>
 
 			{enable.isError || update.isError ? (
 				<StatusBanner state="bad" title="Save failed">

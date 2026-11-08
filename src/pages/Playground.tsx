@@ -1,22 +1,24 @@
 import { useMutation } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import {
-	Blocks,
+	CubeTransparent,
+	Fingerprint,
+	Graph,
+	Lightning,
+	PaperPlaneRight,
+	ShieldWarning
+} from '@phosphor-icons/react';
+import {
 	Bot,
 	Braces,
 	ChevronDown,
 	Clock3,
-	Fingerprint,
 	GitBranch,
 	Hash,
 	KeyRound,
 	Loader2,
-	Send,
-	ShieldAlert,
 	TextCursorInput,
-	User,
-	Workflow,
-	Zap
+	User
 } from 'lucide-react';
 import { type ReactNode, useEffect, useMemo, useState } from 'react';
 
@@ -503,7 +505,7 @@ export function PlaygroundPage() {
 
 	return (
 		<div className="page-stack">
-			<PageHeader title="LLM Playground" description="Send test requests through the gateway." />
+			<PageHeader title="Live Agent Arena" description="Test A2A delegation, MCP tools, Guardrail shields, and NVIDIA NIM routing." />
 			{configDataLoading ? (
 				<StatusBanner state="loading" title="Loading LLM configuration" />
 			) : configDataError ? (
@@ -737,15 +739,15 @@ export function PlaygroundPage() {
 						{PLAYGROUND_PRESETS.map(preset => {
 							const presetIcon =
 								preset.id === 'a2a' ? (
-									<Workflow size={15} style={{ color: 'var(--info)' }} />
+									<Graph size={17} weight="duotone" style={{ color: 'var(--info)' }} />
 								) : preset.id === 'mcp' ? (
-									<Blocks size={15} style={{ color: 'var(--primary)' }} />
+									<CubeTransparent size={17} weight="duotone" style={{ color: 'var(--primary)' }} />
 								) : preset.id === 'jailbreak' ? (
-									<ShieldAlert size={15} style={{ color: 'var(--bad)' }} />
+									<ShieldWarning size={17} weight="duotone" style={{ color: 'var(--bad)' }} />
 								) : preset.id === 'pii' ? (
-									<Fingerprint size={15} style={{ color: 'var(--bad)' }} />
+									<Fingerprint size={17} weight="duotone" style={{ color: 'var(--bad)' }} />
 								) : (
-									<Zap size={15} style={{ color: 'var(--warn)' }} />
+									<Lightning size={17} weight="duotone" style={{ color: 'var(--warn)' }} />
 								);
 							return (
 								<button
@@ -784,7 +786,7 @@ export function PlaygroundPage() {
 							disabled={sendBlockers.length > 0}
 							onClick={send}
 						>
-							<Send size={16} />
+							<PaperPlaneRight size={16} weight="duotone" />
 							Send
 						</button>
 						<button
