@@ -3,7 +3,7 @@ export const config = {
         name: "Mustafa",
         fullName: "Mustafa Başar",
         title: "AI Solutions Engineer",
-        description: "AI Solutions Engineer focused on agentic orchestration and governance. I build state-aware multi-agent systems with LangGraph, add human-in-the-loop controls for auditability and safety, and drive token efficiency through prompt caching and SLM offloading."
+        description: "AI Solutions Engineer building stateful multi-agent systems with LangGraph, HITL governance, and token-efficient routing."
     },
     social: {
         github: "mustafabasar7",
@@ -12,7 +12,7 @@ export const config = {
     },
     about: {
         title: "About Me",
-        description: "I'm an AI Solutions Engineer specializing in production-grade autonomous systems. My focus is the orchestration logic - the brain layer that handles state, memory, and multi-agent coordination for enterprise-scale agentic workflows. I design state-aware multi-agent systems with LangGraph, enforce auditability and safety through human-in-the-loop governance, and optimize cost with prompt caching and SLM offloading."
+        description: "I build production multi-agent systems with LangGraph — combining stateful orchestration, human-in-the-loop safety, and token-efficient model routing."
     },
     experiences: [
         {
@@ -20,7 +20,7 @@ export const config = {
             company: "Turkuvaz Medya Grubu",
             period: "2023 - Present",
             location: "Istanbul, TR",
-            description: "Building an interactive knowledge layer across 6+ national news & broadcast brands through a LangGraph-based multi-agent ecosystem, with governance and cost optimization at the core.",
+            description: "Multi-agent knowledge layer across 6+ national media brands — ~65% faster research, ~60% lower token cost.",
             responsibilities: [
                 "Built an interactive knowledge layer across 6+ national news & broadcast brands via a LangGraph multi-agent ecosystem",
                 "Cut editorial research and lookup time ~65% across newsrooms with state-aware agent orchestration",
@@ -34,7 +34,7 @@ export const config = {
             company: "Neural Intelligence Labs",
             period: "2021 - 2023",
             location: "Istanbul, TR",
-            description: "Early engineer at a pre-seed AI startup building enterprise document intelligence: durable RAG pipelines that turn scattered documents into grounded, citable answers.",
+            description: "Durable Temporal + RAG pipelines across 12+ enterprise sources — ~70% less reprocessing, ~90%+ grounding accuracy.",
             responsibilities: [
                 "Built a Temporal-backed durable RAG ingestion pipeline; resumable runs cut reprocessing time ~70% after failures",
                 "Indexed ~12 heterogeneous document sources with semantic search for cross-source consistency",
@@ -51,7 +51,7 @@ export const config = {
             category: "Agentic AI",
             technologies: "LangGraph, Python, Multi-Agent Systems",
             image: "/images/proj-1.svg",
-            description: "A blueprint for decomposing complex tasks: a central supervisor delegates to specialized worker nodes, coordinating state and results across the swarm."
+            description: "Supervisor-worker task decomposition and state coordination."
         },
         {
             id: 2,
@@ -59,7 +59,7 @@ export const config = {
             category: "Agentic AI",
             technologies: "LangGraph, Python, Adaptive RAG",
             image: "/images/proj-2.svg",
-            description: "Real-time tool selection driven by latent context and user intent, routing each step to the right capability instead of a fixed toolchain."
+            description: "Intent-driven real-time tool and model routing."
         },
         {
             id: 3,
@@ -67,7 +67,7 @@ export const config = {
             category: "Agentic AI",
             technologies: "LangGraph, State Machines, Python",
             image: "/images/proj-3.svg",
-            description: "Durable state persistence across long-horizon task execution, so agents retain memory and resume cleanly over multi-step workflows."
+            description: "Checkpointed memory across long-running workflows."
         },
         {
             id: 4,
@@ -75,7 +75,7 @@ export const config = {
             category: "Multi-Agent Systems",
             technologies: "LangGraph, Multi-Agent Systems, Python",
             image: "/images/proj-4.svg",
-            description: "Coordination models for large-scale decentralized agent ecosystems, structuring how hierarchical swarms divide and synchronize work."
+            description: "Parallel fan-out and synchronization for agent swarms."
         },
         {
             id: 5,
@@ -83,7 +83,7 @@ export const config = {
             category: "AI Governance",
             technologies: "HITL Governance, LangGraph, Python",
             image: "/images/proj-5.svg",
-            description: "Safety-focused interruption patterns that preserve human agency inside complex automated systems, enforcing auditability and control."
+            description: "Human-in-the-loop approval gates for high-risk actions."
         },
         {
             id: 6,
@@ -91,7 +91,7 @@ export const config = {
             category: "Retrieval / RAG",
             technologies: "RAG, Temporal, LangChain, FastAPI",
             image: "/images/proj-6.svg",
-            description: "A Temporal-backed pipeline that durably ingests scattered enterprise documents, indexes them for retrieval, and answers grounded in the source passages - resumable, so a failed run continues instead of reprocessing."
+            description: "Resumable Temporal + RAG ingestion with cited answers."
         }
     ],
     contact: {
@@ -103,13 +103,13 @@ export const config = {
         develop: {
             title: "AGENTIC AI",
             description: "Multi-agent orchestration & governance",
-            details: "Designing state-aware multi-agent systems with LangGraph - supervisor patterns, persistent memory, dynamic tool routing, and HITL governance for auditable, safe autonomous workflows.",
+            details: "Supervisor graphs, checkpointed memory, dynamic routing, and HITL gates.",
             tools: ["LangGraph", "LangChain", "Multi-Agent Systems", "HITL Governance", "State Machines", "Adaptive RAG", "Context Engineering", "Python"]
         },
         design: {
             title: "AI PLATFORM",
             description: "Production AI systems & tooling",
-            details: "Shipping reliable AI platforms with the modern agentic stack - observability, evaluation, model routing, and durable orchestration across distributed services.",
+            details: "Observability, evals, model routing, and durable execution.",
             tools: ["OpenAI Agents SDK", "Vercel AI SDK", "Haystack", "LiteLLM", "Langfuse", "OpenTelemetry", "Temporal", "FastAPI", "Next.js"]
         }
     }

@@ -8,7 +8,7 @@ export const configTR: typeof ConfigEN = {
     fullName: "Mustafa Başar",
     title: "Yapay Zeka Çözüm Mühendisi",
     description:
-      "Ajansal orkestrasyon ve yönetişime odaklanan bir Yapay Zeka Çözüm Mühendisiyim. LangGraph ile durum-farkında çoklu-ajan sistemleri kuruyor, denetlenebilirlik ve güvenlik için insan-döngüde kontroller ekliyor, prompt önbellekleme ve küçük model yönlendirmesiyle token verimliliğini artırıyorum.",
+      "LangGraph, HITL yönetişimi ve verimli model yönlendirmesiyle durum-farkında çoklu-ajan sistemleri kuran Yapay Zeka Çözüm Mühendisi.",
   },
   social: {
     github: "mustafabasar7",
@@ -18,7 +18,7 @@ export const configTR: typeof ConfigEN = {
   about: {
     title: "Hakkımda",
     description:
-      "Üretim seviyesinde otonom sistemlerde uzmanlaşmış bir Yapay Zeka Çözüm Mühendisiyim. Odağım orkestrasyon mantığı - kurumsal ölçekli ajansal iş akışlarında durumu, hafızayı ve çoklu-ajan koordinasyonunu yöneten 'beyin' katmanı. LangGraph ile durum-farkında çoklu-ajan sistemleri tasarlıyor, insan-döngüde yönetişimle denetlenebilirlik ve güvenliği sağlıyor, prompt önbellekleme ve küçük model yönlendirmesiyle maliyeti optimize ediyorum.",
+      "LangGraph ile üretim seviyesinde çoklu-ajan sistemleri kuruyorum — durum-farkında orkestrasyon, insan-döngüde güvenlik ve maliyet odaklı model yönlendirme.",
   },
   experiences: [
     {
@@ -27,7 +27,7 @@ export const configTR: typeof ConfigEN = {
       period: "2023 - Günümüz",
       location: "İstanbul, TR",
       description:
-        "LangGraph tabanlı bir çoklu-ajan ekosistemiyle, 6+ ulusal haber ve yayın markası genelinde etkileşimli bir bilgi katmanı kuruyorum; merkezde yönetişim ve maliyet optimizasyonu var.",
+        "6+ ulusal medya markasında çoklu-ajan bilgi katmanı — ~%65 daha hızlı araştırma, ~%60 daha düşük token maliyeti.",
       responsibilities: [
         "LangGraph çoklu-ajan ekosistemiyle 6+ ulusal haber ve yayın markası genelinde etkileşimli bilgi katmanı kurdum",
         "Durum-farkında ajan orkestrasyonuyla haber odalarında editöryel araştırma ve arama süresini ~%65 kısalttım",
@@ -42,7 +42,7 @@ export const configTR: typeof ConfigEN = {
       period: "2021 - 2023",
       location: "İstanbul, TR",
       description:
-        "Pre-seed bir YZ startup'ında erken mühendis: dağınık dokümanları kaynak göstererek temellendirilmiş cevaplara çeviren dayanıklı RAG hatları kurdum.",
+        "12+ kurumsal kaynakta dayanıklı Temporal + RAG hatları — ~%70 daha az yeniden işleme, ~%90+ doğruluk.",
       responsibilities: [
         "Temporal tabanlı dayanıklı bir RAG ingestion hattı kurdum; resumable çalışmalar hata sonrası yeniden işleme süresini ~%70 azalttı",
         "Kaynaklar arası tutarlılık için ~12 heterojen doküman kaynağını semantik aramayla indeksledim",
@@ -60,7 +60,7 @@ export const configTR: typeof ConfigEN = {
       technologies: "LangGraph, Python, Multi-Agent Systems",
       image: "/images/proj-1.svg",
       description:
-        "Karmaşık görevleri parçalamak için bir şema: merkezi bir süpervizör, uzman işçi düğümlerine görev dağıtır ve sürü genelinde durumu ve sonuçları koordine eder.",
+        "Süpervizör-işçi görev paylaşımı ve durum koordinasyonu.",
     },
     {
       id: 2,
@@ -69,7 +69,7 @@ export const configTR: typeof ConfigEN = {
       technologies: "LangGraph, Python, Adaptive RAG",
       image: "/images/proj-2.svg",
       description:
-        "Sabit bir araç zinciri yerine, gizli bağlam ve kullanıcı niyetine göre her adımı doğru yeteneğe yönlendiren gerçek zamanlı araç seçimi.",
+        "Niyet ve bağlama göre gerçek zamanlı araç yönlendirme.",
     },
     {
       id: 3,
@@ -78,7 +78,7 @@ export const configTR: typeof ConfigEN = {
       technologies: "LangGraph, State Machines, Python",
       image: "/images/proj-3.svg",
       description:
-        "Uzun-soluklu görev yürütmede dayanıklı durum kalıcılığı; böylece ajanlar hafızayı korur ve çok adımlı iş akışlarında temiz biçimde kaldığı yerden devam eder.",
+        "Uzun soluklu iş akışlarında kalıcı hafıza ve durum.",
     },
     {
       id: 4,
@@ -87,7 +87,7 @@ export const configTR: typeof ConfigEN = {
       technologies: "LangGraph, Multi-Agent Systems, Python",
       image: "/images/proj-4.svg",
       description:
-        "Büyük ölçekli merkezi olmayan ajan ekosistemleri için koordinasyon modelleri; hiyerarşik sürülerin işi nasıl böldüğünü ve senkronize ettiğini yapılandırır.",
+        "Ajan sürüleri için paralel görev dağıtımı ve senkronizasyon.",
     },
     {
       id: 5,
@@ -96,7 +96,7 @@ export const configTR: typeof ConfigEN = {
       technologies: "HITL Governance, LangGraph, Python",
       image: "/images/proj-5.svg",
       description:
-        "Karmaşık otomatik sistemlerin içinde insan iradesini koruyan, güvenlik odaklı kesinti desenleri; denetlenebilirliği ve kontrolü zorunlu kılar.",
+        "Kritik aksiyonlar için insan-onaylı güvenlik kapıları.",
     },
     {
       id: 6,
@@ -105,7 +105,7 @@ export const configTR: typeof ConfigEN = {
       technologies: "RAG, Temporal, LangChain, FastAPI",
       image: "/images/proj-6.svg",
       description:
-        "Dağınık kurumsal dokümanları dayanıklı biçimde alıp indeksleyen ve cevabı kaynak pasajlara dayandıran Temporal tabanlı bir hat - resumable, yani çöken bir çalışma baştan işlemek yerine kaldığı yerden devam eder.",
+        "Kaldığı yerden devam eden Temporal + RAG doküman hattı.",
     },
   ],
   contact: {
@@ -118,14 +118,14 @@ export const configTR: typeof ConfigEN = {
       title: "AJANSAL YZ",
       description: "Çoklu-ajan orkestrasyonu ve yönetişim",
       details:
-        "LangGraph ile durum-farkında çoklu-ajan sistemleri tasarlamak - süpervizör desenleri, kalıcı hafıza, dinamik araç yönlendirme ve denetlenebilir, güvenli otonom iş akışları için HITL yönetişimi.",
+        "Süpervizör grafikleri, kalıcı hafıza, dinamik yönlendirme ve HITL kapıları.",
       tools: ["LangGraph", "LangChain", "Multi-Agent Systems", "HITL Governance", "State Machines", "Adaptive RAG", "Context Engineering", "Python"],
     },
     design: {
       title: "YZ PLATFORMU",
       description: "Üretim YZ sistemleri ve araçları",
       details:
-        "Modern ajansal yığınla güvenilir YZ platformları geliştirmek - gözlemlenebilirlik, değerlendirme, model yönlendirme ve dağıtık servisler genelinde dayanıklı orkestrasyon.",
+        "Gözlemlenebilirlik, değerlendirme, model yönlendirme ve dayanıklı yürütme.",
       tools: ["OpenAI Agents SDK", "Vercel AI SDK", "Haystack", "LiteLLM", "Langfuse", "OpenTelemetry", "Temporal", "FastAPI", "Next.js"],
     },
   },
