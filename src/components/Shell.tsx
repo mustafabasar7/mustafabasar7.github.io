@@ -42,6 +42,7 @@ import {
 	useRuntimeInfo,
 	useTrafficConfigData
 } from '@/hooks';
+import { startGuidedTour } from '@/tour';
 
 type PhosphorIconComponent = React.ComponentType<{
 	size?: number;
@@ -52,6 +53,8 @@ type NavItemConfig = {
 	to: string;
 	label: string;
 	icon: PhosphorIconComponent;
+	color?: string;
+	tourId?: string;
 	placeholder?: boolean;
 	groupStart?: boolean;
 	exact?: boolean;
@@ -203,6 +206,15 @@ export function Shell() {
 						)}
 					</div>
 					<div className="topbar-controls">
+						<button
+							className="button"
+							type="button"
+							onClick={() => startGuidedTour(true)}
+							style={{ gap: '6px', height: '34px', padding: '0 12px', fontSize: '13px' }}
+						>
+							<Compass size={17} weight="duotone" style={{ color: 'var(--primary)' }} />
+							Guided Tour
+						</button>
 						{runtime.data?.user && <UserMenu user={runtime.data.user} />}
 						<Tooltip content="Toggle theme">
 							<button
@@ -308,9 +320,15 @@ function navigationGroups(options: {
 		{
 			title: 'Interactive Sandbox',
 			items: [
-				{ to: '/', label: 'Control Panel', icon: Compass },
-				{ to: '/llm/playground', label: 'Live Agent Arena', icon: Sparkle },
-				{ to: '/mcp/playground', label: 'MCP Inspector', icon: TerminalWindow }
+				{ to: '/llm/playground', label: 'Live Agent Arena', icon: Sparkle, color: '#10b981' },
+				{
+					to: '/mcp/playground',
+					label: 'MCP Inspector',
+					icon: TerminalWindow,
+					color: '#38bdf8',
+					tourId: 'nav-mcp-inspector'
+				},
+				{ to: '/overview', label: 'Architecture Guide', icon: Compass, color: '#a78bfa' }
 			]
 		}
 	];
@@ -318,40 +336,52 @@ function navigationGroups(options: {
 		groups.push({
 			title: 'Protocols (A2A & MCP)',
 			items: [
-				{ to: '/traffic/routes', label: 'A2A Agent Mesh', icon: Graph },
-				{ to: '/mcp/servers', label: 'MCP Tool Servers', icon: CubeTransparent },
+				{ to: '/traffic/routes', label: 'A2A Agent Mesh', icon: Graph, color: '#38bdf8' },
+				{ to: '/mcp/servers', label: 'MCP Tool Servers', icon: CubeTransparent, color: '#10b981' },
 				...(options.hasBinds
-					? [{ to: '/traffic/listeners', label: 'Mesh Listeners', icon: Broadcast }]
+					? [{ to: '/traffic/listeners', label: 'Mesh Listeners', icon: Broadcast, color: '#22d3ee' }]
 					: []),
-				{ to: '/traffic/gateways', label: 'Ingress Endpoints', icon: Broadcast },
-				{ to: '/mcp/policies', label: 'MCP Access Policy', icon: LockKey }
+				{ to: '/traffic/gateways', label: 'Ingress Endpoints', icon: Broadcast, color: '#818cf8' },
+				{ to: '/mcp/policies', label: 'MCP Access Policy', icon: LockKey, color: '#f59e0b' }
 			]
 		});
 		groups.push({
 			title: 'Safety & Governance',
 			items: [
-				{ to: '/llm/guardrails', label: 'AI Guardrails', icon: ShieldWarning },
-				{ to: '/llm/policies', label: 'Traffic Policies', icon: ShieldCheck },
-				{ to: '/cel', label: 'CEL Rule Engine', icon: CodeBlock }
+				{
+					to: '/llm/guardrails',
+					label: 'AI Guardrails',
+					icon: ShieldWarning,
+					color: '#f43f5e',
+					tourId: 'nav-guardrails'
+				},
+				{ to: '/llm/policies', label: 'Traffic Policies', icon: ShieldCheck, color: '#10b981' },
+				{ to: '/cel', label: 'CEL Rule Engine', icon: CodeBlock, color: '#a78bfa' }
 			]
 		});
 		groups.push({
 			title: 'Models & Cost Router',
 			items: [
-				{ to: '/llm/models', label: 'Model Router', icon: Cpu },
-				{ to: '/llm/providers', label: 'NIM Providers', icon: Stack },
-				{ to: '/llm/costs', label: 'Cost & Pricing', icon: Wallet },
-				{ to: '/llm/keys', label: 'Scoped Virtual Keys', icon: Fingerprint }
+				{ to: '/llm/models', label: 'Model Router', icon: Cpu, color: '#38bdf8' },
+				{ to: '/llm/providers', label: 'NIM Providers', icon: Stack, color: '#10b981' },
+				{ to: '/llm/costs', label: 'Cost & Pricing', icon: Wallet, color: '#fbbf24' },
+				{ to: '/llm/keys', label: 'Scoped Virtual Keys', icon: Fingerprint, color: '#ec4899' }
 			]
 		});
 		groups.push({
 			title: 'Telemetry & Config',
 			items: [
-				{ to: '/llm/logs', label: 'Live Trace Logs', icon: Pulse },
-				{ to: '/llm/analytics', label: 'Spend Analytics', icon: ChartLineUp },
-				{ to: '/raw-config', label: 'YAML Manifest', icon: FileCode, exact: true },
-				{ to: '/llm/client-setup', label: 'SDK Integration', icon: PlugsConnected },
-				{ to: '/settings', label: 'System Settings', icon: GearSix }
+				{
+					to: '/llm/logs',
+					label: 'Live Trace Logs',
+					icon: Pulse,
+					color: '#10b981',
+					tourId: 'nav-logs'
+				},
+				{ to: '/llm/analytics', label: 'Spend Analytics', icon: ChartLineUp, color: '#38bdf8' },
+				{ to: '/raw-config', label: 'YAML Manifest', icon: FileCode, color: '#fbbf24', exact: true },
+				{ to: '/llm/client-setup', label: 'SDK Integration', icon: PlugsConnected, color: '#a78bfa' },
+				{ to: '/settings', label: 'System Settings', icon: GearSix, color: '#94a3b8' }
 			]
 		});
 	} else {
@@ -438,6 +468,8 @@ function NavItem(props: {
 	to: string;
 	label: string;
 	icon: PhosphorIconComponent;
+	color?: string;
+	tourId?: string;
 	currentPath: string;
 	placeholder?: boolean;
 	groupStart?: boolean;
@@ -446,14 +478,29 @@ function NavItem(props: {
 	const Icon = props.icon;
 	const navigate = useNavigate();
 	const active = props.placeholder ? false : navItemActive(props, props.currentPath);
+	const iconBadge = (
+		<span
+			className="nav-icon-badge"
+			style={
+				props.color
+					? ({
+							'--icon-color': props.color
+						} as React.CSSProperties)
+					: undefined
+			}
+		>
+			<Icon size={16} weight={active ? 'fill' : 'duotone'} />
+		</span>
+	);
 	if (props.placeholder) {
 		return (
 			<button
 				type="button"
 				className={props.groupStart ? 'nav-item nav-group-start' : 'nav-item'}
+				data-tour={props.tourId}
 				onClick={() => void navigate({ to: props.to })}
 			>
-				<Icon size={18} weight="duotone" />
+				{iconBadge}
 				<span>{props.label}</span>
 			</button>
 		);
@@ -461,9 +508,10 @@ function NavItem(props: {
 	return (
 		<Link
 			to={props.to}
+			data-tour={props.tourId}
 			className={`${active ? 'nav-item active' : 'nav-item'}${props.groupStart ? ' nav-group-start' : ''}`}
 		>
-			<Icon size={18} weight={active ? 'fill' : 'duotone'} />
+			{iconBadge}
 			<span>{props.label}</span>
 		</Link>
 	);

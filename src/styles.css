@@ -264,6 +264,74 @@ a {
 	font-weight: 600;
 }
 
+.nav-icon-badge {
+	 --icon-color: var(--primary);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 24px;
+	height: 24px;
+	flex-shrink: 0;
+	border-radius: 6px;
+	background: color-mix(in srgb, var(--icon-color) 16%, transparent);
+	border: 1px solid color-mix(in srgb, var(--icon-color) 32%, transparent);
+	color: var(--icon-color);
+	transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.nav-item:hover .nav-icon-badge,
+.nav-item.active .nav-icon-badge {
+	background: color-mix(in srgb, var(--icon-color) 26%, transparent);
+	transform: scale(1.05);
+}
+
+.driver-popover.cp-tour-popover {
+	background: var(--surface) !important;
+	color: var(--text) !important;
+	border: 1px solid color-mix(in srgb, var(--primary) 45%, var(--line)) !important;
+	border-radius: 12px !important;
+	box-shadow: 0 20px 44px rgb(0 0 0 / 0.65) !important;
+	padding: 18px !important;
+	max-width: 360px !important;
+	font-family: var(--font-sans) !important;
+}
+
+.driver-popover.cp-tour-popover .driver-popover-title {
+	font-size: 15px !important;
+	font-weight: 700 !important;
+	color: var(--primary-strong) !important;
+	margin-bottom: 6px !important;
+}
+
+.driver-popover.cp-tour-popover .driver-popover-description {
+	font-size: 13.5px !important;
+	line-height: 1.55 !important;
+	color: var(--text) !important;
+}
+
+.driver-popover.cp-tour-popover .driver-popover-progress-text {
+	color: var(--muted) !important;
+	font-size: 12px !important;
+}
+
+.driver-popover.cp-tour-popover .driver-popover-next-btn,
+.driver-popover.cp-tour-popover .driver-popover-prev-btn {
+	background: var(--surface-2) !important;
+	color: var(--text) !important;
+	border: 1px solid var(--line-strong) !important;
+	border-radius: 7px !important;
+	text-shadow: none !important;
+	font-size: 12.5px !important;
+	font-weight: 600 !important;
+	padding: 6px 12px !important;
+}
+
+.driver-popover.cp-tour-popover .driver-popover-next-btn {
+	background: var(--primary) !important;
+	border-color: var(--primary) !important;
+	color: #04130e !important;
+}
+
 .sidebar-links {
 	display: flex;
 	align-items: center;

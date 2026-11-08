@@ -67,6 +67,14 @@ const appRoute = createRoute({
 const indexRoute = createRoute({
 	getParentRoute: () => appRoute,
 	path: '/',
+	beforeLoad: () => {
+		throw redirect({ to: '/llm/playground' });
+	}
+});
+
+const overviewRoute = createRoute({
+	getParentRoute: () => appRoute,
+	path: '/overview',
 	component: HomePage
 });
 
@@ -248,6 +256,7 @@ const router = createRouter({
 		loginRoute,
 		appRoute.addChildren([
 			indexRoute,
+			overviewRoute,
 			dumpPoliciesRoute,
 			llmGetStartedRoute,
 			modelsRoute,

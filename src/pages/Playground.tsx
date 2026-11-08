@@ -24,6 +24,7 @@ import { type ReactNode, useEffect, useMemo, useState } from 'react';
 
 import { PLAYGROUND_PRESETS } from '@/api/browserGateway';
 import { sendChatCompletion, sendMcpJsonRpc } from '@/api/playgroundApi';
+import { startGuidedTour } from '@/tour';
 import { claudeSubscriptionWarning } from '@/claudeSubscription';
 import {
 	Dropdown,
@@ -168,7 +169,7 @@ export function PlaygroundPage() {
 	const [apiKey, setApiKey] = useState('');
 	const [system, setSystem] = useState('You are a concise assistant.');
 	const [systemOpen, setSystemOpen] = useState(false);
-	const [prompt, setPrompt] = useState('');
+	const [prompt, setPrompt] = useState<string>(PLAYGROUND_PRESETS[0].prompt);
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 	const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState(false);
@@ -182,6 +183,8 @@ export function PlaygroundPage() {
 
 	useEffect(() => {
 		for (const key of legacySecretStorageKeys) localStorage.removeItem(key);
+		const timer = window.setTimeout(() => startGuidedTour(false), 550);
+		return () => window.clearTimeout(timer);
 	}, []);
 
 	const savedModelExists = modelOptions.some(item => item.value === model);
@@ -674,7 +677,7 @@ export function PlaygroundPage() {
 							)}
 						</div>
 						{mcpServerCount > 0 ? (
-							<div className="playground-tool-cell">
+							<div className="playground-tool-cell" id="tour-mcp-toggle">
 								<label className="config-option-row">
 									<input
 										type="checkbox"
@@ -735,19 +738,23 @@ export function PlaygroundPage() {
 							</div>
 						) : null}
 					</div>
-					<div className="button-row" style={{ flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}>
+					<div
+						id="tour-presets"
+						className="button-row"
+						style={{ flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}
+					>
 						{PLAYGROUND_PRESETS.map(preset => {
 							const presetIcon =
 								preset.id === 'a2a' ? (
-									<Graph size={17} weight="duotone" style={{ color: 'var(--info)' }} />
+									<Graph size={18} weight="duotone" style={{ color: '#38bdf8' }} />
 								) : preset.id === 'mcp' ? (
-									<CubeTransparent size={17} weight="duotone" style={{ color: 'var(--primary)' }} />
+									<CubeTransparent size={18} weight="duotone" style={{ color: '#10b981' }} />
 								) : preset.id === 'jailbreak' ? (
-									<ShieldWarning size={17} weight="duotone" style={{ color: 'var(--bad)' }} />
+									<ShieldWarning size={18} weight="duotone" style={{ color: '#f43f5e' }} />
 								) : preset.id === 'pii' ? (
-									<Fingerprint size={17} weight="duotone" style={{ color: 'var(--bad)' }} />
+									<Fingerprint size={18} weight="duotone" style={{ color: '#ec4899' }} />
 								) : (
-									<Lightning size={17} weight="duotone" style={{ color: 'var(--warn)' }} />
+									<Lightning size={18} weight="duotone" style={{ color: '#fbbf24' }} />
 								);
 							return (
 								<button
@@ -779,7 +786,7 @@ export function PlaygroundPage() {
 							placeholder="Ask a test question..."
 						/>
 					</Field>
-					<div className="button-row">
+					<div className="button-row" id="tour-send-row">
 						<button
 							className="button primary"
 							type="button"
