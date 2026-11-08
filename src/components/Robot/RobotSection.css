@@ -129,6 +129,7 @@
 
 .robot-task-form input {
   flex: 1;
+  min-width: 0;
   padding: 0.85rem 1.1rem;
   border-radius: 999px;
   border: 1.5px solid rgba(194, 164, 255, 0.3);
@@ -173,13 +174,18 @@
 }
 
 .robot-chip {
-  padding: 0.5rem 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
   border-radius: 999px;
   border: 1.5px solid rgba(157, 123, 255, 0.4);
   background: transparent;
   color: #c8b9ff;
   font-size: 0.85rem;
   font-weight: 600;
+  line-height: 1.25;
+  text-align: center;
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
 }
@@ -361,7 +367,7 @@
     text-align: center;
   }
   .robot-controls { padding: 0 var(--gutter); }
-  .robot-chip { min-height: 44px; padding: 0.55rem 0.9rem; font-size: 0.82rem; }
+  .robot-chip { padding: 0.5rem 0.85rem; font-size: 0.8rem; }
   .robot-chat { max-height: 280px; padding: 1rem; }
   .robot-msg-name { font-size: 0.86rem; }
   .robot-status, .robot-msg-task { font-size: 0.75rem; }

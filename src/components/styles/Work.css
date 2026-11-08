@@ -17,9 +17,12 @@
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 28px;
+  justify-content: center;
+  gap: clamp(12px, 2vw, 22px);
   margin-top: 14px;
-  padding: 38px 68px;
+  padding: clamp(14px, 2vw, 24px) clamp(22px, 3.2vw, 44px);
+  box-sizing: border-box;
+  max-width: 100%;
   border-radius: 999px;
   text-decoration: none;
   color: #1a1430;
@@ -52,25 +55,27 @@
 .work-cta-text {
   display: flex;
   flex-direction: column;
-  line-height: 1.15;
+  line-height: 1.2;
 }
 
 .work-cta-text strong {
-  font-size: 38px;
+  font-size: clamp(1.1rem, 2.1vw, 1.85rem);
   font-weight: 800;
   letter-spacing: 0.01em;
 }
 
 .work-cta-text em {
-  font-size: 19px;
+  font-size: clamp(0.8rem, 1.2vw, 1.05rem);
   font-style: normal;
   font-weight: 600;
   opacity: 0.85;
 }
 
 .work-cta-arrow {
-  font-size: 44px;
+  font-size: clamp(1.4rem, 2.4vw, 2.2rem);
   font-weight: 800;
+  line-height: 1;
+  flex-shrink: 0;
   transition: transform 0.2s ease;
 }
 
@@ -191,6 +196,8 @@
 
 .work-image-in {
   position: relative;
+  display: block;
+  width: 100%;
 }
 
 .work-link {
@@ -230,8 +237,13 @@
 }
 
 .work-image img {
+  width: 100%;
+  height: auto;
   max-width: 100%;
   max-height: 350px;
+  object-fit: contain;
+  display: block;
+  border-radius: 10px;
 }
 
 @media only screen and (max-height: 900px) {
@@ -361,16 +373,20 @@
 }
 
 .see-all-btn {
-  display: inline-block;
-  padding: 15px 35px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 28px;
   min-height: 44px;
   box-sizing: border-box;
-  font-size: 16px;
-  font-weight: 500;
+  line-height: 1.2;
+  font-size: 15px;
+  font-weight: 600;
   color: #000;
   background: var(--accentColor);
-  border-radius: 30px;
+  border-radius: 999px;
   text-decoration: none;
+  text-align: center;
   transition: all 0.3s ease;
   margin-top: 10px;
 }

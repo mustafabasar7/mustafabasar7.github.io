@@ -11,9 +11,7 @@
   .landing-section,
   .landing-container {
     height: auto !important;
-    /* Keep the first touch from resizing the hero as mobile browser chrome
-       expands/collapses. The small viewport is stable for the whole visit. */
-    min-height: 100svh;
+    min-height: auto;
     max-width: 100vw;
     box-sizing: border-box;
     display: flex;
@@ -23,7 +21,7 @@
   }
 
   .landing-container {
-    padding: 4.75rem var(--gutter) var(--space-lg);
+    padding: 5.5rem var(--gutter) 1.5rem;
   }
 
   /* Fix spacing between name and subtitle */

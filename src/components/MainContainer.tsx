@@ -43,7 +43,7 @@ const MainContainer = ({ children }: PropsWithChildren) => {
       <SocialIcons />
       {tier === "desktop" && children}
       <div className="container-main">
-        <Landing>{tier === "phone" ? children : null}</Landing>
+        <Landing />
         {ORDER[tier].map((id) => (
           <Fragment key={id}>{SECTIONS[id]()}</Fragment>
         ))}

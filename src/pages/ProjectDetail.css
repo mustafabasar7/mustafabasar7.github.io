@@ -336,6 +336,7 @@
 
 .pd-input {
   flex: 1;
+  min-width: 0;
   resize: none;
   overflow: hidden; /* kill the stray internal scrollbar from a long placeholder */
   font-family: inherit;
@@ -527,16 +528,15 @@
   }
 }
 
-/* Phone: >= 44px tap targets and no horizontal overflow from long mono lines. */
+/* Phone: clean tap targets and no horizontal overflow from long mono lines. */
 @media (max-width: 768px) {
-  .pd-back { display: inline-flex; align-items: center; min-height: 44px; }
-  .pd-nav-item { min-height: 44px; box-sizing: border-box; }
-  .pd-scrub-btn { width: 44px; height: 44px; }
-  .pd-scrub-speed { min-height: 44px; min-width: 44px; }
-  .pd-chip { min-height: 44px; }
-  .pd-run { min-height: 44px; }
-  .pd-input { min-height: 44px; font-size: 1rem; } /* >=16px avoids iOS zoom-on-focus */
-  .pd-chat-foot { flex-wrap: wrap; }
+  .pd-back { display: inline-flex; align-items: center; }
+  .pd-nav-item { box-sizing: border-box; }
+  .pd-scrub-btn { width: 38px; height: 38px; }
+  .pd-scrub-speed { min-height: 38px; min-width: 38px; }
+  .pd-chip { line-height: 1.35; border-radius: 14px; padding: 0.45rem 0.75rem; }
+  .pd-run { display: inline-flex; align-items: center; justify-content: center; min-height: 42px; }
+  .pd-input { min-height: 42px; font-size: 1rem; } /* >=16px avoids iOS zoom-on-focus */
   .pd-term-line, .pd-doc-line { overflow-wrap: anywhere; }
   .pd-panel, .pd-stage { min-width: 0; max-width: 100%; }
 }
