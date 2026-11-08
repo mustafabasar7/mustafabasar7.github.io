@@ -1,33 +1,34 @@
 import { Link, Outlet, useNavigate, useRouterState } from '@tanstack/react-router';
 import {
-	BarChart3,
-	Bolt,
-	Bot,
-	Boxes,
-	Braces,
-	Cable,
+	Activity,
+	Binary,
+	Blocks,
 	ChevronDown,
 	ChevronRight,
-	Coins,
-	FileCode2,
+	Code2,
+	Cog,
+	Compass,
+	Cpu,
+	Fingerprint,
 	GitFork,
 	Globe,
-	Home,
-	KeyRound,
+	Layers,
+	LineChart,
+	Lock,
 	LogOut,
 	Menu,
 	MessageSquarePlus,
 	Moon,
-	Network,
-	Play,
-	Route,
-	ScrollText,
-	Server,
-	Shield,
+	Plug,
+	Radar,
+	ShieldAlert,
 	ShieldCheck,
-	SlidersHorizontal,
+	Sparkles,
 	Sun,
-	UserRound
+	Terminal,
+	UserRound,
+	Wallet,
+	Workflow
 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
@@ -300,129 +301,66 @@ function navigationGroups(options: {
 }): ReadonlyArray<{ title: string; items: readonly NavItemConfig[] }> {
 	const groups: Array<{ title: string; items: readonly NavItemConfig[] }> = [
 		{
-			title: 'Gateway',
-			items: [{ to: '/', label: 'Home', icon: Home }]
+			title: 'Interactive Sandbox',
+			items: [
+				{ to: '/', label: 'Control Plane', icon: Compass },
+				{ to: '/llm/playground', label: 'Live Agent Arena', icon: Sparkles },
+				{ to: '/mcp/playground', label: 'MCP Inspector', icon: Terminal }
+			]
 		}
 	];
 	if (!options.dumpMode) {
 		groups.push({
-			title: 'LLM',
-			items: options.hasLlm
-				? [
-						{ to: '/llm/models', label: 'Models', icon: Bot },
-						{ to: '/llm/providers', label: 'Providers', icon: Boxes },
-
-						{
-							to: '/llm/policies',
-							label: 'Policies',
-							icon: Bolt,
-							groupStart: true
-						},
-						{ to: '/llm/guardrails', label: 'Guardrails', icon: Shield },
-						{ to: '/llm/keys', label: 'Virtual API Keys', icon: KeyRound },
-						{ to: '/llm/costs', label: 'Costs', icon: Coins },
-
-						{
-							to: '/llm/analytics',
-							label: 'Analytics',
-							icon: BarChart3,
-							groupStart: true
-						},
-						{ to: '/llm/logs', label: 'Logs', icon: ScrollText },
-
-						{
-							to: '/llm/client-setup',
-							label: 'Client Setup',
-							icon: Cable,
-							groupStart: true
-						},
-						{ to: '/llm/playground', label: 'Chat Playground', icon: Play }
-					]
-				: [
-						{
-							to: '/llm/get-started',
-							label: 'Get started',
-							icon: Bot,
-							placeholder: true
-						}
-					]
+			title: 'Protocols (A2A & MCP)',
+			items: [
+				{ to: '/traffic/routes', label: 'A2A Agent Mesh', icon: Workflow },
+				{ to: '/mcp/servers', label: 'MCP Tool Servers', icon: Blocks },
+				...(options.hasBinds
+					? [{ to: '/traffic/listeners', label: 'Mesh Listeners', icon: Radar }]
+					: []),
+				{ to: '/traffic/gateways', label: 'Ingress Gateways', icon: Radar },
+				{ to: '/mcp/policies', label: 'MCP Access Policy', icon: Lock }
+			]
 		});
 		groups.push({
-			title: 'MCP',
-			items: options.hasMcp
-				? [
-						{ to: '/mcp/servers', label: 'Servers', icon: Server },
-						{ to: '/mcp/policies', label: 'Policies', icon: ShieldCheck },
-						{ to: '/mcp/playground', label: 'Tool Playground', icon: Play }
-					]
-				: [
-						{
-							to: '/mcp/get-started',
-							label: 'Get started',
-							icon: Server,
-							placeholder: true
-						}
-					]
+			title: 'Safety & Governance',
+			items: [
+				{ to: '/llm/guardrails', label: 'AI Guardrails', icon: ShieldAlert },
+				{ to: '/llm/policies', label: 'Traffic Policies', icon: ShieldCheck },
+				{ to: '/cel', label: 'CEL Rule Engine', icon: Binary }
+			]
+		});
+		groups.push({
+			title: 'Models & Cost Router',
+			items: [
+				{ to: '/llm/models', label: 'Model Router', icon: Cpu },
+				{ to: '/llm/providers', label: 'NIM Providers', icon: Layers },
+				{ to: '/llm/costs', label: 'Cost & Pricing', icon: Wallet },
+				{ to: '/llm/keys', label: 'Scoped Virtual Keys', icon: Fingerprint }
+			]
+		});
+		groups.push({
+			title: 'Telemetry & Config',
+			items: [
+				{ to: '/llm/logs', label: 'Live Trace Logs', icon: Activity },
+				{ to: '/llm/analytics', label: 'Spend Analytics', icon: LineChart },
+				{ to: '/raw-config', label: 'YAML Manifest', icon: Code2, exact: true },
+				{ to: '/llm/client-setup', label: 'SDK Integration', icon: Plug },
+				{ to: '/settings', label: 'System Settings', icon: Cog }
+			]
 		});
 	} else {
 		groups.push({
-			title: 'LLM',
+			title: 'Protocols & Models',
 			items: [
-				{ to: '/llm/models', label: 'Models', icon: Bot },
-				{ to: '/llm/client-setup', label: 'Client Setup', icon: Cable }
+				{ to: '/llm/models', label: 'Model Router', icon: Cpu },
+				{ to: '/traffic/routes', label: 'A2A Agent Mesh', icon: Workflow },
+				{ to: '/traffic/listeners', label: 'Mesh Listeners', icon: Radar },
+				{ to: '/traffic/policies', label: 'Traffic Policies', icon: ShieldCheck },
+				{ to: '/cel', label: 'CEL Rule Engine', icon: Binary }
 			]
 		});
 	}
-	groups.push({
-		title: 'Traffic',
-		items: options.dumpMode
-			? [
-					{ to: '/traffic/listeners', label: 'Listeners', icon: Network },
-					{ to: '/traffic/routes', label: 'Routes', icon: Route },
-					{ to: '/traffic/policies', label: 'Policies', icon: ShieldCheck }
-				]
-			: options.hasTraffic
-				? [
-						{ to: '/traffic/gateways', label: 'Gateways', icon: Network },
-						...(options.hasBinds
-							? [
-									{
-										to: '/traffic/listeners',
-										label: 'Listeners',
-										icon: Network
-									}
-								]
-							: []),
-						{ to: '/traffic/routes', label: 'Routes', icon: Route }
-					]
-				: [
-						{
-							to: '/traffic/get-started',
-							label: 'Get started',
-							icon: Network,
-							placeholder: true
-						}
-					]
-	});
-	groups.push({
-		title: 'Tools',
-		items: options.dumpMode
-			? [{ to: '/cel', label: 'CEL Playground', icon: Braces }]
-			: [
-					{ to: '/cel', label: 'CEL Playground', icon: Braces },
-					{
-						to: '/raw-config',
-						label: 'Raw Configuration',
-						icon: FileCode2,
-						exact: true
-					},
-					{
-						to: '/settings',
-						label: 'Settings',
-						icon: SlidersHorizontal
-					}
-				]
-	});
 	return groups;
 }
 

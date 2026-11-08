@@ -145,7 +145,7 @@ a {
 
 .app-shell {
 	display: grid;
-	grid-template-columns: 220px minmax(0, 1fr);
+	grid-template-columns: 244px minmax(0, 1fr);
 	min-height: 100vh;
 }
 
@@ -154,14 +154,14 @@ a {
 	inset: 0 auto 0 0;
 	display: flex;
 	flex-direction: column;
-	width: 220px;
+	width: 244px;
 	height: 100dvh;
 	box-sizing: border-box;
 	overflow: hidden;
 	overscroll-behavior: contain;
 	border-right: 1px solid var(--line);
-	background: var(--surface);
-	padding: 14px;
+	background: linear-gradient(180deg, var(--surface) 0%, var(--bg) 100%);
+	padding: 16px 14px;
 	scrollbar-gutter: stable;
 }
 
@@ -210,11 +210,11 @@ a {
 }
 
 .nav-section {
-	margin: 9px 8px 2px;
-	color: var(--muted);
-	font-size: 11px;
+	margin: 14px 10px 4px;
+	color: var(--accent);
+	font-size: 10.5px;
 	font-weight: 700;
-	letter-spacing: 0;
+	letter-spacing: 0.06em;
 	text-transform: uppercase;
 }
 
@@ -223,15 +223,16 @@ a {
 	align-items: center;
 	gap: 10px;
 	width: 100%;
-	min-height: 28px;
-	border: 0;
-	border-radius: 6px;
+	min-height: 32px;
+	border: 1px solid transparent;
+	border-radius: 8px;
 	background: transparent;
-	padding: 0 9px;
+	padding: 0 10px;
 	color: var(--muted);
 	font: inherit;
-	font-size: 14px;
+	font-size: 13.5px;
 	text-align: left;
+	transition: all 0.15s ease;
 }
 
 .nav-item.nav-group-start {
@@ -258,8 +259,9 @@ a {
 .nav-item.active,
 .nav-item.active:hover {
 	background: var(--accent-soft);
+	border-color: color-mix(in srgb, var(--primary) 35%, transparent);
 	color: var(--primary-strong);
-	font-weight: 500;
+	font-weight: 600;
 }
 
 .sidebar-links {
