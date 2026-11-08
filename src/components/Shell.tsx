@@ -84,9 +84,7 @@ export function Shell() {
 		enabled: Boolean(mode.data && mode.data.mode !== 'dump')
 	});
 	const [theme, setTheme] = useState(
-		() =>
-			localStorage.getItem('theme') ??
-			(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+		() => localStorage.getItem('mb_theme') ?? 'dark'
 	);
 	const [mobileNavOpen, setMobileNavOpen] = useState(false);
 	const [mobileNavPathname, setMobileNavPathname] = useState(router.location.pathname);
@@ -207,7 +205,7 @@ export function Shell() {
 								aria-label="Toggle theme"
 								onClick={() => {
 									const next = theme === 'dark' ? 'light' : 'dark';
-									localStorage.setItem('theme', next);
+									localStorage.setItem('mb_theme', next);
 									setTheme(next);
 								}}
 							>

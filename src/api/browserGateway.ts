@@ -3,9 +3,14 @@ import { mcpSettingsFields } from '@/config';
 
 type AnyRecord = Record<string, unknown>;
 
-const STORAGE_CONFIG_KEY = 'mb_gateway_config_v1';
-const STORAGE_RAW_KEY = 'mb_gateway_raw_v1';
-const STORAGE_LOGS_KEY = 'mb_gateway_logs_v1';
+const STORAGE_CONFIG_KEY = 'mb_gateway_config_v2';
+const STORAGE_RAW_KEY = 'mb_gateway_raw_v2';
+const STORAGE_LOGS_KEY = 'mb_gateway_logs_v2';
+
+// Client-side rate limiter (max 15 requests per 60s window)
+const requestTimestamps: number[] = [];
+const RATE_LIMIT_WINDOW_MS = 60_000;
+const RATE_LIMIT_MAX_REQ = 15;
 
 // NVIDIA NIM endpoint — API key is read from .env.local (VITE_NVIDIA_API_KEY) or UI input, never hardcoded in git.
 const ENV_NVIDIA_API_KEY = (import.meta.env.VITE_NVIDIA_API_KEY as string | undefined) ?? '';
@@ -220,15 +225,39 @@ export function defaultGatewayConfig(): AnyRecord {
 		mcp: {
 			targets: [
 				{
-					name: 'enterprise-mcp-suite',
+					name: 'a2a-protocol-bridge',
 					mcp: {
-						host: 'http://localhost:8080/mcp'
+						host: 'http://localhost:8080/mcp/a2a'
 					}
 				},
 				{
-					name: 'a2a-discovery-bridge',
+					name: 'enterprise-rag-archive',
 					mcp: {
-						host: 'http://localhost:8080/mcp/a2a'
+						host: 'http://localhost:8080/mcp/rag'
+					}
+				},
+				{
+					name: 'mcp-server-memory',
+					mcp: {
+						host: 'http://localhost:8080/mcp/memory'
+					}
+				},
+				{
+					name: 'mcp-server-sequential-thinking',
+					mcp: {
+						host: 'http://localhost:8080/mcp/sequentialthinking'
+					}
+				},
+				{
+					name: 'mcp-server-git',
+					mcp: {
+						host: 'http://localhost:8080/mcp/git'
+					}
+				},
+				{
+					name: 'mcp-server-fetch',
+					mcp: {
+						host: 'http://localhost:8080/mcp/fetch'
 					}
 				}
 			],
@@ -307,6 +336,21 @@ const MCP_TOOLS = [
 		}
 	},
 	{
+		name: 'a2a_discover_agent_card',
+		description:
+			'Fetch and validate a remote agent /.well-known/agent.json AgentCard capability manifest.',
+		inputSchema: {
+			type: 'object',
+			properties: {
+				agentDomain: {
+					type: 'string',
+					description: 'Internal mesh hostname (e.g. research.agents.internal)'
+				}
+			},
+			required: ['agentDomain']
+		}
+	},
+	{
 		name: 'search_media_archive',
 		description:
 			'Hybrid vector + BM25 search across 12,000+ indexed enterprise documents and newsroom archives.',
@@ -323,6 +367,72 @@ const MCP_TOOLS = [
 				}
 			},
 			required: ['query']
+		}
+	},
+	{
+		name: 'read_graph',
+		description:
+			'[Official @modelcontextprotocol/server-memory] Read the entire entity-relation knowledge graph.',
+		inputSchema: {
+			type: 'object',
+			properties: {}
+		}
+	},
+	{
+		name: 'search_nodes',
+		description:
+			'[Official @modelcontextprotocol/server-memory] Search for nodes in the knowledge graph based on a query.',
+		inputSchema: {
+			type: 'object',
+			properties: {
+				query: {
+					type: 'string',
+					description: 'The search query to match against entity names, types, and observation content'
+				}
+			},
+			required: ['query']
+		}
+	},
+	{
+		name: 'sequentialthinking',
+		description:
+			'[Official @modelcontextprotocol/server-sequential-thinking] Dynamic and reflective problem-solving through structured thought steps.',
+		inputSchema: {
+			type: 'object',
+			properties: {
+				thought: {
+					type: 'string',
+					description: 'Your current thinking step'
+				},
+				thoughtNumber: {
+					type: 'number',
+					description: 'Current thought number (e.g. 1)'
+				},
+				totalThoughts: {
+					type: 'number',
+					description: 'Estimated total thoughts needed (e.g. 3)'
+				},
+				nextThoughtNeeded: {
+					type: 'boolean',
+					description: 'Whether another thought step is needed'
+				}
+			},
+			required: ['thought', 'thoughtNumber', 'totalThoughts', 'nextThoughtNeeded']
+		}
+	},
+	{
+		name: 'git_status',
+		description:
+			'[Official @modelcontextprotocol/server-git] Shows the working tree status and active branch telemetry.',
+		inputSchema: {
+			type: 'object',
+			properties: {
+				repo_path: {
+					type: 'string',
+					description: 'Path to Git repository'
+				}
+			},
+			required: ['repo_path']
 		}
 	},
 	{
@@ -674,6 +784,80 @@ function executeMcpToolCall(name: string, args: AnyRecord) {
 						'Pre-execution regex + PII redaction filters and LangGraph interrupt() gates prevented 100% of unauthorized external publish attempts across 6 national brands.'
 				}
 			]
+		};
+	}
+	if (name === 'a2a_discover_agent_card') {
+		const domain = stringValue(args.agentDomain) || 'research.agents.internal';
+		return {
+			name: domain.split('.')[0],
+			url: `https://${domain}/a2a`,
+			version: '1.0.0',
+			protocolVersion: '0.2.1',
+			capabilities: {
+				streaming: true,
+				pushNotifications: false,
+				stateTransitionHistory: true
+			},
+			skills: [
+				{
+					id: 'hybrid-rag-research',
+					name: 'Grounded Document Synthesis',
+					tags: ['rag', 'citations', 'temporal']
+				},
+				{
+					id: 'hitl-governance-check',
+					name: 'Compliance Verification',
+					tags: ['guardrails', 'cel', 'hitl']
+				}
+			]
+		};
+	}
+	if (name === 'read_graph' || name === 'search_nodes') {
+		return {
+			server: '@modelcontextprotocol/server-memory',
+			entities: [
+				{
+					name: 'Enterprise_Control_Plane',
+					entityType: 'Architecture',
+					observations: [
+						'Routes simple tasks to Nemotron-3.5-Bolt-E4B SLM (~60% lower token cost)',
+						'Enforces pre-execution PII & Prompt-Injection guardrails',
+						'Connects 6 official MCP servers and 3 A2A mesh agents'
+					]
+				},
+				{
+					name: 'FactCheck_Agent',
+					entityType: 'A2A_Peer',
+					observations: [
+						'Discovered via /.well-known/agent.json',
+						'Maintains 96.4% citation grounding confidence across 12,480 indexed docs'
+					]
+				}
+			],
+			relations: [
+				{
+					from: 'Enterprise_Control_Plane',
+					to: 'FactCheck_Agent',
+					relationType: 'DELEGATES_VIA_A2A'
+				}
+			]
+		};
+	}
+	if (name === 'sequentialthinking') {
+		return {
+			server: '@modelcontextprotocol/server-sequential-thinking',
+			thoughtNumber: Number(args.thoughtNumber ?? 1),
+			totalThoughts: Number(args.totalThoughts ?? 3),
+			nextThoughtNeeded: Boolean(args.nextThoughtNeeded ?? false),
+			status: 'recorded_in_reasoning_trace'
+		};
+	}
+	if (name === 'git_status') {
+		return {
+			server: '@modelcontextprotocol/server-git',
+			branch: 'main',
+			clean: true,
+			lastCommit: 'Deploy AI Control Plane UI (A2A, MCP, Guardrails, Cost Router)'
 		};
 	}
 	return {
@@ -1092,6 +1276,23 @@ export function installBrowserGateway() {
 		}
 
 		if (path.endsWith('/v1/chat/completions')) {
+			const nowMs = Date.now();
+			while (requestTimestamps.length > 0 && nowMs - requestTimestamps[0] > RATE_LIMIT_WINDOW_MS) {
+				requestTimestamps.shift();
+			}
+			if (requestTimestamps.length >= RATE_LIMIT_MAX_REQ) {
+				return new Response(
+					JSON.stringify({
+						error: {
+							message: 'Rate limit exceeded (max 15 requests/minute). Please wait a moment.',
+							type: 'rate_limit_exceeded',
+							code: 429
+						}
+					}),
+					{ status: 429, headers: { 'Content-Type': 'application/json' } }
+				);
+			}
+			requestTimestamps.push(nowMs);
 			const reqBody = parseBody();
 			const messages = array(reqBody.messages) as Array<Record<string, unknown>>;
 			const startedAt = new Date();
