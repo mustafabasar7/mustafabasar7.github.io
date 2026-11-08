@@ -1,17 +1,22 @@
 import { useMutation } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
 import {
+	Blocks,
 	Bot,
 	Braces,
 	ChevronDown,
 	Clock3,
+	Fingerprint,
 	GitBranch,
 	Hash,
 	KeyRound,
 	Loader2,
 	Send,
+	ShieldAlert,
 	TextCursorInput,
-	User
+	User,
+	Workflow,
+	Zap
 } from 'lucide-react';
 import { type ReactNode, useEffect, useMemo, useState } from 'react';
 
@@ -729,19 +734,34 @@ export function PlaygroundPage() {
 						) : null}
 					</div>
 					<div className="button-row" style={{ flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}>
-						{PLAYGROUND_PRESETS.map(preset => (
-							<button
-								key={preset.label}
-								className="button"
-								type="button"
-								onClick={() => {
-									setPrompt(preset.prompt);
-									setMcpEnabled(preset.enableMcp);
-								}}
-							>
-								{preset.label}
-							</button>
-						))}
+						{PLAYGROUND_PRESETS.map(preset => {
+							const presetIcon =
+								preset.id === 'a2a' ? (
+									<Workflow size={15} style={{ color: 'var(--info)' }} />
+								) : preset.id === 'mcp' ? (
+									<Blocks size={15} style={{ color: 'var(--primary)' }} />
+								) : preset.id === 'jailbreak' ? (
+									<ShieldAlert size={15} style={{ color: 'var(--bad)' }} />
+								) : preset.id === 'pii' ? (
+									<Fingerprint size={15} style={{ color: 'var(--bad)' }} />
+								) : (
+									<Zap size={15} style={{ color: 'var(--warn)' }} />
+								);
+							return (
+								<button
+									key={preset.id}
+									className="button"
+									type="button"
+									onClick={() => {
+										setPrompt(preset.prompt);
+										setMcpEnabled(preset.enableMcp);
+									}}
+								>
+									{presetIcon}
+									{preset.label}
+								</button>
+							);
+						})}
 					</div>
 					<Field label="User message">
 						<textarea
