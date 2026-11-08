@@ -5,6 +5,7 @@ import { AGENTS, streamAgent, type RunStatus } from "../../lib/agents";
 import { AGENTS_TR } from "../../lib/agents.tr";
 import { useLang } from "../../i18n/LanguageProvider";
 import OverseerBust from "./OverseerBust";
+import { useViewport } from "../../lib/viewport";
 
 const RobotScene = lazy(() => import("./RobotScene"));
 
@@ -26,7 +27,7 @@ const RobotSection = () => {
   // Localized agent roster (name/short/metrics) for display.
   const agents = lang === "tr" ? AGENTS.map((a, i) => ({ ...a, ...AGENTS_TR[i] })) : AGENTS;
   const statusLabel = (s: RunStatus) => (s === "cached" ? t("robot.status.cached") : t("robot.status.demo"));
-  const [isDesktop] = useState(() => window.innerWidth > 1024);
+  const { isDesktop } = useViewport();
   const ref = useRef<HTMLDivElement | null>(null);
   const [visible, setVisible] = useState(false);
   const [dispatched, setDispatched] = useState(false); // hide the click-cue after first use

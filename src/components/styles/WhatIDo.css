@@ -6,6 +6,7 @@
   position: relative;
   opacity: 1;
   height: 100vh;
+  height: var(--vh-full);
   width: var(--cWidth);
   max-width: 1920px;
   margin: auto;
@@ -25,7 +26,7 @@
   line-height: calc(2vw + 12px);
   font-weight: 600;
   margin-right: 28%;
-  margin-bottom: 100px;
+  margin-bottom: var(--space-xl);
 }
 
 .hat-h2 {
@@ -327,8 +328,8 @@
 @media only screen and (max-width: 1024px) {
   .whatIDO {
     height: auto;
-    padding: 50px 0px;
-    padding-bottom: 50px;
+    padding: var(--space-xl) 0px;
+    padding-bottom: var(--space-xl);
   }
 
   .what-box-in {
@@ -359,15 +360,15 @@
   }
 }
 
-@media only screen and (max-width: 900px) {
+@media only screen and (max-width: 1024px) {
   .whatIDO {
     flex-direction: column;
   }
 
   .what-box h2 {
-    margin: 50px 0;
-    font-size: 42px;
-    line-height: 42px;
+    margin: var(--space-lg) 0;
+    font-size: var(--text-xl);
+    line-height: 1;
   }
 
   .what-box:first-child {
@@ -380,7 +381,7 @@
 
   .what-box {
     width: 500px;
-    max-width: calc(100% - 50px);
+    max-width: calc(100% - 2 * var(--gutter));
     margin: auto;
   }
 
@@ -438,12 +439,13 @@
   .whatIDO {
     place-items: inherit;
     align-items: start;
-    justify-content: left;
+    justify-content: center;
   }
 
   .what-box {
-    max-width: calc(100% - 25px);
-    margin: 0;
+    max-width: calc(100% - 2 * var(--gutter));
+    margin: 0 auto;
+    min-width: 0;
   }
 
   .what-content p {
@@ -454,6 +456,15 @@
   .what-tags {
     font-size: 12px;
     line-height: 1.45;
+    padding: 4px 10px;
+  }
+
+  .what-content p {
+    overflow-wrap: anywhere;
+  }
+
+  .what-border1 svg {
+    width: 100%;
   }
 }
 

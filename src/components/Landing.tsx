@@ -1,21 +1,14 @@
-import { PropsWithChildren, useEffect, useState } from "react";
+import { PropsWithChildren } from "react";
 import "./styles/Landing.css";
 import { useLang } from "../i18n/LanguageProvider";
+import { useViewport } from "../lib/viewport";
 
 const Landing = ({ children }: PropsWithChildren) => {
   const { c, lang, t } = useLang();
-  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 768);
+  const { isPhone: isMobile } = useViewport();
   const nameParts = c.developer.fullName.split(" ");
   const firstName = nameParts[0] || c.developer.name;
   const lastName = nameParts.slice(1).join(" ") || "";
-
-  useEffect(() => {
-    const media = window.matchMedia("(max-width: 768px)");
-    const update = () => setIsMobile(media.matches);
-    update();
-    media.addEventListener("change", update);
-    return () => media.removeEventListener("change", update);
-  }, []);
 
   return (
     <>

@@ -1,3 +1,4 @@
+import { isDesktop } from "../../lib/viewport";
 import * as THREE from "three";
 import gsap from "gsap";
 
@@ -57,7 +58,7 @@ export function setCharTimeline(
     }
   });
   let neckBone = character?.getObjectByName("spine005");
-  if (window.innerWidth > 1024) {
+  if (isDesktop()) {
     if (character) {
       tl1
         .fromTo(character.rotation, { y: 0 }, { y: 0.7, duration: 1 }, 0)
@@ -169,7 +170,7 @@ export function setAllTimeline() {
       0
     );
 
-  if (window.innerWidth > 1024) {
+  if (isDesktop()) {
     careerTimeline.fromTo(
       ".career-section",
       { y: 0 },

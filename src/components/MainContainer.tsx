@@ -1,4 +1,4 @@
-import { PropsWithChildren, useEffect, useState } from "react";
+import { Fragment, PropsWithChildren, ReactNode, useEffect } from "react";
 import About from "./About";
 import Career from "./Career";
 import Contact from "./Contact";
@@ -10,51 +10,43 @@ import Work from "./Work";
 import TechStackNew from "./TechStackNew";
 import CallToAction from "./CallToAction";
 import RobotSection from "./Robot/RobotSection";
-import setSplitText from "./utils/splitText";
+import mountTextReveals from "./utils/splitText";
+import { Tier, useTier } from "../lib/viewport";
+
+// Section manifest: the only place that knows which sections exist and in
+// what order each tier shows them. Phones lead with the robot + work;
+// tablet/desktop lead with the story.
+const SECTIONS: Record<string, () => ReactNode> = {
+  robot: () => <RobotSection />,
+  work: () => <Work />,
+  about: () => <About />,
+  whatido: () => <WhatIDo />,
+  career: () => <Career />,
+};
+
+const ORDER: Record<Tier, string[]> = {
+  phone: ["robot", "work", "about", "whatido", "career"],
+  tablet: ["about", "whatido", "career", "robot", "work"],
+  desktop: ["about", "whatido", "career", "robot", "work"],
+};
 
 const MainContainer = ({ children }: PropsWithChildren) => {
-  const [isDesktopView, setIsDesktopView] = useState<boolean>(
-    window.innerWidth > 1024
-  );
-  const [isMobile, setIsMobile] = useState<boolean>(window.innerWidth <= 768);
+  const tier = useTier();
 
   useEffect(() => {
-    const resizeHandler = () => {
-      setSplitText();
-      setIsDesktopView(window.innerWidth > 1024);
-      setIsMobile(window.innerWidth <= 768);
-    };
-    resizeHandler();
-    window.addEventListener("resize", resizeHandler);
-    return () => {
-      window.removeEventListener("resize", resizeHandler);
-    };
-  }, [isDesktopView]);
+    return mountTextReveals();
+  }, []);
 
   return (
     <div className="container-main">
       <Navbar />
       <SocialIcons />
-      {isDesktopView && children}
+      {tier === "desktop" && children}
       <div className="container-main">
-        <Landing>{isMobile ? children : null}</Landing>
-        {isMobile ? (
-          <>
-            <RobotSection />
-            <Work />
-            <About />
-            <WhatIDo />
-            <Career />
-          </>
-        ) : (
-          <>
-            <About />
-            <WhatIDo />
-            <Career />
-            <RobotSection />
-            <Work />
-          </>
-        )}
+        <Landing>{tier === "phone" ? children : null}</Landing>
+        {ORDER[tier].map((id) => (
+          <Fragment key={id}>{SECTIONS[id]()}</Fragment>
+        ))}
         <TechStackNew />
         <CallToAction />
         <Contact />
@@ -64,3 +56,4 @@ const MainContainer = ({ children }: PropsWithChildren) => {
 };
 
 export default MainContainer;
+

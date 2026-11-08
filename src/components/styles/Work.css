@@ -94,7 +94,7 @@
 
 .work-section {
   transition: 0s;
-  height: 100vh;
+  height: var(--vh-full);
   box-sizing: border-box;
   will-change: transform;
 }
@@ -321,7 +321,7 @@
     gap: 20px;
   }
 } */
-@media only screen and (max-width: 1025px) {
+@media only screen and (max-width: 1024px) {
   .work-container {
     align-content: normal;
   }
@@ -363,6 +363,8 @@
 .see-all-btn {
   display: inline-block;
   padding: 15px 35px;
+  min-height: 44px;
+  box-sizing: border-box;
   font-size: 16px;
   font-weight: 500;
   color: #000;
@@ -395,10 +397,10 @@
   .work-box {
     width: 100%;
     max-width: 100%;
-    padding: 30px 15px;
+    padding: var(--space-lg) var(--gutter);
     border-right: none;
     border-bottom: 1px solid #363636;
-    gap: 20px;
+    gap: var(--space-sm);
   }
 
   .work-flex .work-box:nth-child(even) {
@@ -406,18 +408,18 @@
   }
 
   .work-section h2 {
-    font-size: 36px;
-    margin-top: 50px;
-    margin-bottom: 20px;
+    font-size: var(--text-xl);
+    margin-top: var(--space-xl);
+    margin-bottom: var(--space-sm);
   }
 
   .work-title h3 {
-    font-size: 30px;
-    line-height: 30px;
+    font-size: var(--text-xl);
+    line-height: 1.1;
   }
 
   .work-info h4 {
-    font-size: 18px;
+    font-size: var(--text-base);
   }
 
   .work-image img {
@@ -425,22 +427,22 @@
   }
 
   .work-box-cta {
-    padding: 40px 20px;
+    padding: var(--space-lg) var(--gutter);
     border-bottom: none;
   }
 
   .see-all-works h3 {
-    font-size: 24px;
+    font-size: var(--text-lg);
   }
 
   .see-all-works p {
-    font-size: 14px;
+    font-size: var(--text-sm);
   }
 
   /* Big "Try it live" CTA: shrink + center so it doesn't cramp on phones,
      and drop the absolutely-positioned decorations that overflow a 360px view. */
   .work-heading-row {
-    gap: 16px;
+    gap: var(--space-sm);
     justify-content: center;
   }
 
@@ -453,8 +455,9 @@
     width: 100%;
     justify-content: center;
     gap: 14px;
-    padding: 18px 26px;
+    padding: var(--space-sm) var(--space-md);
     margin-top: 6px;
+    min-height: 44px;
   }
 
   .work-cta-text {
@@ -462,11 +465,11 @@
   }
 
   .work-cta-text strong {
-    font-size: 23px;
+    font-size: var(--text-lg);
   }
 
   .work-cta-text em {
-    font-size: 12.5px;
+    font-size: var(--text-sm);
   }
 
   .work-cta-arrow {
@@ -556,6 +559,7 @@
 
   .work-cta-wrap {
     width: min(100%, 420px);
+    max-width: 100%;
     justify-content: center;
     transform: none;
   }

@@ -10,21 +10,21 @@
   margin: auto;
 }
 .about-me {
-  padding: 40px 0px;
+  padding: var(--space-lg) 0px;
   padding-bottom: 0;
   width: 100%;
-  max-width: calc(100% - 15px);
+  max-width: 100%;
 }
 
 /* Personal photo + short caption — full width above the text on mobile. */
 .about-portrait {
   width: 100%;
-  max-width: calc(100% - 15px);
+  max-width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 28px;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-md);
 }
 .about-portrait img {
   width: min(100%, 420px);
@@ -34,7 +34,7 @@
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
 }
 .about-portrait-caption {
-  font-size: 14px;
+  font-size: var(--text-sm);
   font-weight: 400;
   color: rgba(255, 255, 255, 0.6);
   font-style: italic;
@@ -43,18 +43,18 @@
 }
 
 .about-me h3 {
-  font-size: 18px;
+  font-size: clamp(1.125rem, 1rem + 0.7vw, 1.5625rem);
   text-transform: uppercase;
-  letter-spacing: 4px;
+  letter-spacing: clamp(4px, 0.3vw + 2px, 7px);
   font-weight: 400;
   color: var(--accentColor);
   margin-bottom: 15px;
 }
 
 .about-me p {
-  font-size: 20px;
+  font-size: clamp(1.25rem, 1rem + 1.2vw, 2.0625rem);
   font-weight: 600;
-  line-height: 26px;
+  line-height: 1.12;
   letter-spacing: 0.5px;
   word-spacing: 2px;
 }
@@ -68,38 +68,15 @@
   display: block;
 }
 
-@media only screen and (min-width: 600px) {
+@media only screen and (min-width: 769px) {
   .about-section {
     justify-content: center;
-  }
-  .about-me {
-    width: 500px;
-  }
-  .about-me h3 {
-    font-size: 22px;
-    letter-spacing: 6px;
-  }
-  .about-me p {
-    font-size: 28px;
-    line-height: 32px;
-  }
-}
-@media only screen and (min-width: 768px) {
-  .about-me {
-    width: 500px;
-    max-width: calc(100% - 70px);
-    transform: translateY(0%);
-  }
-  .about-me h3 {
-    font-size: 25px;
-    letter-spacing: 7px;
-  }
-  .about-me p {
-    font-size: 33px;
-    line-height: 36px;
-  }
-  .about-section {
     opacity: 1;
+  }
+  .about-me {
+    width: min(500px, 100%);
+    max-width: calc(100% - 2 * var(--gutter));
+    transform: translateY(0%);
   }
 }
 @media only screen and (min-width: 1025px) {
@@ -113,7 +90,7 @@
     height: var(--vh);
     padding: 0px;
     opacity: 1;
-    gap: 28px;
+    gap: var(--space-md);
   }
   .about-me {
     padding: 0px;
@@ -132,7 +109,7 @@
   }
   .about-portrait img {
     width: 100%;
-    max-width: 360px;
+    max-width: min(360px, 100%);
   }
   .about-portrait-caption {
     text-align: left;

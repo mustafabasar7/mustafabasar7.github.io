@@ -1,3 +1,4 @@
+import { isPhone } from "../lib/viewport";
 import {
   createContext,
   PropsWithChildren,
@@ -18,7 +19,7 @@ export const LoadingContext = createContext<LoadingType | null>(null);
 export const LoadingProvider = ({ children }: PropsWithChildren) => {
   const [isLoading, setIsLoading] = useState(() => {
     // Skip loading on mobile
-    if (window.innerWidth <= 768) return false;
+    if (isPhone()) return false;
     return true;
   });
   const [loading, setLoading] = useState(0);
@@ -30,7 +31,7 @@ export const LoadingProvider = ({ children }: PropsWithChildren) => {
   };
   useEffect(() => {
     // Auto-start the UI on mobile; the 3D model loads progressively in-place.
-    if (window.innerWidth <= 768) {
+    if (isPhone()) {
       import("../components/utils/initialFX").then((module) => {
         if (module.initialFX) {
           setTimeout(() => {

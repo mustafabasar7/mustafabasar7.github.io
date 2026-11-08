@@ -1,3 +1,4 @@
+import { isPhone } from "../lib/viewport";
 import "./styles/Work.css";
 import WorkImage from "./WorkImage";
 import gsap from "gsap";
@@ -12,7 +13,7 @@ const Work = () => {
   const { c, t, p } = useLang();
   useEffect(() => {
     // Disable pinning on mobile to allow scrolling
-    if (window.innerWidth <= 768) return;
+    if (isPhone()) return;
 
     let translateX: number = 0;
 

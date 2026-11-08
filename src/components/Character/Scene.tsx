@@ -1,3 +1,4 @@
+import { isPhone } from "../../lib/viewport";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import setCharacter from "./utils/character";
@@ -140,7 +141,7 @@ const Scene = () => {
       let running = false;
       const animate = () => {
         rafId = requestAnimationFrame(animate);
-        const isMobile = window.innerWidth <= 768;
+        const isMobile = isPhone();
         if (headBone && !isMobile) {
           handleHeadRotation(
             headBone,

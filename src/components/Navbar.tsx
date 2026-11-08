@@ -1,3 +1,4 @@
+import { isPhone, isDesktop } from "../lib/viewport";
 import { useEffect, useState } from "react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import HoverLinks from "./HoverLinks";
@@ -17,7 +18,7 @@ const Navbar = () => {
     // Mobile uses the browser's native touch scrolling. Creating Lenis and
     // stopping it here races LoadingProvider's initialFX() start call, which
     // can leave <html> in `lenis-stopped` and lock the page after a reload.
-    if (window.innerWidth <= 768) {
+    if (isPhone()) {
       lenis?.destroy();
       lenis = null;
       document.documentElement.classList.remove(
@@ -56,7 +57,7 @@ const Navbar = () => {
     links.forEach((elem) => {
       const element = elem as HTMLAnchorElement;
       element.addEventListener("click", (e) => {
-        if (window.innerWidth > 1024) {
+        if (isDesktop()) {
           e.preventDefault();
           const elem = e.currentTarget as HTMLAnchorElement;
           const section = elem.getAttribute("data-href");
