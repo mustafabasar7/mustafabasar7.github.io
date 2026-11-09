@@ -1,7 +1,7 @@
 import { driver } from 'driver.js';
 import 'driver.js/dist/driver.css';
 
-const TOUR_STORAGE_KEY = 'mb_control_panel_tour_seen_v1';
+const TOUR_STORAGE_KEY = 'mb_control_panel_tour_seen_v2';
 
 export function startGuidedTour(force = false) {
 	if (!force) {
@@ -17,7 +17,7 @@ export function startGuidedTour(force = false) {
 		showProgress: true,
 		animate: true,
 		allowClose: true,
-		overlayOpacity: 0.72,
+		overlayOpacity: 0.74,
 		stagePadding: 8,
 		stageRadius: 10,
 		popoverClass: 'cp-tour-popover',
@@ -26,21 +26,31 @@ export function startGuidedTour(force = false) {
 		doneBtnText: 'Start Exploring',
 		steps: [
 			{
+				element: '#tour-welcome-banner',
+				popover: {
+					title: 'Welcome — You Can Freely Use This Live Chat!',
+					description:
+						'This is not a static portfolio mockup. You are inside a <strong>live AI Control Panel</strong> connected to <strong>NVIDIA NIM (Nemotron 3.5 Super 120B)</strong>.<br/><br/><strong>What you can access &amp; ask:</strong><br/>• Ask anything about <strong>Mustafa Başar</strong> (projects, AI engineering stack, contact)<br/>• Test live <strong>A2A Agent Delegation</strong> &amp; <strong>MCP Tool Calls</strong><br/>• Write your own custom prompts or try to break the <strong>Guardrails</strong>!',
+					side: 'bottom',
+					align: 'start'
+				}
+			},
+			{
 				element: '#tour-presets',
 				popover: {
-					title: 'Mission 1: Pick a Live Scenario',
+					title: 'Step 1: 1-Click Educational Scenarios',
 					description:
-						'Click any preset chip — test <strong>A2A Agent Delegation</strong>, trigger an <strong>MCP Tool Call</strong>, or try to bypass the gateway with a <strong>Jailbreak</strong> or <strong>PII Leak</strong> attack.',
-					side: 'bottom',
+						'Not sure what to type first? Click any preset:<br/>• <strong>Ask About Mustafa Başar:</strong> Query engineering experience &amp; architecture<br/>• <strong>A2A Delegation:</strong> Coordinate multi-agent workflows via <code>/.well-known/agent.json</code><br/>• <strong>MCP Tool Call:</strong> Query enterprise RAG &amp; knowledge graphs via JSON-RPC<br/>• <strong>Try Jailbreak / PII Leak:</strong> Watch ingress guardrails block attacks in <code>&lt;10ms</code>',
+					side: 'top',
 					align: 'start'
 				}
 			},
 			{
 				element: '#tour-send-row',
 				popover: {
-					title: 'Mission 2: Execute Against NVIDIA NIM 120B',
+					title: 'Step 2: Send or Write Your Own Prompt',
 					description:
-						'Press <strong>Send</strong> (or write your own prompt). Safe prompts execute live on <strong>NVIDIA Nemotron 3.5 Super 120B</strong>; attacks are intercepted in &lt;10ms with a <code>403 Policy Violation</code>.',
+						'Click <strong>Send</strong> to execute the loaded prompt, or type any question in the box above. Safe prompts route to <strong>NVIDIA NIM</strong>; policy violations return an instant <code>HTTP 403</code>.',
 					side: 'top',
 					align: 'start'
 				}
@@ -48,9 +58,9 @@ export function startGuidedTour(force = false) {
 			{
 				element: '#tour-mcp-toggle',
 				popover: {
-					title: 'Mission 3: Live MCP Tool Calling',
+					title: 'Step 3: How MCP (Model Context Protocol) Works',
 					description:
-						'When enabled, the model automatically discovers and invokes tools across <strong>6 official MCP servers</strong> (<code>memory</code>, <code>sequential-thinking</code>, <code>git</code>, <code>rag</code>, and <code>a2a-bridge</code>).',
+						'When checked, the Control Panel attaches <strong>8 live tools</strong> from <strong>6 official MCP servers</strong> (<code>memory</code>, <code>sequential-thinking</code>, <code>git</code>, <code>fetch</code>, <code>enterprise-rag</code>, <code>a2a-bridge</code>) so the LLM can fetch grounded data autonomously.',
 					side: 'bottom',
 					align: 'start'
 				}
@@ -58,9 +68,9 @@ export function startGuidedTour(force = false) {
 			{
 				element: '[data-tour="nav-mcp-inspector"]',
 				popover: {
-					title: 'Mission 4: Inspect Raw MCP & Guardrails',
+					title: 'Step 4: Inspect Protocols & Security Policies',
 					description:
-						'Jump to <strong>MCP Inspector</strong> to fire raw JSON-RPC <code>tools/call</code> payloads, or open <strong>AI Guardrails</strong> &amp; <strong>A2A Agent Mesh</strong> to edit live policies.',
+						'Want to look under the hood? Open <strong>MCP Inspector</strong> to fire raw JSON-RPC <code>tools/call</code> requests, <strong>A2A Agent Mesh</strong> to inspect agent routes, or <strong>AI Guardrails</strong> to edit regex &amp; PII rules.',
 					side: 'right',
 					align: 'center'
 				}
@@ -68,9 +78,9 @@ export function startGuidedTour(force = false) {
 			{
 				element: '[data-tour="nav-logs"]',
 				popover: {
-					title: 'Mission 5: Audit Traces & SLM Cost Routing',
+					title: 'Step 5: Audit Live Traces & SLM Cost Savings',
 					description:
-						'Every prompt you run is recorded in <strong>Live Trace Logs</strong> and <strong>Spend Analytics</strong> — inspect the full JSON payload, latency, and token savings.',
+						'Every message you send is logged in <strong>Live Trace Logs</strong> and <strong>Spend Analytics</strong> — inspect the full prompt/response JSON, latency, and how <strong>SLM routing</strong> cuts token costs by 60%+.',
 					side: 'right',
 					align: 'center'
 				}

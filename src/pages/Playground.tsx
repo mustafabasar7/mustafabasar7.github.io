@@ -2,7 +2,8 @@ import { LangGraph, MCP, Nvidia } from '@lobehub/icons';
 import {
 	KeyMinimalisticSquare2BoldDuotoneIcon,
 	SendSquareBoldDuotoneIcon,
-	ShieldWarningBoldDuotoneIcon
+	ShieldWarningBoldDuotoneIcon,
+	UserCircleBoldDuotoneIcon
 } from '@solar-icons/react';
 import { useMutation } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
@@ -165,7 +166,9 @@ export function PlaygroundPage() {
 	const [apiKeyMode, setApiKeyMode] = useState<'saved' | 'raw'>(() => storedApiKeyMode());
 	const [selectedKeyRef, setSelectedKeyRef] = useStoredStringState(storageKeys.selectedKey, '');
 	const [apiKey, setApiKey] = useState('');
-	const [system, setSystem] = useState('You are a concise assistant.');
+	const [system, setSystem] = useState(
+		'You are the interactive AI Control Panel assistant for Mustafa Başar (Enterprise AI Solutions Engineer, GitHub: github.com/mustafabasar7, LinkedIn: linkedin.com/in/mustafa-basar, Email: basarmustafa7@gmail.com). Explain A2A agent delegation, MCP tool execution, deterministic PII/Prompt-Injection guardrails, and SLM vs. Frontier cost routing clearly and concisely.'
+	);
 	const [systemOpen, setSystemOpen] = useState(false);
 	const [prompt, setPrompt] = useState<string>(PLAYGROUND_PRESETS[0].prompt);
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -507,6 +510,14 @@ export function PlaygroundPage() {
 	return (
 		<div className="page-stack">
 			<PageHeader title="Live Agent Arena" description="Test A2A delegation, MCP tools, Guardrail shields, and NVIDIA NIM routing." />
+			<div id="tour-welcome-banner">
+				<StatusBanner
+					state="info"
+					title="Interactive AI Control Panel — You Can Freely Use This Live Chat!"
+				>
+					Ask anything about <strong>Mustafa Başar&apos;s AI Engineering projects, architecture &amp; contact info</strong>, execute live <strong>A2A &amp; MCP tools</strong> across 6 connected servers, or try to break the <strong>PII &amp; Prompt-Injection Guardrails</strong>. Click a scenario chip below or type your own prompt!
+				</StatusBanner>
+			</div>
 			{configDataLoading ? (
 				<StatusBanner state="loading" title="Loading LLM configuration" />
 			) : configDataError ? (
@@ -745,6 +756,12 @@ export function PlaygroundPage() {
 							const presetIcon =
 								preset.id === 'a2a' ? (
 									<LangGraph.Avatar size={18} shape="square" />
+								) : preset.id === 'profile' ? (
+									<UserCircleBoldDuotoneIcon
+										size={18}
+										secondaryOpacity={0.45}
+										style={{ color: '#38bdf8' }}
+									/>
 								) : preset.id === 'mcp' ? (
 									<MCP.Avatar size={18} shape="square" />
 								) : preset.id === 'jailbreak' ? (
