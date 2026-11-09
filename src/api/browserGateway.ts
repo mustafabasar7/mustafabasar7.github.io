@@ -921,10 +921,17 @@ async function callNvidiaNim(
 		const userText = latestUserRaw.toLowerCase();
 		if (
 			userText.includes('a2a') ||
+			userText.includes('delegate') ||
+			userText.includes('subagent') ||
 			userText.includes('agentcard') ||
 			userText.includes('researchagent') ||
 			userText.includes('factcheck')
 		) {
+			const isCodingSubagent =
+				userText.includes('subagent') ||
+				userText.includes('code') ||
+				userText.includes('different llm') ||
+				userText.includes('slm');
 			return {
 				ok: true,
 				status: 200,
@@ -945,7 +952,9 @@ async function callNvidiaNim(
 										function: {
 											name: 'a2a_delegate_task',
 											arguments: JSON.stringify({
-												targetAgent: 'factcheck-agent',
+												targetAgent: isCodingSubagent
+													? 'subagent-slm-worker (nemotron-bolt-e4b)'
+													: 'factcheck-agent',
 												taskInstruction: latestUserRaw
 											})
 										}
@@ -1001,24 +1010,20 @@ async function callNvidiaNim(
 		}
 	}
 
-	const cleanMessages = messages.map(m => {
-		if (m.role === 'tool') {
+	const cleanMessages = messages
+		.filter(m => !(m.role === 'assistant' && Array.isArray(m.tool_calls) && !stringValue(m.content).trim()))
+		.map(m => {
+			if (m.role === 'tool') {
+				return {
+					role: 'user',
+					content: `[Verified Protocol Execution Result from ${stringValue(m.name) || 'tool'} — Summarize this completed execution result clearly for the user without outputting raw tool_calls JSON]: ${stringValue(m.content)}`
+				};
+			}
 			return {
-				role: 'user',
-				content: `[Control Panel Executed MCP/A2A Tool (${stringValue(m.name) || 'tool'}) — Already completed, summarize this verified payload directly for the user]: ${stringValue(m.content)}`
+				role: stringValue(m.role) || 'user',
+				content: stringValue(m.content) || '...'
 			};
-		}
-		if (m.role === 'assistant' && Array.isArray(m.tool_calls)) {
-			return {
-				role: 'assistant',
-				content: `Dispatched protocol tool call: ${JSON.stringify(m.tool_calls)}`
-			};
-		}
-		return {
-			role: stringValue(m.role) || 'user',
-			content: stringValue(m.content) || '...'
-		};
-	});
+		});
 
 	const lastUser = cleanMessages.filter(m => m.role === 'user').at(-1)?.content ?? '';
 	const lowerUser = lastUser.toLowerCase();

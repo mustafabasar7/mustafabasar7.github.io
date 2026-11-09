@@ -324,6 +324,45 @@ export function PlaygroundPage() {
 		return { tools, sessionId };
 	}
 
+	async function streamAssistantReply(args: {
+		fullText: string;
+		meta: MessageMeta;
+		raw: unknown;
+		prependUserMessage?: ChatMessage;
+	}) {
+		const { fullText, meta, raw, prependUserMessage } = args;
+		const totalLen = fullText.length;
+		const stepChars = Math.max(12, Math.ceil(totalLen / 34));
+		let cursor = Math.min(totalLen, stepChars);
+
+		setMessages(current => [
+			...current,
+			...(prependUserMessage ? [prependUserMessage] : []),
+			{
+				role: 'assistant',
+				content: `${fullText.slice(0, cursor)}${cursor < totalLen ? ' ▍' : ''}`,
+				meta,
+				raw
+			}
+		]);
+
+		while (cursor < totalLen) {
+			await new Promise(resolve => window.setTimeout(resolve, 18));
+			cursor = Math.min(totalLen, cursor + stepChars);
+			const nextSlice = `${fullText.slice(0, cursor)}${cursor < totalLen ? ' ▍' : ''}`;
+			setMessages(current => {
+				if (current.length === 0) return current;
+				const updated = [...current];
+				const lastIdx = updated.length - 1;
+				updated[lastIdx] = {
+					...updated[lastIdx],
+					content: nextSlice
+				};
+				return updated;
+			});
+		}
+	}
+
 	async function send() {
 		const userMessage = prompt.trim();
 		if (!userMessage) return;
@@ -333,6 +372,15 @@ export function PlaygroundPage() {
 			...messages,
 			userChatMessage
 		];
+		const wantsProtocolTools =
+			mcpServerCount > 0 &&
+			/\b(a2a|delegate|subagent|agentcard|factcheck|researchagent|mcp|search_media_archive|media archive)\b/i.test(
+				userMessage
+			);
+		const effectiveMcpEnabled = mcpEnabled || wantsProtocolTools;
+		if (wantsProtocolTools && !mcpEnabled) {
+			setMcpEnabled(true);
+		}
 		setLoading(true);
 		setError(null);
 		setRunSteps([
@@ -349,7 +397,7 @@ export function PlaygroundPage() {
 			);
 			let availableMcpTools = mcpTools;
 			let activeMcpSessionId = mcpSessionId;
-			if (mcpEnabled && mcpTools.length === 0) {
+			if (effectiveMcpEnabled && mcpTools.length === 0) {
 				setRunSteps([
 					{ label: 'Preparing request', state: 'done' },
 					{ label: 'Initializing MCP tools', state: 'active' },
@@ -364,12 +412,14 @@ export function PlaygroundPage() {
 				}
 			}
 			const tools =
-				mcpEnabled && availableMcpTools.length > 0
+				effectiveMcpEnabled && availableMcpTools.length > 0
 					? availableMcpTools.map(toolToOpenAiFunction)
 					: undefined;
 			setRunSteps([
 				{ label: 'Preparing request', state: 'done' },
-				...(mcpEnabled ? [{ label: 'Initializing MCP tools', state: 'done' as const }] : []),
+				...(effectiveMcpEnabled
+					? [{ label: 'Initializing MCP tools', state: 'done' as const }]
+					: []),
 				{ label: 'Sending chat completion', state: 'active' },
 				{ label: 'Waiting for model response', state: 'pending' }
 			]);
@@ -385,12 +435,14 @@ export function PlaygroundPage() {
 			const firstLatencyMs = Math.round(performance.now() - started);
 			setRunSteps([
 				{ label: 'Preparing request', state: 'done' },
-				...(mcpEnabled ? [{ label: 'Initializing MCP tools', state: 'done' as const }] : []),
+				...(effectiveMcpEnabled
+					? [{ label: 'Initializing MCP tools', state: 'done' as const }]
+					: []),
 				{ label: 'Sending chat completion', state: 'done' },
 				{ label: 'Waiting for model response', state: 'done' }
 			]);
 			const toolCalls = extractToolCalls(response);
-			if (mcpEnabled && toolCalls.length > 0) {
+			if (effectiveMcpEnabled && toolCalls.length > 0) {
 				const assistantMessage: ChatMessage = {
 					role: 'assistant',
 					content: assistantContent(response),
@@ -466,37 +518,29 @@ export function PlaygroundPage() {
 					{ label: 'Sending tool results', state: 'done' },
 					{ label: 'Waiting for final response', state: 'done' }
 				]);
-				setMessages(current => [
-					...current,
-					{
-						role: 'assistant',
-						content: assistantText(finalResponse),
-						meta: responseMeta(
-							finalResponse,
-							requestModel,
-							selectedCatalogProvider ?? undefined,
-							finalLatencyMs
-						),
-						raw: finalResponse
-					}
-				]);
+				await streamAssistantReply({
+					fullText: assistantText(finalResponse),
+					meta: responseMeta(
+						finalResponse,
+						requestModel,
+						selectedCatalogProvider ?? undefined,
+						finalLatencyMs
+					),
+					raw: finalResponse
+				});
 			} else {
-				setMessages(current => [
-					...current,
-					userChatMessage,
-					{
-						role: 'assistant',
-						content: assistantText(response),
-						meta: responseMeta(
-							response,
-							requestModel,
-							selectedCatalogProvider ?? undefined,
-							firstLatencyMs
-						),
-						raw: response
-					}
-				]);
 				setPrompt('');
+				await streamAssistantReply({
+					fullText: assistantText(response),
+					meta: responseMeta(
+						response,
+						requestModel,
+						selectedCatalogProvider ?? undefined,
+						firstLatencyMs
+					),
+					raw: response,
+					prependUserMessage: userChatMessage
+				});
 			}
 		} catch (err) {
 			setRunSteps(current =>
