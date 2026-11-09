@@ -1,7 +1,7 @@
 import { type Driver, driver } from 'driver.js';
 import 'driver.js/dist/driver.css';
 
-const TOUR_STORAGE_KEY = 'mb_control_panel_tour_seen_v6';
+const TOUR_STORAGE_KEY = 'mb_control_panel_tour_seen_v7';
 
 export type TourAction =
 	| 'preset'
@@ -31,23 +31,26 @@ export function notifyTourAction(action: TourAction) {
 				if (!drv.isActive()) return;
 				drv.refresh();
 				drv.updatePopover({
+					title: 'Step 3/3 · Real LLM Response Ready! 🎉',
 					description:
-						'The Control Panel checked the Guardrails, routed your request and rendered the reply above.<div class="tour-action-hint">✅ Response ready! Read it, then continue to Part 2.</div>'
+						'The real LLM (NVIDIA Nemotron) streamed its response live through the Control Panel guardrails.<div class="tour-action-hint">✅ Done! Read the reply, then click “Part 2: Explore Advanced Features →” below to explore A2A delegation & MCP tools.</div>'
 				});
 			}, 150);
 		}
 		return;
 	}
 
-	if (action === 'mcp-toggle' && idx === 0) {
+	if (action === 'mcp-toggle' && idx === 1) {
 		window.setTimeout(() => drv.isActive() && drv.moveNext(), 150);
-	} else if (action === 'nav-logs' && idx === 1) {
+	} else if (action === 'nav-logs' && idx === 2) {
 		window.setTimeout(() => drv.isActive() && drv.destroy(), 150);
 	}
 }
 
-function startPart1() {
+export function startPart1() {
+	if (activeDriver?.isActive()) activeDriver.destroy();
 	activePart = 1;
+
 	const drv = driver({
 		showProgress: true,
 		progressText: 'Part 1/2 · {{current}} of {{total}}',
@@ -66,11 +69,11 @@ function startPart1() {
 		},
 		steps: [
 			{
-				element: '#tour-presets',
+				element: '#tour-preset-profile',
 				popover: {
-					title: 'Part 1 · Try it — Pick a scenario',
+					title: 'Step 1/3 · Recommended Scenario',
 					description:
-						'You are talking to a <strong>real LLM</strong> (NVIDIA Nemotron) — go ahead and use it! Pick any scenario: <strong>Ask About Mustafa Başar</strong>, <strong>A2A delegation</strong>, <strong>MCP tool call</strong> or a <strong>Guardrail attack</strong>.<div class="tour-action-hint">👇 Click any scenario button</div>',
+						'Start here! Click <strong>Ask About Mustafa Başar</strong> to load the recommended question for the real LLM (NVIDIA Nemotron).<div class="tour-action-hint">👇 Click “Ask About Mustafa Başar”</div>',
 					side: 'top',
 					align: 'start',
 					showButtons: ['close']
@@ -79,9 +82,9 @@ function startPart1() {
 			{
 				element: '#tour-send-btn',
 				popover: {
-					title: 'Part 1 · Try it — Send it',
+					title: 'Step 2/3 · Send to Real LLM',
 					description:
-						'Your scenario is loaded in the message box (you can edit it). Safe prompts run live on <strong>NVIDIA Nemotron</strong>; attacks are blocked with <code>HTTP 403</code>.<div class="tour-action-hint">👇 Click “Send”</div>',
+						'Prompt loaded! Click <strong>Send</strong> to run this live through the AI Guardrails and NVIDIA Nemotron.<div class="tour-action-hint">👇 Click “Send”</div>',
 					side: 'top',
 					align: 'start',
 					showButtons: ['previous', 'close']
@@ -90,9 +93,9 @@ function startPart1() {
 			{
 				element: '#tour-chat-area',
 				popover: {
-					title: 'Part 1 · Try it — Watch the result',
+					title: 'Step 3/3 · Real LLM Response Stream',
 					description:
-						'The live pipeline trace and the streamed reply appear right here.<div class="tour-action-hint">⏳ Waiting for the response…</div>',
+						'Watch the token-by-token stream arrive in real time! AI Guardrail checks and latency metrics appear below.<div class="tour-action-hint">⏳ Waiting for the response…</div>',
 					side: 'bottom',
 					align: 'start',
 					showButtons: ['previous', 'next', 'close'],
@@ -108,8 +111,10 @@ function startPart1() {
 	drv.drive();
 }
 
-function startPart2() {
+export function startPart2() {
+	if (activeDriver?.isActive()) activeDriver.destroy();
 	activePart = 2;
+
 	const drv = driver({
 		showProgress: true,
 		progressText: 'Part 2/2 · {{current}} of {{total}}',
@@ -122,20 +127,31 @@ function startPart2() {
 		popoverClass: 'cp-tour-popover',
 		nextBtnText: 'Next →',
 		prevBtnText: '← Back',
-		doneBtnText: 'Finish',
+		doneBtnText: 'Finish Tour ✓',
 		onDestroyed: () => {
 			if (activeDriver === drv) activeDriver = null;
 		},
 		steps: [
 			{
-				element: '#tour-mcp-toggle',
+				element: '#tour-presets',
 				popover: {
-					title: 'Part 2 · Explore — MCP tool servers',
+					title: 'Advanced Scenarios (A2A, MCP, Attacks)',
 					description:
-						'Optional: enable <strong>8 live tools</strong> across <strong>6 MCP servers</strong> (<code>memory</code>, <code>git</code>, <code>fetch</code>, <code>enterprise-rag</code>, <code>a2a-bridge</code> …). Then try the A2A / MCP scenarios again.',
-					side: 'bottom',
+						'Try the other scenarios: <strong>A2A Agent Delegation</strong>, <strong>MCP Tool Calls</strong>, or test safety shields with <strong>Try Jailbreak</strong> and <strong>Try PII Leak</strong> (blocked with HTTP 403).',
+					side: 'top',
 					align: 'start',
 					showButtons: ['next', 'close']
+				}
+			},
+			{
+				element: '#tour-mcp-toggle',
+				popover: {
+					title: '6 Live MCP Tool Servers',
+					description:
+						'Toggle on live tools across 6 connected MCP servers (<code>memory</code>, <code>git</code>, <code>fetch</code>, <code>enterprise-rag</code>, <code>a2a-bridge</code>).',
+					side: 'bottom',
+					align: 'start',
+					showButtons: ['previous', 'next', 'close']
 				}
 			},
 			{
@@ -144,12 +160,12 @@ function startPart2() {
 					el?.addEventListener('click', () => notifyTourAction('nav-logs'), { once: true });
 				},
 				popover: {
-					title: 'Part 2 · Explore — Traces & inspectors',
+					title: 'Live Trace Logs & Cost Savings',
 					description:
-						'Open <strong>Live Trace Logs</strong>, <strong>MCP Inspector</strong> or <strong>AI Guardrails</strong> from the menu to see raw JSON, latency and the 60%+ SLM cost savings.',
+						'Open <strong>Live Trace Logs</strong> from the menu to inspect raw JSON, latency, and 60%+ SLM cost savings.',
 					side: 'right',
 					align: 'center',
-					showButtons: ['previous', 'next', 'close']
+					showButtons: ['previous', 'close']
 				}
 			}
 		]
@@ -160,6 +176,10 @@ function startPart2() {
 
 export function startGuidedTour(force = false) {
 	if (!force) {
+		// Never interrupt mobile visitors on page load
+		if (typeof window !== 'undefined' && window.innerWidth < 768) {
+			return;
+		}
 		try {
 			if (localStorage.getItem(TOUR_STORAGE_KEY) === '1') return;
 			localStorage.setItem(TOUR_STORAGE_KEY, '1');
@@ -167,6 +187,5 @@ export function startGuidedTour(force = false) {
 			// Ignore storage errors
 		}
 	}
-	if (activeDriver?.isActive()) activeDriver.destroy();
 	startPart1();
 }

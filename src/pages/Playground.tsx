@@ -807,10 +807,10 @@ export function PlaygroundPage() {
 					</div>
 					<div
 						id="tour-presets"
-						className="button-row"
-						style={{ flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}
+						className="button-row playground-presets"
 					>
 						{PLAYGROUND_PRESETS.map(preset => {
+							const isRecommended = preset.id === 'profile';
 							const presetIcon =
 								preset.id === 'a2a' ? (
 									<LangGraph.Avatar size={18} shape="square" />
@@ -841,7 +841,7 @@ export function PlaygroundPage() {
 								<button
 									key={preset.id}
 									id={`tour-preset-${preset.id}`}
-									className="button"
+									className={`button ${isRecommended ? 'button-recommended' : ''}`}
 									type="button"
 									onClick={() => {
 										setPrompt(preset.prompt);
@@ -850,7 +850,8 @@ export function PlaygroundPage() {
 									}}
 								>
 									{presetIcon}
-									{preset.label}
+									<span>{preset.label}</span>
+									{isRecommended ? <span className="recommended-chip">Recommended</span> : null}
 								</button>
 							);
 						})}
@@ -858,7 +859,8 @@ export function PlaygroundPage() {
 					<div id="tour-prompt-box">
 						<Field label="User message">
 							<textarea
-								rows={6}
+								className="playground-prompt-textarea"
+								rows={3}
 								value={prompt}
 								onChange={event => setPrompt(event.target.value)}
 								onKeyDown={event => {
@@ -870,7 +872,7 @@ export function PlaygroundPage() {
 										}
 									}
 								}}
-								placeholder="Ask a test question..."
+								placeholder="Ask a question or select a preset above..."
 							/>
 						</Field>
 					</div>

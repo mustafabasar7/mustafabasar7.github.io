@@ -6614,9 +6614,16 @@ textarea {
 		grid-template-columns: 1fr;
 	}
 
-	table,
+	.table-wrap,
+	.log-table-wrap {
+		max-width: 100%;
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	.table-wrap table,
 	.keys-table {
-		min-width: 720px;
+		min-width: 580px;
 	}
 
 	.logs-filter-bar {
@@ -6787,17 +6794,69 @@ textarea {
 	}
 }
 
-/* ---- Live Agent Arena: mobile responsiveness ---- */
+/* ---- Live Agent Arena: mobile responsiveness & presets ---- */
+.button-recommended {
+	border-color: var(--primary) !important;
+	background: color-mix(in srgb, var(--primary) 10%, var(--surface)) !important;
+	font-weight: 600;
+}
+
+.recommended-chip {
+	display: inline-block;
+	margin-left: 6px;
+	font-size: 10px;
+	text-transform: uppercase;
+	font-weight: 700;
+	letter-spacing: 0.04em;
+	padding: 1px 6px;
+	border-radius: 9999px;
+	background: var(--primary);
+	color: #fff;
+	line-height: 1.4;
+}
+
+.playground-prompt-textarea {
+	min-height: 72px;
+	resize: vertical;
+}
+
+.model-name-pattern,
+.log-model-name,
+td.strong {
+	word-break: break-word;
+	overflow-wrap: anywhere;
+}
+
 @media (max-width: 980px) {
+	.playground-shell {
+		display: flex !important;
+		flex-direction: column !important;
+		gap: 16px !important;
+	}
+
 	.playground-chat-panel {
-		order: -1;
+		order: 1 !important;
+		min-height: 0;
+	}
+
+	.playground-config-panel {
+		order: 2 !important;
 		min-height: 0;
 	}
 
 	.mini-chat {
-		min-height: 260px;
-		max-height: 60vh;
-		padding: 8px;
+		min-height: 120px;
+		max-height: 48vh;
+		padding: 10px;
+	}
+
+	.mini-chat:has(.chat-empty) {
+		min-height: 90px;
+	}
+
+	.chat-empty {
+		padding: 18px 8px;
+		font-size: 13.5px;
 	}
 
 	.chat-message {
@@ -6815,7 +6874,7 @@ textarea {
 	}
 
 	.chat-bubble {
-		padding: 8px;
+		padding: 8px 10px;
 		font-size: 13.5px;
 	}
 
@@ -6823,6 +6882,7 @@ textarea {
 	.chat-md-code-wrap {
 		max-width: 100%;
 		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
 	}
 
 	.chat-protocol-summary {
@@ -6835,33 +6895,57 @@ textarea {
 		order: 5;
 	}
 
+	/* Sleek horizontal scrolling chip row for presets */
 	#tour-presets {
-		display: grid !important;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
+		display: flex !important;
+		flex-wrap: nowrap !important;
+		overflow-x: auto !important;
+		overflow-y: hidden !important;
+		gap: 8px !important;
+		padding: 4px 2px 8px 2px !important;
+		margin-bottom: 6px !important;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: none;
+	}
+
+	#tour-presets::-webkit-scrollbar {
+		display: none;
 	}
 
 	#tour-presets .button {
-		justify-content: flex-start;
-		min-width: 0;
-		padding: 0 8px;
-		font-size: 12.5px;
-		white-space: normal;
-		text-align: left;
-		height: auto;
-		min-height: 36px;
+		flex: 0 0 auto !important;
+		white-space: nowrap !important;
+		border-radius: 9999px !important;
+		padding: 6px 14px !important;
+		font-size: 13px !important;
+		height: 34px !important;
+		min-height: 34px !important;
+		justify-content: center !important;
+	}
+
+	.playground-prompt-textarea {
+		min-height: 56px !important;
+		height: 56px !important;
+		font-size: 14px !important;
+		padding: 8px 10px !important;
 	}
 
 	#tour-send-row {
 		position: sticky;
 		bottom: 0;
-		z-index: 5;
+		z-index: 10;
 		padding: 8px 0;
 		background: var(--surface);
+		display: flex;
+		gap: 8px;
 	}
 
 	#tour-send-row .button.primary {
 		flex: 1;
 		justify-content: center;
+		height: 40px;
+		font-size: 14.5px;
+		font-weight: 600;
 	}
 
 	.playground-run-timeline {
@@ -6869,17 +6953,62 @@ textarea {
 		padding: 6px;
 	}
 
+	#tour-welcome-banner .status-banner {
+		padding: 10px 12px;
+	}
+
+	#tour-welcome-banner .status-banner-title {
+		font-size: 13.5px;
+	}
+
+	#tour-welcome-banner .status-banner-content {
+		font-size: 12.5px;
+		line-height: 1.4;
+	}
+
 	.driver-popover.cp-tour-popover {
-		padding: 16px 16px !important;
+		padding: 14px 14px !important;
 		max-width: calc(100vw - 24px) !important;
 		min-width: 0 !important;
+		border-radius: 12px !important;
 	}
 
 	.driver-popover.cp-tour-popover .driver-popover-title {
-		font-size: 16.5px !important;
+		font-size: 15px !important;
+		line-height: 1.3 !important;
 	}
 
 	.driver-popover.cp-tour-popover .driver-popover-description {
-		font-size: 14px !important;
+		font-size: 13px !important;
+		line-height: 1.4 !important;
+	}
+
+	.driver-popover.cp-tour-popover .driver-popover-footer button {
+		padding: 5px 12px !important;
+		font-size: 12.5px !important;
+		min-height: 28px !important;
+	}
+}
+
+@media (max-width: 640px) {
+	.tour-topbar-text {
+		display: none;
+	}
+
+	.tour-topbar-button {
+		padding: 0 8px !important;
+		min-width: 34px !important;
+		justify-content: center !important;
+	}
+
+	.content {
+		padding: 12px !important;
+		max-width: 100vw !important;
+		overflow-x: hidden !important;
+	}
+
+	.panel {
+		padding: 14px !important;
+		max-width: 100% !important;
 	}
 }
