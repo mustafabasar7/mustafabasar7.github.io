@@ -103,7 +103,7 @@ export function Shell() {
 	const trafficData = useTrafficConfigData({
 		enabled: Boolean(mode.data && mode.data.mode !== 'dump')
 	});
-	const [theme, setTheme] = useState(() => localStorage.getItem('mb_theme') ?? 'dark');
+	const [theme, setTheme] = useState(() => localStorage.getItem('mb_theme_v2') ?? 'light');
 	const [mobileNavOpen, setMobileNavOpen] = useState(false);
 	const [mobileNavPathname, setMobileNavPathname] = useState(router.location.pathname);
 	if (mobileNavPathname !== router.location.pathname) {
@@ -247,7 +247,7 @@ export function Shell() {
 								aria-label="Toggle theme"
 								onClick={() => {
 									const next = theme === 'dark' ? 'light' : 'dark';
-									localStorage.setItem('mb_theme', next);
+									localStorage.setItem('mb_theme_v2', next);
 									setTheme(next);
 								}}
 							>

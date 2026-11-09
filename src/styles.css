@@ -56,30 +56,30 @@ samp,
 
 :root[data-theme='dark'] {
 	color-scheme: dark;
-	--bg: #070b14;
-	--surface: #0d1322;
-	--surface-2: #131c31;
-	--surface-3: #1b2642;
-	--text: #f1f5f9;
-	--muted: #94a3b8;
-	--line: #1e293b;
-	--line-strong: #334155;
-	--placeholder: #64748b;
+	--bg: #09090b;
+	--surface: #121215;
+	--surface-2: #18181b;
+	--surface-3: #222226;
+	--text: #fafafa;
+	--muted: #a1a1aa;
+	--line: #27272a;
+	--line-strong: #3f3f46;
+	--placeholder: #71717a;
 	--primary: #10b981;
 	--primary-strong: #34d399;
 	--accent: #38bdf8;
-	--accent-soft: #0c2924;
+	--accent-soft: #11261f;
 	--warn: #fbbf24;
-	--warn-bg: #291f0c;
+	--warn-bg: #271f10;
 	--info: #38bdf8;
-	--info-bg: #0c2338;
+	--info-bg: #11222e;
 	--bad: #f87171;
-	--bad-bg: #2c1418;
+	--bad-bg: #2a1416;
 	--ok: #34d399;
-	--ok-bg: #0b291e;
-	--shadow: 0 2px 6px rgb(0 0 0 / 0.35);
-	--shadow-popover: 0 12px 28px rgb(0 0 0 / 0.45);
-	--shadow-drawer: -10px 0 28px rgb(0 0 0 / 0.45);
+	--ok-bg: #10261e;
+	--shadow: 0 2px 6px rgb(0 0 0 / 0.45);
+	--shadow-popover: 0 12px 28px rgb(0 0 0 / 0.6);
+	--shadow-drawer: -10px 0 28px rgb(0 0 0 / 0.6);
 }
 
 ::selection {
