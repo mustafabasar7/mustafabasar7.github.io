@@ -15,7 +15,8 @@
 		"paths": {
 			"@/*": ["./src/*"],
 			"@lobehub/ui": ["./src/lobehubUiShim.tsx"],
-			"lucide-react": ["./src/solarLucideShim.tsx"]
+			"lucide-react": ["./src/solarLucideShim.tsx"],
+			"react-is": ["./src/reactIsShim.ts"]
 		},
 		"resolveJsonModule": true,
 		"isolatedModules": true,

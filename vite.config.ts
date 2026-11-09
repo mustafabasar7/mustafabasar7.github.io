@@ -17,6 +17,10 @@ export default defineConfig(() => ({
 				replacement: fileURLToPath(new URL('./src/solarLucideShim.tsx', import.meta.url))
 			},
 			{
+				find: 'react-is',
+				replacement: fileURLToPath(new URL('./src/reactIsShim.ts', import.meta.url))
+			},
+			{
 				find: 'monaco-editor/esm/vs/editor/editor.worker.js',
 				replacement: 'monaco-editor/editor/editor.worker.js'
 			},
