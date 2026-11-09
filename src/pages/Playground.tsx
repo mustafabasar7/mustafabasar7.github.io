@@ -23,7 +23,7 @@ import { type ReactNode, useEffect, useMemo, useState } from 'react';
 
 import { PLAYGROUND_PRESETS } from '@/api/browserGateway';
 import { sendChatCompletion, sendMcpJsonRpc } from '@/api/playgroundApi';
-import { startGuidedTour } from '@/tour';
+import { notifyTourAction, startGuidedTour } from '@/tour';
 import { claudeSubscriptionWarning } from '@/claudeSubscription';
 import {
 	Dropdown,
@@ -691,7 +691,10 @@ export function PlaygroundPage() {
 									<input
 										type="checkbox"
 										checked={mcpEnabled}
-										onChange={event => setMcpEnabled(event.target.checked)}
+										onChange={event => {
+											setMcpEnabled(event.target.checked);
+											notifyTourAction('mcp-toggle');
+										}}
 									/>
 									<span>
 										<strong>
@@ -787,6 +790,7 @@ export function PlaygroundPage() {
 									onClick={() => {
 										setPrompt(preset.prompt);
 										setMcpEnabled(preset.enableMcp);
+										notifyTourAction('preset');
 									}}
 								>
 									{presetIcon}
@@ -803,7 +807,10 @@ export function PlaygroundPage() {
 							onKeyDown={event => {
 								if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
 									event.preventDefault();
-									if (sendBlockers.length === 0) void send();
+									if (sendBlockers.length === 0) {
+										notifyTourAction('send');
+										void send();
+									}
 								}
 							}}
 							placeholder="Ask a test question..."
@@ -814,7 +821,10 @@ export function PlaygroundPage() {
 							className="button primary"
 							type="button"
 							disabled={sendBlockers.length > 0}
-							onClick={send}
+							onClick={() => {
+								notifyTourAction('send');
+								void send();
+							}}
 						>
 							<SendSquareBoldDuotoneIcon size={17} secondaryOpacity={0.45} />
 							Send

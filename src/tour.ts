@@ -1,7 +1,28 @@
-import { driver } from 'driver.js';
+import { type Driver, driver } from 'driver.js';
 import 'driver.js/dist/driver.css';
 
-const TOUR_STORAGE_KEY = 'mb_control_panel_tour_seen_v2';
+const TOUR_STORAGE_KEY = 'mb_control_panel_tour_seen_v3';
+
+let activeDriver: Driver | null = null;
+let currentActionTarget: 'preset' | 'send' | 'mcp-toggle' | 'nav-inspector' | 'nav-logs' | null =
+	null;
+
+export function notifyTourAction(
+	action: 'preset' | 'send' | 'mcp-toggle' | 'nav-inspector' | 'nav-logs'
+) {
+	if (!activeDriver || !activeDriver.isActive()) return;
+	if (currentActionTarget === action) {
+		window.setTimeout(() => {
+			if (activeDriver?.isActive()) {
+				if (activeDriver.hasNextStep()) {
+					activeDriver.moveNext();
+				} else {
+					activeDriver.destroy();
+				}
+			}
+		}, 180);
+	}
+}
 
 export function startGuidedTour(force = false) {
 	if (!force) {
@@ -13,74 +34,106 @@ export function startGuidedTour(force = false) {
 		}
 	}
 
+	if (activeDriver?.isActive()) {
+		activeDriver.destroy();
+	}
+
 	const drv = driver({
 		showProgress: true,
 		animate: true,
 		allowClose: true,
-		overlayOpacity: 0.74,
-		stagePadding: 8,
-		stageRadius: 10,
+		disableActiveInteraction: false,
+		overlayOpacity: 0.68,
+		stagePadding: 10,
+		stageRadius: 12,
 		popoverClass: 'cp-tour-popover',
-		nextBtnText: 'Next →',
+		nextBtnText: 'Skip / Next →',
 		prevBtnText: '← Back',
-		doneBtnText: 'Start Exploring',
+		doneBtnText: 'Finish Tour',
+		onDestroyed: () => {
+			currentActionTarget = null;
+			activeDriver = null;
+		},
 		steps: [
 			{
-				element: '#tour-welcome-banner',
-				popover: {
-					title: 'Welcome — You Can Freely Use This Live Chat!',
-					description:
-						'This is not a static portfolio mockup. You are inside a <strong>live AI Control Panel</strong> connected to <strong>NVIDIA NIM (Nemotron 3.5 Super 120B)</strong>.<br/><br/><strong>What you can access &amp; ask:</strong><br/>• Ask anything about <strong>Mustafa Başar</strong> (projects, AI engineering stack, contact)<br/>• Test live <strong>A2A Agent Delegation</strong> &amp; <strong>MCP Tool Calls</strong><br/>• Write your own custom prompts or try to break the <strong>Guardrails</strong>!',
-					side: 'bottom',
-					align: 'start'
-				}
-			},
-			{
 				element: '#tour-presets',
+				onHighlightStarted: () => {
+					currentActionTarget = 'preset';
+				},
 				popover: {
-					title: 'Step 1: 1-Click Educational Scenarios',
+					title: 'Step 1/5 — Click Any Scenario Button Below!',
 					description:
-						'Not sure what to type first? Click any preset:<br/>• <strong>Ask About Mustafa Başar:</strong> Query engineering experience &amp; architecture<br/>• <strong>A2A Delegation:</strong> Coordinate multi-agent workflows via <code>/.well-known/agent.json</code><br/>• <strong>MCP Tool Call:</strong> Query enterprise RAG &amp; knowledge graphs via JSON-RPC<br/>• <strong>Try Jailbreak / PII Leak:</strong> Watch ingress guardrails block attacks in <code>&lt;10ms</code>',
+						'You can freely use this live chat! <strong>Click any scenario button inside the highlighted box</strong> to auto-advance:<br/><br/>• <strong>Ask About Mustafa Başar:</strong> Query AI projects, stack &amp; contact info<br/>• <strong>A2A Agent Delegation:</strong> Multi-agent coordination via <code>AgentCard</code><br/>• <strong>MCP Tool Call:</strong> Live JSON-RPC tool execution<br/>• <strong>Try Jailbreak / PII Leak:</strong> Test sub-10ms Guardrail blocking',
 					side: 'top',
 					align: 'start'
 				}
 			},
 			{
 				element: '#tour-send-row',
+				onHighlightStarted: () => {
+					currentActionTarget = 'send';
+				},
 				popover: {
-					title: 'Step 2: Send or Write Your Own Prompt',
+					title: 'Step 2/5 — Now Click "Send" to Run It Live!',
 					description:
-						'Click <strong>Send</strong> to execute the loaded prompt, or type any question in the box above. Safe prompts route to <strong>NVIDIA NIM</strong>; policy violations return an instant <code>HTTP 403</code>.',
+						'Your chosen prompt is loaded (or you can type your own question in the message box).<br/><br/><strong>Click the green "Send" button now</strong> — safe prompts run live on <strong>NVIDIA Nemotron 3.5 Super 120B</strong>, while attacks are blocked with <code>HTTP 403</code>!',
 					side: 'top',
 					align: 'start'
 				}
 			},
 			{
 				element: '#tour-mcp-toggle',
+				onHighlightStarted: () => {
+					currentActionTarget = 'mcp-toggle';
+				},
 				popover: {
-					title: 'Step 3: How MCP (Model Context Protocol) Works',
+					title: 'Step 3/5 — Toggle MCP Tool Servers',
 					description:
-						'When checked, the Control Panel attaches <strong>8 live tools</strong> from <strong>6 official MCP servers</strong> (<code>memory</code>, <code>sequential-thinking</code>, <code>git</code>, <code>fetch</code>, <code>enterprise-rag</code>, <code>a2a-bridge</code>) so the LLM can fetch grounded data autonomously.',
+						'When enabled, the Control Panel connects <strong>8 live tools</strong> across <strong>6 official MCP servers</strong> (<code>memory</code>, <code>sequential-thinking</code>, <code>git</code>, <code>fetch</code>, <code>enterprise-rag</code>, <code>a2a-bridge</code>).<br/><br/><strong>Click the checkbox</strong> (or press Next) to continue!',
 					side: 'bottom',
 					align: 'start'
 				}
 			},
 			{
 				element: '[data-tour="nav-mcp-inspector"]',
+				onHighlightStarted: el => {
+					currentActionTarget = 'nav-inspector';
+					if (el) {
+						el.addEventListener(
+							'click',
+							() => {
+								notifyTourAction('nav-inspector');
+							},
+							{ once: true }
+						);
+					}
+				},
 				popover: {
-					title: 'Step 4: Inspect Protocols & Security Policies',
+					title: 'Step 4/5 — Inspect Raw MCP & Guardrail Rules',
 					description:
-						'Want to look under the hood? Open <strong>MCP Inspector</strong> to fire raw JSON-RPC <code>tools/call</code> requests, <strong>A2A Agent Mesh</strong> to inspect agent routes, or <strong>AI Guardrails</strong> to edit regex &amp; PII rules.',
+						'Want to test raw protocol payloads? You can open <strong>MCP Inspector</strong> to fire JSON-RPC <code>tools/call</code> requests, <strong>A2A Agent Mesh</strong> for agent routing, or <strong>AI Guardrails</strong> to edit security rules.',
 					side: 'right',
 					align: 'center'
 				}
 			},
 			{
 				element: '[data-tour="nav-logs"]',
+				onHighlightStarted: el => {
+					currentActionTarget = 'nav-logs';
+					if (el) {
+						el.addEventListener(
+							'click',
+							() => {
+								notifyTourAction('nav-logs');
+							},
+							{ once: true }
+						);
+					}
+				},
 				popover: {
-					title: 'Step 5: Audit Live Traces & SLM Cost Savings',
+					title: 'Step 5/5 — Audit Live Trace Logs & Cost Savings',
 					description:
-						'Every message you send is logged in <strong>Live Trace Logs</strong> and <strong>Spend Analytics</strong> — inspect the full prompt/response JSON, latency, and how <strong>SLM routing</strong> cuts token costs by 60%+.',
+						'Every prompt you just ran is recorded in <strong>Live Trace Logs</strong> and <strong>Spend Analytics</strong>. Click <strong>Live Trace Logs</strong> (or Finish Tour) to inspect full JSON payloads, latency, and 60%+ SLM token cost savings!',
 					side: 'right',
 					align: 'center'
 				}
@@ -88,5 +141,6 @@ export function startGuidedTour(force = false) {
 		]
 	});
 
+	activeDriver = drv;
 	drv.drive();
 }
