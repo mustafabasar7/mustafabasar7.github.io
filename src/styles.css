@@ -6883,3 +6883,35 @@ textarea {
 		font-size: 14px !important;
 	}
 }
+
+/* ---- Mobile polish (CSS only) ---- */
+@media (max-width: 620px) {
+	#tour-presets {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	#tour-presets .button {
+		min-height: 44px;
+		font-size: 13.5px;
+	}
+
+	/* 16px prevents iOS Safari zoom on focus */
+	.playground-chat-panel textarea,
+	#tour-prompt-box textarea {
+		font-size: 16px;
+		min-height: 88px;
+	}
+
+	#tour-send-row {
+		padding-bottom: max(8px, env(safe-area-inset-bottom));
+	}
+
+	#tour-send-row .button {
+		min-height: 44px;
+	}
+
+	.topbar-controls {
+		gap: 6px;
+		min-width: 0;
+	}
+}
