@@ -1,35 +1,33 @@
-import { Link, Outlet, useNavigate, useRouterState } from '@tanstack/react-router';
+import { Github, LangGraph, MCP, Nvidia } from '@lobehub/icons';
 import {
-	Broadcast,
-	CaretDown,
-	CaretRight,
-	ChartLineUp,
-	CodeBlock,
-	Compass,
-	Cpu,
-	CubeTransparent,
-	EnvelopeSimple,
-	FileCode,
-	Fingerprint,
-	GearSix,
-	GitBranch,
-	GlobeHemisphereWest,
-	Graph,
-	List,
-	LockKey,
-	MoonStars,
-	PlugsConnected,
-	Pulse,
-	ShieldCheck,
-	ShieldWarning,
-	SignOut,
-	Sparkle,
-	Stack,
-	SunDim,
-	TerminalWindow,
-	UserCircle,
-	Wallet
-} from '@phosphor-icons/react';
+	AltArrowDownBoldDuotoneIcon,
+	AltArrowRightBoldDuotoneIcon,
+	CodeSquareBoldDuotoneIcon,
+	CompassBigBoldDuotoneIcon,
+	CpuBoltBoldDuotoneIcon,
+	FileCodeBoldDuotoneIcon,
+	GlobalBoldDuotoneIcon,
+	GraphNewUpBoldDuotoneIcon,
+	HamburgerMenuBoldDuotoneIcon,
+	KeyMinimalisticSquare2BoldDuotoneIcon,
+	LetterBoldDuotoneIcon,
+	Logout2BoldDuotoneIcon,
+	MagicWand3BoldDuotoneIcon,
+	MoonStarsBoldDuotoneIcon,
+	PlugCircleBoldDuotoneIcon,
+	Pulse2BoldDuotoneIcon,
+	Radar2BrokenIcon,
+	SettingsBoldDuotoneIcon,
+	ShieldCheckBoldDuotoneIcon,
+	ShieldKeyholeBoldDuotoneIcon,
+	ShieldNetworkBoldDuotoneIcon,
+	ShieldWarningBoldDuotoneIcon,
+	StationBoldDuotoneIcon,
+	Sun2BoldDuotoneIcon,
+	UserCircleBoldDuotoneIcon,
+	WalletMoneyBoldDuotoneIcon
+} from '@solar-icons/react';
+import { Link, Outlet, useNavigate, useRouterState } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
 
 import { apiBase } from '@/api/base';
@@ -44,15 +42,28 @@ import {
 } from '@/hooks';
 import { startGuidedTour } from '@/tour';
 
-type PhosphorIconComponent = React.ComponentType<{
+type NavIconComponent = React.ComponentType<{
 	size?: number;
-	weight?: 'thin' | 'light' | 'regular' | 'bold' | 'fill' | 'duotone';
+	secondaryOpacity?: number;
+	style?: React.CSSProperties;
 }>;
+
+const LobeMcpIcon: NavIconComponent = ({ size = 17 }) => <MCP.Avatar size={size} shape="square" />;
+const LobeMcpColorIcon: NavIconComponent = ({ size = 17 }) => (
+	<MCP.Avatar size={size} shape="circle" />
+);
+const LobeNvidiaIcon: NavIconComponent = ({ size = 17 }) => (
+	<Nvidia.Avatar size={size} shape="square" />
+);
+const LobeA2aIcon: NavIconComponent = ({ size = 17 }) => (
+	<LangGraph.Avatar size={size} shape="square" />
+);
+const LobeGithubIcon: NavIconComponent = ({ size = 18 }) => <Github size={size} />;
 
 type NavItemConfig = {
 	to: string;
 	label: string;
-	icon: PhosphorIconComponent;
+	icon: NavIconComponent;
 	color?: string;
 	tourId?: string;
 	placeholder?: boolean;
@@ -64,17 +75,17 @@ const projectLinks = [
 	{
 		label: 'GitHub — mustafabasar7',
 		href: 'https://github.com/mustafabasar7',
-		icon: GitBranch
+		icon: LobeGithubIcon
 	},
 	{
 		label: 'LinkedIn — Mustafa Başar',
 		href: 'https://www.linkedin.com/in/mustafa-basar/',
-		icon: GlobeHemisphereWest
+		icon: GlobalBoldDuotoneIcon
 	},
 	{
 		label: 'Contact — basarmustafa7@gmail.com',
 		href: 'mailto:basarmustafa7@gmail.com',
-		icon: EnvelopeSimple
+		icon: LetterBoldDuotoneIcon
 	}
 ] as const;
 
@@ -92,9 +103,7 @@ export function Shell() {
 	const trafficData = useTrafficConfigData({
 		enabled: Boolean(mode.data && mode.data.mode !== 'dump')
 	});
-	const [theme, setTheme] = useState(
-		() => localStorage.getItem('mb_theme') ?? 'dark'
-	);
+	const [theme, setTheme] = useState(() => localStorage.getItem('mb_theme') ?? 'dark');
 	const [mobileNavOpen, setMobileNavOpen] = useState(false);
 	const [mobileNavPathname, setMobileNavPathname] = useState(router.location.pathname);
 	if (mobileNavPathname !== router.location.pathname) {
@@ -137,9 +146,20 @@ export function Shell() {
 	return (
 		<div className="app-shell">
 			<aside className="sidebar">
-				<Link to="/" className="brand" aria-label="Mustafa Başar Control Panel" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '10px' }}>
-					<ShieldCheck size={24} weight="duotone" style={{ color: 'var(--primary)' }} />
-					<strong style={{ fontSize: '14px', fontWeight: 600, letterSpacing: '-0.01em' }}>Mustafa Başar · Control Panel</strong>
+				<Link
+					to="/"
+					className="brand"
+					aria-label="Mustafa Başar Control Panel"
+					style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '10px' }}
+				>
+					<ShieldNetworkBoldDuotoneIcon
+						size={24}
+						secondaryOpacity={0.45}
+						style={{ color: 'var(--primary)', flexShrink: 0 }}
+					/>
+					<strong style={{ fontSize: '14px', fontWeight: 600, letterSpacing: '-0.01em' }}>
+						Mustafa Başar · Control Panel
+					</strong>
 				</Link>
 				<nav className="nav-list" aria-label="Primary">
 					{navGroups.map(group => (
@@ -163,7 +183,7 @@ export function Shell() {
 									rel="noreferrer"
 									aria-label={link.label}
 								>
-									<Icon size={18} weight="duotone" />
+									<Icon size={18} secondaryOpacity={0.42} />
 								</a>
 							</Tooltip>
 						);
@@ -180,8 +200,8 @@ export function Shell() {
 								aria-expanded={mobileNavOpen}
 								onClick={() => setMobileNavOpen(open => !open)}
 							>
-								<List size={17} weight="bold" />
-								<CurrentIcon size={17} weight="duotone" />
+								<HamburgerMenuBoldDuotoneIcon size={17} secondaryOpacity={0.45} />
+								<CurrentIcon size={17} secondaryOpacity={0.45} />
 								<span>{currentNav.label}</span>
 							</button>
 							{mobileNavOpen ? (
@@ -200,7 +220,7 @@ export function Shell() {
 						{matchedNav && currentGroup && (
 							<nav className="breadcrumb" aria-label="Breadcrumb">
 								<span>{currentGroup.title}</span>
-								<CaretRight size={14} weight="bold" />
+								<AltArrowRightBoldDuotoneIcon size={14} secondaryOpacity={0.45} />
 								<span aria-current="page">{matchedNav.label}</span>
 							</nav>
 						)}
@@ -212,7 +232,11 @@ export function Shell() {
 							onClick={() => startGuidedTour(true)}
 							style={{ gap: '6px', height: '34px', padding: '0 12px', fontSize: '13px' }}
 						>
-							<Compass size={17} weight="duotone" style={{ color: 'var(--primary)' }} />
+							<CompassBigBoldDuotoneIcon
+								size={17}
+								secondaryOpacity={0.45}
+								style={{ color: 'var(--primary)' }}
+							/>
 							Guided Tour
 						</button>
 						{runtime.data?.user && <UserMenu user={runtime.data.user} />}
@@ -227,7 +251,19 @@ export function Shell() {
 									setTheme(next);
 								}}
 							>
-								{theme === 'dark' ? <SunDim size={19} weight="duotone" /> : <MoonStars size={19} weight="duotone" />}
+								{theme === 'dark' ? (
+									<Sun2BoldDuotoneIcon
+										size={19}
+										secondaryOpacity={0.45}
+										style={{ color: '#fbbf24' }}
+									/>
+								) : (
+									<MoonStarsBoldDuotoneIcon
+										size={19}
+										secondaryOpacity={0.45}
+										style={{ color: '#38bdf8' }}
+									/>
+								)}
 							</button>
 						</Tooltip>
 					</div>
@@ -283,10 +319,10 @@ function UserMenu({ user }: { user: RuntimeUser }) {
 				onClick={() => setOpen(!open)}
 			>
 				<span className="user-avatar" aria-hidden="true">
-					{initials || <UserCircle size={17} weight="duotone" />}
+					{initials || <UserCircleBoldDuotoneIcon size={17} secondaryOpacity={0.45} />}
 				</span>
 				<span className="user-menu-name">{label}</span>
-				<CaretDown size={14} aria-hidden="true" />
+				<AltArrowDownBoldDuotoneIcon size={14} aria-hidden="true" />
 			</button>
 			{open && (
 				<section id="user-menu-panel" className="user-menu-panel" aria-label="Your account">
@@ -298,7 +334,7 @@ function UserMenu({ user }: { user: RuntimeUser }) {
 					{user.canLogout && (
 						<form action={`${apiBase}/api/auth/logout`} method="post">
 							<button className="user-menu-signout" type="submit">
-								<SignOut size={16} weight="duotone" aria-hidden="true" />
+								<Logout2BoldDuotoneIcon size={16} aria-hidden="true" />
 								Sign out
 							</button>
 						</form>
@@ -320,15 +356,25 @@ function navigationGroups(options: {
 		{
 			title: 'Interactive Sandbox',
 			items: [
-				{ to: '/llm/playground', label: 'Live Agent Arena', icon: Sparkle, color: '#10b981' },
+				{
+					to: '/llm/playground',
+					label: 'Live Agent Arena',
+					icon: MagicWand3BoldDuotoneIcon,
+					color: '#10b981'
+				},
 				{
 					to: '/mcp/playground',
 					label: 'MCP Inspector',
-					icon: TerminalWindow,
+					icon: LobeMcpColorIcon,
 					color: '#38bdf8',
 					tourId: 'nav-mcp-inspector'
 				},
-				{ to: '/overview', label: 'Architecture Guide', icon: Compass, color: '#a78bfa' }
+				{
+					to: '/overview',
+					label: 'Architecture Guide',
+					icon: CompassBigBoldDuotoneIcon,
+					color: '#a78bfa'
+				}
 			]
 		}
 	];
@@ -336,13 +382,40 @@ function navigationGroups(options: {
 		groups.push({
 			title: 'Protocols (A2A & MCP)',
 			items: [
-				{ to: '/traffic/routes', label: 'A2A Agent Mesh', icon: Graph, color: '#38bdf8' },
-				{ to: '/mcp/servers', label: 'MCP Tool Servers', icon: CubeTransparent, color: '#10b981' },
+				{
+					to: '/traffic/routes',
+					label: 'A2A Agent Mesh',
+					icon: LobeA2aIcon,
+					color: '#38bdf8'
+				},
+				{
+					to: '/mcp/servers',
+					label: 'MCP Tool Servers',
+					icon: LobeMcpIcon,
+					color: '#10b981'
+				},
 				...(options.hasBinds
-					? [{ to: '/traffic/listeners', label: 'Mesh Listeners', icon: Broadcast, color: '#22d3ee' }]
+					? [
+							{
+								to: '/traffic/listeners',
+								label: 'Mesh Listeners',
+								icon: Radar2BrokenIcon,
+								color: '#22d3ee'
+							}
+						]
 					: []),
-				{ to: '/traffic/gateways', label: 'Ingress Endpoints', icon: Broadcast, color: '#818cf8' },
-				{ to: '/mcp/policies', label: 'MCP Access Policy', icon: LockKey, color: '#f59e0b' }
+				{
+					to: '/traffic/gateways',
+					label: 'Ingress Endpoints',
+					icon: StationBoldDuotoneIcon,
+					color: '#818cf8'
+				},
+				{
+					to: '/mcp/policies',
+					label: 'MCP Access Policy',
+					icon: ShieldKeyholeBoldDuotoneIcon,
+					color: '#f59e0b'
+				}
 			]
 		});
 		groups.push({
@@ -351,21 +424,51 @@ function navigationGroups(options: {
 				{
 					to: '/llm/guardrails',
 					label: 'AI Guardrails',
-					icon: ShieldWarning,
+					icon: ShieldWarningBoldDuotoneIcon,
 					color: '#f43f5e',
 					tourId: 'nav-guardrails'
 				},
-				{ to: '/llm/policies', label: 'Traffic Policies', icon: ShieldCheck, color: '#10b981' },
-				{ to: '/cel', label: 'CEL Rule Engine', icon: CodeBlock, color: '#a78bfa' }
+				{
+					to: '/llm/policies',
+					label: 'Traffic Policies',
+					icon: ShieldCheckBoldDuotoneIcon,
+					color: '#10b981'
+				},
+				{
+					to: '/cel',
+					label: 'CEL Rule Engine',
+					icon: CodeSquareBoldDuotoneIcon,
+					color: '#a78bfa'
+				}
 			]
 		});
 		groups.push({
 			title: 'Models & Cost Router',
 			items: [
-				{ to: '/llm/models', label: 'Model Router', icon: Cpu, color: '#38bdf8' },
-				{ to: '/llm/providers', label: 'NIM Providers', icon: Stack, color: '#10b981' },
-				{ to: '/llm/costs', label: 'Cost & Pricing', icon: Wallet, color: '#fbbf24' },
-				{ to: '/llm/keys', label: 'Scoped Virtual Keys', icon: Fingerprint, color: '#ec4899' }
+				{
+					to: '/llm/models',
+					label: 'Model Router',
+					icon: CpuBoltBoldDuotoneIcon,
+					color: '#38bdf8'
+				},
+				{
+					to: '/llm/providers',
+					label: 'NIM Providers',
+					icon: LobeNvidiaIcon,
+					color: '#74B71B'
+				},
+				{
+					to: '/llm/costs',
+					label: 'Cost & Pricing',
+					icon: WalletMoneyBoldDuotoneIcon,
+					color: '#fbbf24'
+				},
+				{
+					to: '/llm/keys',
+					label: 'Scoped Virtual Keys',
+					icon: KeyMinimalisticSquare2BoldDuotoneIcon,
+					color: '#ec4899'
+				}
 			]
 		});
 		groups.push({
@@ -374,25 +477,46 @@ function navigationGroups(options: {
 				{
 					to: '/llm/logs',
 					label: 'Live Trace Logs',
-					icon: Pulse,
+					icon: Pulse2BoldDuotoneIcon,
 					color: '#10b981',
 					tourId: 'nav-logs'
 				},
-				{ to: '/llm/analytics', label: 'Spend Analytics', icon: ChartLineUp, color: '#38bdf8' },
-				{ to: '/raw-config', label: 'YAML Manifest', icon: FileCode, color: '#fbbf24', exact: true },
-				{ to: '/llm/client-setup', label: 'SDK Integration', icon: PlugsConnected, color: '#a78bfa' },
-				{ to: '/settings', label: 'System Settings', icon: GearSix, color: '#94a3b8' }
+				{
+					to: '/llm/analytics',
+					label: 'Spend Analytics',
+					icon: GraphNewUpBoldDuotoneIcon,
+					color: '#38bdf8'
+				},
+				{
+					to: '/raw-config',
+					label: 'YAML Manifest',
+					icon: FileCodeBoldDuotoneIcon,
+					color: '#fbbf24',
+					exact: true
+				},
+				{
+					to: '/llm/client-setup',
+					label: 'SDK Integration',
+					icon: PlugCircleBoldDuotoneIcon,
+					color: '#a78bfa'
+				},
+				{
+					to: '/settings',
+					label: 'System Settings',
+					icon: SettingsBoldDuotoneIcon,
+					color: '#94a3b8'
+				}
 			]
 		});
 	} else {
 		groups.push({
 			title: 'Protocols & Models',
 			items: [
-				{ to: '/llm/models', label: 'Model Router', icon: Cpu },
-				{ to: '/traffic/routes', label: 'A2A Agent Mesh', icon: Graph },
-				{ to: '/traffic/listeners', label: 'Mesh Listeners', icon: Broadcast },
-				{ to: '/traffic/policies', label: 'Traffic Policies', icon: ShieldCheck },
-				{ to: '/cel', label: 'CEL Rule Engine', icon: CodeBlock }
+				{ to: '/llm/models', label: 'Model Router', icon: CpuBoltBoldDuotoneIcon },
+				{ to: '/traffic/routes', label: 'A2A Agent Mesh', icon: LobeA2aIcon },
+				{ to: '/traffic/listeners', label: 'Mesh Listeners', icon: Radar2BrokenIcon },
+				{ to: '/traffic/policies', label: 'Traffic Policies', icon: ShieldCheckBoldDuotoneIcon },
+				{ to: '/cel', label: 'CEL Rule Engine', icon: CodeSquareBoldDuotoneIcon }
 			]
 		});
 	}
@@ -432,7 +556,7 @@ function MobileNavSection(props: {
 function MobileNavItem(props: {
 	to: string;
 	label: string;
-	icon: PhosphorIconComponent;
+	icon: NavIconComponent;
 	currentPath: string;
 	placeholder?: boolean;
 	groupStart?: boolean;
@@ -448,7 +572,7 @@ function MobileNavItem(props: {
 				className={props.groupStart ? 'mobile-nav-item nav-group-start' : 'mobile-nav-item'}
 				onClick={() => void navigate({ to: props.to })}
 			>
-				<Icon size={17} weight="duotone" />
+				<Icon size={18} secondaryOpacity={0.45} />
 				<span>{props.label}</span>
 			</button>
 		);
@@ -458,7 +582,7 @@ function MobileNavItem(props: {
 			to={props.to}
 			className={`${active ? 'mobile-nav-item active' : 'mobile-nav-item'}${props.groupStart ? ' nav-group-start' : ''}`}
 		>
-			<Icon size={17} weight={active ? 'fill' : 'duotone'} />
+			<Icon size={18} secondaryOpacity={active ? 0.6 : 0.42} />
 			<span>{props.label}</span>
 		</Link>
 	);
@@ -467,7 +591,7 @@ function MobileNavItem(props: {
 function NavItem(props: {
 	to: string;
 	label: string;
-	icon: PhosphorIconComponent;
+	icon: NavIconComponent;
 	color?: string;
 	tourId?: string;
 	currentPath: string;
@@ -489,7 +613,7 @@ function NavItem(props: {
 					: undefined
 			}
 		>
-			<Icon size={16} weight={active ? 'fill' : 'duotone'} />
+			<Icon size={17} secondaryOpacity={active ? 0.6 : 0.42} />
 		</span>
 	);
 	if (props.placeholder) {

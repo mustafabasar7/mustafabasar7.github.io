@@ -1,13 +1,11 @@
+import { LangGraph, MCP, Nvidia } from '@lobehub/icons';
+import {
+	KeyMinimalisticSquare2BoldDuotoneIcon,
+	SendSquareBoldDuotoneIcon,
+	ShieldWarningBoldDuotoneIcon
+} from '@solar-icons/react';
 import { useMutation } from '@tanstack/react-query';
 import { Link } from '@tanstack/react-router';
-import {
-	CubeTransparent,
-	Fingerprint,
-	Graph,
-	Lightning,
-	PaperPlaneRight,
-	ShieldWarning
-} from '@phosphor-icons/react';
 import {
 	Bot,
 	Braces,
@@ -746,15 +744,23 @@ export function PlaygroundPage() {
 						{PLAYGROUND_PRESETS.map(preset => {
 							const presetIcon =
 								preset.id === 'a2a' ? (
-									<Graph size={18} weight="duotone" style={{ color: '#38bdf8' }} />
+									<LangGraph.Avatar size={18} shape="square" />
 								) : preset.id === 'mcp' ? (
-									<CubeTransparent size={18} weight="duotone" style={{ color: '#10b981' }} />
+									<MCP.Avatar size={18} shape="square" />
 								) : preset.id === 'jailbreak' ? (
-									<ShieldWarning size={18} weight="duotone" style={{ color: '#f43f5e' }} />
+									<ShieldWarningBoldDuotoneIcon
+										size={18}
+										secondaryOpacity={0.45}
+										style={{ color: '#f43f5e' }}
+									/>
 								) : preset.id === 'pii' ? (
-									<Fingerprint size={18} weight="duotone" style={{ color: '#ec4899' }} />
+									<KeyMinimalisticSquare2BoldDuotoneIcon
+										size={18}
+										secondaryOpacity={0.45}
+										style={{ color: '#ec4899' }}
+									/>
 								) : (
-									<Lightning size={18} weight="duotone" style={{ color: '#fbbf24' }} />
+									<Nvidia.Avatar size={18} shape="square" />
 								);
 							return (
 								<button
@@ -793,7 +799,7 @@ export function PlaygroundPage() {
 							disabled={sendBlockers.length > 0}
 							onClick={send}
 						>
-							<PaperPlaneRight size={16} weight="duotone" />
+							<SendSquareBoldDuotoneIcon size={17} secondaryOpacity={0.45} />
 							Send
 						</button>
 						<button
@@ -861,15 +867,20 @@ function normalizedSpecificModel(model: LlmModel, specificModel: string) {
 
 function ChatMessageView(props: { message: ChatMessage }) {
 	const message = props.message;
-	const Icon = message.role === 'assistant' ? Bot : message.role === 'tool' ? Braces : User;
+	const avatarNode =
+		message.role === 'assistant' ? (
+			<Nvidia.Avatar size={20} shape="square" />
+		) : message.role === 'tool' ? (
+			<MCP.Avatar size={20} shape="square" />
+		) : (
+			<User size={17} />
+		);
 	const inspectValue = message.raw
 		? { message: toOpenAiMessages([message])[0], raw: message.raw }
 		: { message: toOpenAiMessages([message])[0] };
 	return (
 		<div className={`chat-message ${message.role}`}>
-			<div className="chat-avatar">
-				<Icon size={16} />
-			</div>
+			<div className="chat-avatar">{avatarNode}</div>
 			<div className="chat-bubble">
 				{message.role === 'assistant' && message.tool_calls?.length ? (
 					<ToolCallSummary message={message} />

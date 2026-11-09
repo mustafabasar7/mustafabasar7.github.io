@@ -1,11 +1,10 @@
+import { LangGraph, MCP, Nvidia } from '@lobehub/icons';
 import {
-	CubeTransparent,
-	Graph,
-	Pulse,
-	ShieldWarning,
-	Sparkle,
-	TerminalWindow
-} from '@phosphor-icons/react';
+	FileTerminalBoldDuotoneIcon,
+	MagicWand3BoldDuotoneIcon,
+	Pulse2BoldDuotoneIcon,
+	ShieldWarningBoldDuotoneIcon
+} from '@solar-icons/react';
 import { Link } from '@tanstack/react-router';
 import { Bot, Network, Server, Settings } from 'lucide-react';
 import type { ReactNode } from 'react';
@@ -218,7 +217,7 @@ export function HomePage() {
 				description="Mustafa Başar · Enterprise AI Solutions Engineer — Live A2A Mesh, Official MCP Servers, Deterministic Guardrails & NVIDIA NIM Cost Routing."
 				actions={
 					<Link className="button primary" to="/llm/playground">
-						<Sparkle size={17} weight="duotone" />
+						<MagicWand3BoldDuotoneIcon size={17} secondaryOpacity={0.45} />
 						Launch Live Agent Arena
 					</Link>
 				}
@@ -228,7 +227,7 @@ export function HomePage() {
 				<div className="surface-row">
 					<div className="surface-row-main">
 						<div className="surface-row-title">
-							<Sparkle size={20} weight="duotone" style={{ color: 'var(--primary)' }} />
+							<Nvidia.Avatar size={20} shape="square" />
 							<strong>1. Test Live Agent Arena & Try to Break Guardrails</strong>
 						</div>
 						<div className="surface-metrics">
@@ -239,7 +238,7 @@ export function HomePage() {
 					</div>
 					<div className="surface-row-actions">
 						<Link className="button primary" to="/llm/playground">
-							<Sparkle size={16} weight="duotone" />
+							<MagicWand3BoldDuotoneIcon size={16} secondaryOpacity={0.45} />
 							Open Arena
 						</Link>
 					</div>
@@ -248,7 +247,7 @@ export function HomePage() {
 				<div className="surface-row">
 					<div className="surface-row-main">
 						<div className="surface-row-title">
-							<TerminalWindow size={20} weight="duotone" style={{ color: 'var(--accent)' }} />
+							<MCP.Avatar size={20} shape="square" />
 							<strong>2. Inspect Official MCP Servers & Execute JSON-RPC Tools</strong>
 						</div>
 						<div className="surface-metrics">
@@ -259,11 +258,11 @@ export function HomePage() {
 					</div>
 					<div className="surface-row-actions">
 						<Link className="button" to="/mcp/servers">
-							<CubeTransparent size={16} weight="duotone" />
+							<MCP.Avatar size={16} shape="square" />
 							MCP Servers
 						</Link>
 						<Link className="button primary" to="/mcp/playground">
-							<TerminalWindow size={16} weight="duotone" />
+							<FileTerminalBoldDuotoneIcon size={16} secondaryOpacity={0.45} />
 							MCP Inspector
 						</Link>
 					</div>
@@ -272,7 +271,11 @@ export function HomePage() {
 				<div className="surface-row">
 					<div className="surface-row-main">
 						<div className="surface-row-title">
-							<ShieldWarning size={20} weight="duotone" style={{ color: 'var(--bad)' }} />
+							<ShieldWarningBoldDuotoneIcon
+								size={20}
+								secondaryOpacity={0.45}
+								style={{ color: 'var(--bad)' }}
+							/>
 							<strong>3. Audit A2A Agent Mesh & Deterministic Guardrail Policies</strong>
 						</div>
 						<div className="surface-metrics">
@@ -283,14 +286,14 @@ export function HomePage() {
 					</div>
 					<div className="surface-row-actions">
 						<Link className="button" to="/traffic/routes">
-							<Graph size={16} weight="duotone" />
+							<LangGraph.Avatar size={16} shape="square" />
 							A2A Mesh Routes
 						</Link>
 						<Link className="button" to="/cel">
 							CEL Engine
 						</Link>
 						<Link className="button primary" to="/llm/guardrails">
-							<ShieldWarning size={16} weight="duotone" />
+							<ShieldWarningBoldDuotoneIcon size={16} secondaryOpacity={0.45} />
 							Guardrail Rules
 						</Link>
 					</div>
@@ -299,7 +302,11 @@ export function HomePage() {
 				<div className="surface-row">
 					<div className="surface-row-main">
 						<div className="surface-row-title">
-							<Pulse size={20} weight="duotone" style={{ color: 'var(--warn)' }} />
+							<Pulse2BoldDuotoneIcon
+								size={20}
+								secondaryOpacity={0.45}
+								style={{ color: 'var(--warn)' }}
+							/>
 							<strong>4. Inspect Live Trace Payloads, Token Spend & SLM Cost Routing</strong>
 						</div>
 						<div className="surface-metrics">
@@ -316,7 +323,7 @@ export function HomePage() {
 							Spend Charts
 						</Link>
 						<Link className="button primary" to="/llm/logs">
-							<Pulse size={16} weight="duotone" />
+							<Pulse2BoldDuotoneIcon size={16} secondaryOpacity={0.45} />
 							Live Trace Logs
 						</Link>
 					</div>
@@ -365,7 +372,7 @@ export function HomePage() {
 			<section className="surface-overview-list" aria-label="Gateway surfaces">
 				<SurfaceRow
 					title="LLM"
-					icon={<Bot size={18} />}
+					icon={<Nvidia.Avatar size={20} shape="square" />}
 					enabled={hasLlm}
 					disabled={enable.isPending || update.isPending}
 					onEnable={() => void enableSurface('llm')}
@@ -394,7 +401,7 @@ export function HomePage() {
 				/>
 				<SurfaceRow
 					title="MCP"
-					icon={<Server size={18} />}
+					icon={<MCP.Avatar size={20} shape="square" />}
 					enabled={hasMcp}
 					disabled={enable.isPending || update.isPending}
 					onEnable={() => void enableSurface('mcp')}
@@ -420,7 +427,7 @@ export function HomePage() {
 				/>
 				<SurfaceRow
 					title="Traffic"
-					icon={<Network size={18} />}
+					icon={<LangGraph.Avatar size={20} shape="square" />}
 					enabled={hasTraffic}
 					disabled={enable.isPending || update.isPending}
 					onEnable={() => void enableSurface('apis')}

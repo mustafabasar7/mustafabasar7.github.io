@@ -6,11 +6,25 @@ export default defineConfig(() => ({
 	base: '/',
 	plugins: [react()],
 	resolve: {
-		alias: {
-			'@': fileURLToPath(new URL('./src', import.meta.url)),
-			'monaco-editor/esm/vs/editor/editor.worker.js': 'monaco-editor/editor/editor.worker.js',
-			'path-browserify': fileURLToPath(new URL('./src/pathBrowserifyEsm.ts', import.meta.url))
-		}
+		alias: [
+			{ find: '@', replacement: fileURLToPath(new URL('./src', import.meta.url)) },
+			{
+				find: /^@lobehub\/ui(\/.*)?$/,
+				replacement: fileURLToPath(new URL('./src/lobehubUiShim.tsx', import.meta.url))
+			},
+			{
+				find: 'lucide-react',
+				replacement: fileURLToPath(new URL('./src/solarLucideShim.tsx', import.meta.url))
+			},
+			{
+				find: 'monaco-editor/esm/vs/editor/editor.worker.js',
+				replacement: 'monaco-editor/editor/editor.worker.js'
+			},
+			{
+				find: 'path-browserify',
+				replacement: fileURLToPath(new URL('./src/pathBrowserifyEsm.ts', import.meta.url))
+			}
+		]
 	},
 	build: {
 		emptyOutDir: true,
