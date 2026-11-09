@@ -6786,3 +6786,100 @@ textarea {
 		width: 100%;
 	}
 }
+
+/* ---- Live Agent Arena: mobile responsiveness ---- */
+@media (max-width: 980px) {
+	.playground-chat-panel {
+		order: -1;
+		min-height: 0;
+	}
+
+	.mini-chat {
+		min-height: 260px;
+		max-height: 60vh;
+		padding: 8px;
+	}
+
+	.chat-message {
+		grid-template-columns: 24px minmax(0, 1fr);
+		gap: 6px;
+	}
+
+	.chat-message.user {
+		grid-template-columns: minmax(0, 1fr) 24px;
+	}
+
+	.chat-avatar {
+		width: 24px;
+		height: 24px;
+	}
+
+	.chat-bubble {
+		padding: 8px;
+		font-size: 13.5px;
+	}
+
+	.chat-md-table-wrap,
+	.chat-md-code-wrap {
+		max-width: 100%;
+		overflow-x: auto;
+	}
+
+	.chat-protocol-summary {
+		flex-wrap: wrap;
+		row-gap: 4px;
+	}
+
+	.chat-protocol-args {
+		flex-basis: 100%;
+		order: 5;
+	}
+
+	#tour-presets {
+		display: grid !important;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	#tour-presets .button {
+		justify-content: flex-start;
+		min-width: 0;
+		padding: 0 8px;
+		font-size: 12.5px;
+		white-space: normal;
+		text-align: left;
+		height: auto;
+		min-height: 36px;
+	}
+
+	#tour-send-row {
+		position: sticky;
+		bottom: 0;
+		z-index: 5;
+		padding: 8px 0;
+		background: var(--surface);
+	}
+
+	#tour-send-row .button.primary {
+		flex: 1;
+		justify-content: center;
+	}
+
+	.playground-run-timeline {
+		gap: 6px;
+		padding: 6px;
+	}
+
+	.driver-popover.cp-tour-popover {
+		padding: 16px 16px !important;
+		max-width: calc(100vw - 24px) !important;
+		min-width: 0 !important;
+	}
+
+	.driver-popover.cp-tour-popover .driver-popover-title {
+		font-size: 16.5px !important;
+	}
+
+	.driver-popover.cp-tour-popover .driver-popover-description {
+		font-size: 14px !important;
+	}
+}

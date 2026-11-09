@@ -1,7 +1,7 @@
 import { type Driver, driver } from 'driver.js';
 import 'driver.js/dist/driver.css';
 
-const TOUR_STORAGE_KEY = 'mb_control_panel_tour_seen_v5';
+const TOUR_STORAGE_KEY = 'mb_control_panel_tour_seen_v6';
 
 export type TourAction =
 	| 'preset'
@@ -11,61 +11,151 @@ export type TourAction =
 	| 'nav-inspector'
 	| 'nav-logs';
 
+type TourPart = 1 | 2;
+
 let activeDriver: Driver | null = null;
+let activePart: TourPart = 1;
 
 export function notifyTourAction(action: TourAction) {
 	if (!activeDriver || !activeDriver.isActive()) return;
 	const idx = activeDriver.getActiveIndex() ?? 0;
+	const drv = activeDriver;
 
-	if (action === 'preset' && idx <= 2) {
-		window.setTimeout(() => {
-			if (activeDriver?.isActive()) {
-				activeDriver.moveTo(3);
-			}
-		}, 120);
+	if (activePart === 1) {
+		if (action === 'preset' && idx === 0) {
+			window.setTimeout(() => drv.isActive() && drv.moveTo(1), 120);
+		} else if (action === 'send' && idx <= 1) {
+			window.setTimeout(() => drv.isActive() && drv.moveTo(2), 100);
+		} else if (action === 'response-received' && idx === 2) {
+			window.setTimeout(() => {
+				if (!drv.isActive()) return;
+				drv.refresh();
+				drv.updatePopover({
+					description:
+						'The Control Panel checked the Guardrails, routed your request and rendered the reply above.<div class="tour-action-hint">✅ Response ready! Read it, then continue to Part 2.</div>'
+				});
+			}, 150);
+		}
 		return;
 	}
 
-	if (action === 'send' && idx <= 4) {
-		window.setTimeout(() => {
-			if (activeDriver?.isActive()) {
-				activeDriver.moveTo(5);
-			}
-		}, 100);
-		return;
+	if (action === 'mcp-toggle' && idx === 0) {
+		window.setTimeout(() => drv.isActive() && drv.moveNext(), 150);
+	} else if (action === 'nav-logs' && idx === 1) {
+		window.setTimeout(() => drv.isActive() && drv.destroy(), 150);
 	}
+}
 
-	if (action === 'response-received') {
-		window.setTimeout(() => {
-			if (activeDriver?.isActive()) {
-				activeDriver.refresh();
-				if (activeDriver.getActiveIndex() === 5) {
-					activeDriver.updatePopover({
-						description:
-							'The Control Panel checked Guardrails, routed the request, and rendered the result above.<div class="tour-action-hint">✅ Response ready! Inspect it (or click Next →)</div>'
-					});
+function startPart1() {
+	activePart = 1;
+	const drv = driver({
+		showProgress: true,
+		progressText: 'Part 1/2 · {{current}} of {{total}}',
+		animate: true,
+		allowClose: true,
+		disableActiveInteraction: false,
+		overlayOpacity: 0.65,
+		stagePadding: 8,
+		stageRadius: 12,
+		popoverClass: 'cp-tour-popover',
+		nextBtnText: 'Next →',
+		prevBtnText: '← Back',
+		doneBtnText: 'Part 2: Explore →',
+		onDestroyed: () => {
+			if (activeDriver === drv) activeDriver = null;
+		},
+		steps: [
+			{
+				element: '#tour-presets',
+				popover: {
+					title: 'Part 1 · Try it — Pick a scenario',
+					description:
+						'This is a live chat — go ahead and use it! Pick any scenario: <strong>Ask About Mustafa Başar</strong>, <strong>A2A delegation</strong>, <strong>MCP tool call</strong> or a <strong>Guardrail attack</strong>.<div class="tour-action-hint">👇 Click any scenario button</div>',
+					side: 'top',
+					align: 'start',
+					showButtons: ['close']
+				}
+			},
+			{
+				element: '#tour-send-btn',
+				popover: {
+					title: 'Part 1 · Try it — Send it',
+					description:
+						'Your scenario is loaded in the message box (you can edit it). Safe prompts run live on <strong>NVIDIA Nemotron</strong>; attacks are blocked with <code>HTTP 403</code>.<div class="tour-action-hint">👇 Click “Send”</div>',
+					side: 'top',
+					align: 'start',
+					showButtons: ['previous', 'close']
+				}
+			},
+			{
+				element: '#tour-chat-area',
+				popover: {
+					title: 'Part 1 · Try it — Watch the result',
+					description:
+						'The live pipeline trace and the streamed reply appear right here.<div class="tour-action-hint">⏳ Waiting for the response…</div>',
+					side: 'bottom',
+					align: 'start',
+					showButtons: ['previous', 'next', 'close'],
+					onNextClick: () => {
+						drv.destroy();
+						startPart2();
+					}
 				}
 			}
-		}, 120);
-		return;
-	}
+		]
+	});
+	activeDriver = drv;
+	drv.drive();
+}
 
-	if (action === 'mcp-toggle' && idx === 6) {
-		window.setTimeout(() => {
-			if (activeDriver?.isActive()) {
-				activeDriver.moveNext();
+function startPart2() {
+	activePart = 2;
+	const drv = driver({
+		showProgress: true,
+		progressText: 'Part 2/2 · {{current}} of {{total}}',
+		animate: true,
+		allowClose: true,
+		disableActiveInteraction: false,
+		overlayOpacity: 0.65,
+		stagePadding: 8,
+		stageRadius: 12,
+		popoverClass: 'cp-tour-popover',
+		nextBtnText: 'Next →',
+		prevBtnText: '← Back',
+		doneBtnText: 'Finish',
+		onDestroyed: () => {
+			if (activeDriver === drv) activeDriver = null;
+		},
+		steps: [
+			{
+				element: '#tour-mcp-toggle',
+				popover: {
+					title: 'Part 2 · Explore — MCP tool servers',
+					description:
+						'Optional: enable <strong>8 live tools</strong> across <strong>6 MCP servers</strong> (<code>memory</code>, <code>git</code>, <code>fetch</code>, <code>enterprise-rag</code>, <code>a2a-bridge</code> …). Then try the A2A / MCP scenarios again.',
+					side: 'bottom',
+					align: 'start',
+					showButtons: ['next', 'close']
+				}
+			},
+			{
+				element: '[data-tour="nav-logs"]',
+				onHighlightStarted: el => {
+					el?.addEventListener('click', () => notifyTourAction('nav-logs'), { once: true });
+				},
+				popover: {
+					title: 'Part 2 · Explore — Traces & inspectors',
+					description:
+						'Open <strong>Live Trace Logs</strong>, <strong>MCP Inspector</strong> or <strong>AI Guardrails</strong> from the menu to see raw JSON, latency and the 60%+ SLM cost savings.',
+					side: 'right',
+					align: 'center',
+					showButtons: ['previous', 'next', 'close']
+				}
 			}
-		}, 150);
-		return;
-	}
-
-	if (action === 'nav-logs' && idx === 7) {
-		window.setTimeout(() => {
-			if (activeDriver?.isActive()) {
-				activeDriver.destroy();
-			}
-		}, 150);
-	}
+		]
+	});
+	activeDriver = drv;
+	drv.drive();
 }
 
 export function startGuidedTour(force = false) {
@@ -77,129 +167,6 @@ export function startGuidedTour(force = false) {
 			// Ignore storage errors
 		}
 	}
-
-	if (activeDriver?.isActive()) {
-		activeDriver.destroy();
-	}
-
-	const drv = driver({
-		showProgress: true,
-		animate: true,
-		allowClose: true,
-		disableActiveInteraction: false,
-		overlayOpacity: 0.65,
-		stagePadding: 10,
-		stageRadius: 12,
-		popoverClass: 'cp-tour-popover',
-		nextBtnText: 'Next →',
-		prevBtnText: '← Back',
-		doneBtnText: 'Finish Tour',
-		onDestroyed: () => {
-			activeDriver = null;
-		},
-		steps: [
-			{
-				element: '#tour-preset-profile',
-				popover: {
-					title: '1/8 — Ask About Mustafa Başar',
-					description:
-						'You can freely use this live chat! Click this button to query <strong>Mustafa Başar&apos;s AI projects, stack &amp; contact info</strong>.<div class="tour-action-hint">👇 Click the button to load it (or Next →)</div>',
-					side: 'top',
-					align: 'start',
-					showButtons: ['next', 'close']
-				}
-			},
-			{
-				element: '#tour-preset-a2a',
-				popover: {
-					title: '2/8 — Live A2A & MCP Protocols',
-					description:
-						'Or test multi-agent <strong>A2A delegation</strong> (<code>AgentCard</code>) and live <strong>MCP JSON-RPC tool calls</strong>.<div class="tour-action-hint">👇 Click to load (or Next →)</div>',
-					side: 'top',
-					align: 'start',
-					showButtons: ['previous', 'next', 'close']
-				}
-			},
-			{
-				element: '#tour-preset-jailbreak',
-				popover: {
-					title: '3/8 — Security Guardrail Attacks',
-					description:
-						'Want to test security? Try breaking the sub-10ms <strong>Prompt-Injection</strong> &amp; <strong>PII Redaction</strong> shields.<div class="tour-action-hint">👇 Click any scenario button to load a prompt</div>',
-					side: 'top',
-					align: 'start',
-					showButtons: ['previous', 'close']
-				}
-			},
-			{
-				element: '#tour-prompt-box',
-				popover: {
-					title: '4/8 — Editable Prompt Box',
-					description:
-						'Your chosen prompt is loaded here — you can edit it or type your own question anytime.',
-					side: 'top',
-					align: 'start',
-					showButtons: ['previous', 'next', 'close']
-				}
-			},
-			{
-				element: '#tour-send-btn',
-				popover: {
-					title: '5/8 — Send to Control Panel',
-					description:
-						'Now execute your prompt live on <strong>NVIDIA Nemotron 3.5 Super 120B</strong>.<div class="tour-action-hint">👇 Click the green "Send" button below</div>',
-					side: 'top',
-					align: 'start',
-					showButtons: ['previous', 'close']
-				}
-			},
-			{
-				element: '#tour-chat-area',
-				popover: {
-					title: '6/8 — Live Execution Trace & Reply',
-					description:
-						'Watch the live pipeline trace and response right here! Safe prompts stream from NVIDIA NIM, while attacks are blocked with <code>HTTP 403</code>.<div class="tour-action-hint">⏳ Watching live response... Click Next → when ready</div>',
-					side: 'bottom',
-					align: 'start',
-					showButtons: ['previous', 'next', 'close']
-				}
-			},
-			{
-				element: '#tour-mcp-toggle',
-				popover: {
-					title: '7/8 — 6 Connected MCP Servers',
-					description:
-						'Toggle <strong>8 live MCP tools</strong> (<code>memory</code>, <code>sequential-thinking</code>, <code>git</code>, <code>fetch</code>, <code>enterprise-rag</code>, <code>a2a-bridge</code>).',
-					side: 'bottom',
-					align: 'start',
-					showButtons: ['previous', 'next', 'close']
-				}
-			},
-			{
-				element: '[data-tour="nav-logs"]',
-				onHighlightStarted: el => {
-					if (el) {
-						el.addEventListener(
-							'click',
-							() => {
-								notifyTourAction('nav-logs');
-							},
-							{ once: true }
-						);
-					}
-				},
-				popover: {
-					title: '8/8 — Trace Logs & Protocol Inspectors',
-					description:
-						'Open <strong>Live Trace Logs</strong>, <strong>MCP Inspector</strong>, or <strong>AI Guardrails</strong> in the sidebar to inspect raw JSON payloads and 60%+ SLM cost savings!',
-					side: 'right',
-					align: 'center',
-					showButtons: ['previous', 'next', 'close']
-				}
-			}
-		]
-	});
-
-	activeDriver = drv;
-	drv.drive();
+	if (activeDriver?.isActive()) activeDriver.destroy();
+	startPart1();
 }
