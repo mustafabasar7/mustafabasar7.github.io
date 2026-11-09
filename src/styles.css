@@ -292,8 +292,8 @@ a {
 	border-radius: 16px !important;
 	box-shadow: 0 24px 56px rgb(0 0 0 / 0.55) !important;
 	padding: 24px 26px !important;
-	max-width: 480px !important;
-	min-width: 360px !important;
+	max-width: min(480px, calc(100vw - 24px)) !important;
+	min-width: min(340px, calc(100vw - 24px)) !important;
 	font-family: var(--font-sans) !important;
 }
 
@@ -358,6 +358,14 @@ a {
 	border-radius: 10px;
 	background: color-mix(in srgb, var(--surface-2) 85%, transparent);
 	overflow: hidden;
+	min-width: 0;
+	max-width: 100%;
+}
+
+@media (max-width: 620px) {
+	.chat-protocol-step {
+		margin-left: 0;
+	}
 }
 
 .chat-protocol-step.result {
@@ -1344,10 +1352,14 @@ h4.field-label {
 .playground-layout > .panel,
 .playground-shell > .panel {
 	min-height: 0;
+	min-width: 0;
+	max-width: 100%;
 }
 
 .playground-config-panel {
 	align-self: start;
+	min-width: 0;
+	max-width: 100%;
 }
 
 .playground-config-panel .section-heading {
@@ -1358,6 +1370,8 @@ h4.field-label {
 	display: flex;
 	min-height: min(76vh, 860px);
 	flex-direction: column;
+	min-width: 0;
+	max-width: 100%;
 }
 
 .playground-response-panel {
@@ -1373,6 +1387,7 @@ h4.field-label {
 
 .playground-tool-cell {
 	align-self: end;
+	min-width: 0;
 }
 
 .playground-control-row {
@@ -1380,10 +1395,16 @@ h4.field-label {
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: 14px;
 	grid-column: 1 / -1;
+	min-width: 0;
+}
+
+.playground-control-row > * {
+	min-width: 0;
+	max-width: 100%;
 }
 
 .playground-config-panel .playground-control-row {
-	grid-template-columns: 1fr;
+	grid-template-columns: minmax(0, 1fr);
 	gap: 10px;
 }
 
@@ -1396,6 +1417,8 @@ h4.field-label {
 	background: var(--surface-2);
 	padding: 12px;
 	margin-bottom: 12px;
+	min-width: 0;
+	max-width: 100%;
 }
 
 .system-prompt-details {
@@ -4804,6 +4827,7 @@ textarea {
 }
 
 .chat-bubble {
+	min-width: 0;
 	max-width: 100%;
 	border: 1px solid var(--line);
 	border-radius: 8px;
@@ -4851,6 +4875,10 @@ textarea {
 	font-size: 11px;
 	font-weight: 600;
 	line-height: 1.45;
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .message-inspector {
@@ -5606,12 +5634,22 @@ textarea {
 
 .custom-select {
 	position: relative;
+	min-width: 0;
+	max-width: 100%;
+}
+
+.custom-select-trigger {
+	min-width: 0;
+	max-width: 100%;
+	overflow: hidden;
 }
 
 .custom-select-value {
 	display: inline-flex;
 	align-items: center;
+	flex: 1 1 0%;
 	min-width: 0;
+	overflow: hidden;
 	gap: 8px;
 }
 
@@ -6485,7 +6523,7 @@ textarea {
 	.playground-control-row,
 	.policy-form-section.compact,
 	.surface-row {
-		grid-template-columns: 1fr;
+		grid-template-columns: minmax(0, 1fr);
 	}
 
 	.log-table {
