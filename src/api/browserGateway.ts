@@ -3,7 +3,7 @@ import { mcpSettingsFields } from '@/config';
 
 type AnyRecord = Record<string, unknown>;
 
-const STORAGE_CONFIG_KEY = 'mb_gateway_config_v2';
+const STORAGE_CONFIG_KEY = 'mb_gateway_config_v3';
 const STORAGE_RAW_KEY = 'mb_gateway_raw_v2';
 const STORAGE_LOGS_KEY = 'mb_gateway_logs_v2';
 
@@ -193,7 +193,7 @@ export function defaultGatewayConfig(): AnyRecord {
 							}
 						}
 					],
-					mode: 'optional',
+					mode: 'strict',
 					location: {
 						header: {
 							name: 'authorization',
