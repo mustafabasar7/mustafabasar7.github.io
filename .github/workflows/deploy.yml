@@ -25,7 +25,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: npm install --legacy-peer-deps --no-audit --no-fund
+      - run: rm -f package-lock.json && npm install --legacy-peer-deps --no-audit --no-fund
       - run: npm run build
       # GitHub Pages serves 404.html for unknown paths — make it the SPA shell so
       # client routes (e.g. /myworks) survive a direct hit or refresh.
