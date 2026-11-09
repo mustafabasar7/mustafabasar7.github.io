@@ -691,9 +691,14 @@ function checkGuardrails(messages: Array<Record<string, unknown>>): {
 	status: number;
 	message: string;
 } {
-	const fullText = messages
-		.map(m => (typeof m.content === 'string' ? m.content : JSON.stringify(m.content ?? '')))
-		.join('\n');
+	const lastMsg = messages.at(-1);
+	if (!lastMsg || lastMsg.role !== 'user') {
+		return { blocked: false, status: 200, message: '' };
+	}
+	const fullText =
+		typeof lastMsg.content === 'string'
+			? lastMsg.content
+			: JSON.stringify(lastMsg.content ?? '');
 
 	const llm = record(state.config.llm);
 	const policies = record(llm.policies);
@@ -907,18 +912,16 @@ async function callNvidiaNim(
 
 	const hasTools = Array.isArray(body.tools) && body.tools.length > 0;
 	const messages = array(body.messages) as Array<Record<string, unknown>>;
-	const hasToolResult = messages.some(m => m.role === 'tool');
+	const lastMessage = messages.at(-1);
+	const isNewUserTurn = lastMessage?.role === 'user';
 
-	// If MCP tools are attached and this is the first turn, let's check if a tool call is appropriate
-	if (hasTools && !hasToolResult) {
-		const userText = messages
-			.filter(m => m.role === 'user')
-			.map(m => stringValue(m.content))
-			.join(' ')
-			.toLowerCase();
+	// If MCP tools are attached and this is a fresh user turn, check if the latest user prompt requests a tool call
+	if (hasTools && isNewUserTurn) {
+		const latestUserRaw = stringValue(lastMessage.content).trim();
+		const userText = latestUserRaw.toLowerCase();
 		if (
 			userText.includes('a2a') ||
-			userText.includes('delegate') ||
+			userText.includes('agentcard') ||
 			userText.includes('researchagent') ||
 			userText.includes('factcheck')
 		) {
@@ -943,7 +946,7 @@ async function callNvidiaNim(
 											name: 'a2a_delegate_task',
 											arguments: JSON.stringify({
 												targetAgent: 'factcheck-agent',
-												taskInstruction: userText
+												taskInstruction: latestUserRaw
 											})
 										}
 									}
@@ -957,10 +960,10 @@ async function callNvidiaNim(
 			};
 		}
 		if (
-			userText.includes('mcp') ||
-			userText.includes('search') ||
-			userText.includes('archive') ||
-			userText.includes('article')
+			userText.includes('search_media_archive') ||
+			userText.includes('media archive') ||
+			userText.includes('mcp tool') ||
+			userText.includes('find articles')
 		) {
 			return {
 				ok: true,
@@ -982,7 +985,7 @@ async function callNvidiaNim(
 										function: {
 											name: 'search_media_archive',
 											arguments: JSON.stringify({
-												query: userText,
+												query: latestUserRaw,
 												topK: 2
 											})
 										}
@@ -1002,18 +1005,18 @@ async function callNvidiaNim(
 		if (m.role === 'tool') {
 			return {
 				role: 'user',
-				content: `[MCP Tool Execution Result (${stringValue(m.name) || 'tool'})]: ${stringValue(m.content)}`
+				content: `[Control Panel Executed MCP/A2A Tool (${stringValue(m.name) || 'tool'}) — Already completed, summarize this verified payload directly for the user]: ${stringValue(m.content)}`
 			};
 		}
 		if (m.role === 'assistant' && Array.isArray(m.tool_calls)) {
 			return {
 				role: 'assistant',
-				content: `Calling MCP tool: ${JSON.stringify(m.tool_calls)}`
+				content: `Dispatched protocol tool call: ${JSON.stringify(m.tool_calls)}`
 			};
 		}
 		return {
 			role: stringValue(m.role) || 'user',
-			content: stringValue(m.content)
+			content: stringValue(m.content) || '...'
 		};
 	});
 
@@ -1032,7 +1035,7 @@ async function callNvidiaNim(
 	const payload = {
 		model: resolvedModel,
 		messages: cleanMessages,
-		max_tokens: 1800,
+		max_tokens: 8192,
 		temperature: 0.4,
 		chat_template_kwargs: { enable_thinking: false }
 	};

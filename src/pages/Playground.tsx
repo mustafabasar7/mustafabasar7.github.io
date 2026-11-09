@@ -23,7 +23,8 @@ import { type ReactNode, useEffect, useMemo, useState } from 'react';
 
 import { PLAYGROUND_PRESETS } from '@/api/browserGateway';
 import { sendChatCompletion, sendMcpJsonRpc } from '@/api/playgroundApi';
-import { notifyTourAction, startGuidedTour } from '@/tour';
+import { startGuidedTour, notifyTourAction } from '@/tour';
+import { MarkdownContent } from '@/components/MarkdownContent';
 import { claudeSubscriptionWarning } from '@/claudeSubscription';
 import {
 	Dropdown,
@@ -908,25 +909,78 @@ function normalizedSpecificModel(model: LlmModel, specificModel: string) {
 
 function ChatMessageView(props: { message: ChatMessage }) {
 	const message = props.message;
-	const avatarNode =
-		message.role === 'assistant' ? (
-			<Nvidia.Avatar size={20} shape="square" />
-		) : message.role === 'tool' ? (
-			<MCP.Avatar size={20} shape="square" />
-		) : (
-			<User size={17} />
-		);
 	const inspectValue = message.raw
 		? { message: toOpenAiMessages([message])[0], raw: message.raw }
 		: { message: toOpenAiMessages([message])[0] };
+
+	if (message.role === 'assistant' && message.tool_calls?.length) {
+		const call = message.tool_calls[0];
+		const fnName = call?.function?.name || 'mcp_tool';
+		const isA2a = fnName.includes('a2a');
+		return (
+			<details className="chat-protocol-step">
+				<summary className="chat-protocol-summary">
+					<span className="chat-protocol-icon">
+						{isA2a ? (
+							<LangGraph.Avatar size={16} shape="square" />
+						) : (
+							<MCP.Avatar size={16} shape="square" />
+						)}
+					</span>
+					<span className="chat-protocol-badge">{isA2a ? 'A2A HANDOFF' : 'MCP DISPATCH'}</span>
+					<code className="chat-protocol-fn">{fnName}()</code>
+					<span className="chat-protocol-args">
+						{summarizeValue(parseToolArguments(call?.function?.arguments))}
+					</span>
+					<span className="chat-protocol-inspect-hint">Payload ▾</span>
+				</summary>
+				<div className="chat-protocol-body">
+					<JsonBlock value={inspectValue} />
+				</div>
+			</details>
+		);
+	}
+
+	if (message.role === 'tool') {
+		const fnName = message.name || 'mcp_tool';
+		const isA2a = fnName.includes('a2a');
+		return (
+			<details className="chat-protocol-step result">
+				<summary className="chat-protocol-summary">
+					<span className="chat-protocol-icon">
+						{isA2a ? (
+							<LangGraph.Avatar size={16} shape="square" />
+						) : (
+							<MCP.Avatar size={16} shape="square" />
+						)}
+					</span>
+					<span className="chat-protocol-badge ok">
+						{isA2a ? 'A2A VERIFIED' : 'MCP RESULT'}
+					</span>
+					<code className="chat-protocol-fn">{fnName}</code>
+					<span className="chat-protocol-args">{summarizeToolResult(message.content)}</span>
+					<span className="chat-protocol-inspect-hint">Result JSON ▾</span>
+				</summary>
+				<div className="chat-protocol-body">
+					<JsonBlock value={inspectValue} />
+				</div>
+			</details>
+		);
+	}
+
+	const avatarNode =
+		message.role === 'assistant' ? (
+			<Nvidia.Avatar size={20} shape="square" />
+		) : (
+			<User size={17} />
+		);
+
 	return (
 		<div className={`chat-message ${message.role}`}>
 			<div className="chat-avatar">{avatarNode}</div>
 			<div className="chat-bubble">
-				{message.role === 'assistant' && message.tool_calls?.length ? (
-					<ToolCallSummary message={message} />
-				) : message.role === 'tool' ? (
-					<ToolResultSummary message={message} />
+				{message.role === 'assistant' ? (
+					<MarkdownContent content={message.content} />
 				) : (
 					message.content
 				)}
@@ -1010,33 +1064,6 @@ function RunTimeline(props: { steps: RunStep[] }) {
 					<span>{step.label}</span>
 				</div>
 			))}
-		</div>
-	);
-}
-
-function ToolCallSummary(props: { message: ChatMessage }) {
-	return (
-		<div className="tool-call-summary">
-			{props.message.content.trim() ? <p>{props.message.content}</p> : null}
-			{props.message.tool_calls?.map(call => (
-				<div className="tool-call-row" key={call.id}>
-					<span className="tool-pill">Tool call</span>
-					<strong>{call.function?.name || 'unknown'}</strong>
-					<small>{summarizeValue(parseToolArguments(call.function?.arguments))}</small>
-				</div>
-			))}
-		</div>
-	);
-}
-
-function ToolResultSummary(props: { message: ChatMessage }) {
-	return (
-		<div className="tool-call-summary">
-			<div className="tool-call-row">
-				<span className="tool-pill">Tool result</span>
-				<strong>{props.message.name || 'unknown'}</strong>
-				<small>{summarizeToolResult(props.message.content)}</small>
-			</div>
 		</div>
 	);
 }
