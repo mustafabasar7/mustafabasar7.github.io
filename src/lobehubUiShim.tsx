@@ -116,6 +116,22 @@ export function Flexbox({
 	);
 }
 
+export function Divider(props: HTMLAttributes<HTMLSpanElement>) {
+	return (
+		<span
+			style={{
+				display: 'inline-block',
+				width: 1,
+				height: '1em',
+				background: 'currentColor',
+				opacity: 0.25,
+				margin: '0 6px'
+			}}
+			{...props}
+		/>
+	);
+}
+
 export function Tag({
 	icon,
 	children,
