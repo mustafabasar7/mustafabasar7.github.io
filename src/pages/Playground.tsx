@@ -559,7 +559,7 @@ export function PlaygroundPage() {
 			<div id="tour-welcome-banner">
 				<StatusBanner
 					state="info"
-					title="Interactive AI Control Panel — You Can Freely Use This Live Chat!"
+					title="Interactive AI Control Panel — Chat With a Real LLM, Free to Use!"
 				>
 					Ask anything about <strong>Mustafa Başar&apos;s AI Engineering projects, architecture &amp; contact info</strong>, execute live <strong>A2A &amp; MCP tools</strong> across 6 connected servers, or try to break the <strong>PII &amp; Prompt-Injection Guardrails</strong>. Click a scenario chip below or type your own prompt!
 				</StatusBanner>

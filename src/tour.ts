@@ -70,7 +70,7 @@ function startPart1() {
 				popover: {
 					title: 'Part 1 · Try it — Pick a scenario',
 					description:
-						'This is a live chat — go ahead and use it! Pick any scenario: <strong>Ask About Mustafa Başar</strong>, <strong>A2A delegation</strong>, <strong>MCP tool call</strong> or a <strong>Guardrail attack</strong>.<div class="tour-action-hint">👇 Click any scenario button</div>',
+						'You are talking to a <strong>real LLM</strong> (NVIDIA Nemotron) — go ahead and use it! Pick any scenario: <strong>Ask About Mustafa Başar</strong>, <strong>A2A delegation</strong>, <strong>MCP tool call</strong> or a <strong>Guardrail attack</strong>.<div class="tour-action-hint">👇 Click any scenario button</div>',
 					side: 'top',
 					align: 'start',
 					showButtons: ['close']
