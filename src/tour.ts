@@ -1,26 +1,70 @@
 import { type Driver, driver } from 'driver.js';
 import 'driver.js/dist/driver.css';
 
-const TOUR_STORAGE_KEY = 'mb_control_panel_tour_seen_v4';
+const TOUR_STORAGE_KEY = 'mb_control_panel_tour_seen_v5';
+
+export type TourAction =
+	| 'preset'
+	| 'send'
+	| 'response-received'
+	| 'mcp-toggle'
+	| 'nav-inspector'
+	| 'nav-logs';
 
 let activeDriver: Driver | null = null;
-let currentActionTarget: 'preset' | 'send' | 'mcp-toggle' | 'nav-inspector' | 'nav-logs' | null =
-	null;
 
-export function notifyTourAction(
-	action: 'preset' | 'send' | 'mcp-toggle' | 'nav-inspector' | 'nav-logs'
-) {
+export function notifyTourAction(action: TourAction) {
 	if (!activeDriver || !activeDriver.isActive()) return;
-	if (currentActionTarget === action) {
+	const idx = activeDriver.getActiveIndex() ?? 0;
+
+	if (action === 'preset' && idx <= 2) {
 		window.setTimeout(() => {
 			if (activeDriver?.isActive()) {
-				if (activeDriver.hasNextStep()) {
-					activeDriver.moveNext();
-				} else {
-					activeDriver.destroy();
+				activeDriver.moveTo(3);
+			}
+		}, 120);
+		return;
+	}
+
+	if (action === 'send' && idx <= 4) {
+		window.setTimeout(() => {
+			if (activeDriver?.isActive()) {
+				activeDriver.moveTo(5);
+			}
+		}, 100);
+		return;
+	}
+
+	if (action === 'response-received') {
+		window.setTimeout(() => {
+			if (activeDriver?.isActive()) {
+				activeDriver.refresh();
+				if (activeDriver.getActiveIndex() === 5) {
+					activeDriver.updatePopover({
+						description:
+							'The Control Panel checked Guardrails, routed the request, and rendered the result above.<div class="tour-action-hint">✅ Response ready! Inspect it (or click Next →)</div>'
+					});
 				}
 			}
-		}, 180);
+		}, 120);
+		return;
+	}
+
+	if (action === 'mcp-toggle' && idx === 6) {
+		window.setTimeout(() => {
+			if (activeDriver?.isActive()) {
+				activeDriver.moveNext();
+			}
+		}, 150);
+		return;
+	}
+
+	if (action === 'nav-logs' && idx === 7) {
+		window.setTimeout(() => {
+			if (activeDriver?.isActive()) {
+				activeDriver.destroy();
+			}
+		}, 150);
 	}
 }
 
@@ -43,7 +87,7 @@ export function startGuidedTour(force = false) {
 		animate: true,
 		allowClose: true,
 		disableActiveInteraction: false,
-		overlayOpacity: 0.68,
+		overlayOpacity: 0.65,
 		stagePadding: 10,
 		stageRadius: 12,
 		popoverClass: 'cp-tour-popover',
@@ -51,79 +95,89 @@ export function startGuidedTour(force = false) {
 		prevBtnText: '← Back',
 		doneBtnText: 'Finish Tour',
 		onDestroyed: () => {
-			currentActionTarget = null;
 			activeDriver = null;
 		},
 		steps: [
 			{
-				element: '#tour-presets',
-				onHighlightStarted: () => {
-					currentActionTarget = 'preset';
-				},
+				element: '#tour-preset-profile',
 				popover: {
-					title: 'Step 1/5 — Choose a Live Scenario',
+					title: '1/8 — Ask About Mustafa Başar',
 					description:
-						'You can freely use this live chat! Pick a scenario below:<br/><br/>• <strong>Ask About Mustafa Başar:</strong> Query AI projects, architecture &amp; contact info<br/>• <strong>A2A Agent Delegation:</strong> Multi-agent coordination via <code>AgentCard</code><br/>• <strong>MCP Tool Call:</strong> Live JSON-RPC tool execution<br/>• <strong>Try Jailbreak / PII Leak:</strong> Test sub-10ms Guardrail blocking<div class="tour-action-hint">👇 Click any scenario button in the highlighted box to continue</div>',
+						'You can freely use this live chat! Click this button to query <strong>Mustafa Başar&apos;s AI projects, stack &amp; contact info</strong>.<div class="tour-action-hint">👇 Click the button to load it (or Next →)</div>',
 					side: 'top',
 					align: 'start',
-					showButtons: ['close']
+					showButtons: ['next', 'close']
 				}
 			},
 			{
-				element: '#tour-send-row',
-				onHighlightStarted: () => {
-					currentActionTarget = 'send';
-				},
+				element: '#tour-preset-a2a',
 				popover: {
-					title: 'Step 2/5 — Run the Prompt Live',
+					title: '2/8 — Live A2A & MCP Protocols',
 					description:
-						'Your chosen prompt is now loaded into the message box.<br/><br/>Safe prompts execute live on <strong>NVIDIA Nemotron 3.5 Super 120B</strong>, while attacks are intercepted by the Guardrail engine with <code>HTTP 403</code>.<div class="tour-action-hint">👇 Click the green "Send" button below to run &amp; advance</div>',
+						'Or test multi-agent <strong>A2A delegation</strong> (<code>AgentCard</code>) and live <strong>MCP JSON-RPC tool calls</strong>.<div class="tour-action-hint">👇 Click to load (or Next →)</div>',
+					side: 'top',
+					align: 'start',
+					showButtons: ['previous', 'next', 'close']
+				}
+			},
+			{
+				element: '#tour-preset-jailbreak',
+				popover: {
+					title: '3/8 — Security Guardrail Attacks',
+					description:
+						'Want to test security? Try breaking the sub-10ms <strong>Prompt-Injection</strong> &amp; <strong>PII Redaction</strong> shields.<div class="tour-action-hint">👇 Click any scenario button to load a prompt</div>',
 					side: 'top',
 					align: 'start',
 					showButtons: ['previous', 'close']
 				}
 			},
 			{
-				element: '#tour-mcp-toggle',
-				onHighlightStarted: () => {
-					currentActionTarget = 'mcp-toggle';
-				},
+				element: '#tour-prompt-box',
 				popover: {
-					title: 'Step 3/5 — Connected MCP Tool Servers',
+					title: '4/8 — Editable Prompt Box',
 					description:
-						'When enabled, the Control Panel connects <strong>8 live tools</strong> across <strong>6 official MCP servers</strong> (<code>memory</code>, <code>sequential-thinking</code>, <code>git</code>, <code>fetch</code>, <code>enterprise-rag</code>, <code>a2a-bridge</code>).<div class="tour-action-hint">👇 Toggle the checkbox or click Next →</div>',
+						'Your chosen prompt is loaded here — you can edit it or type your own question anytime.',
+					side: 'top',
+					align: 'start',
+					showButtons: ['previous', 'next', 'close']
+				}
+			},
+			{
+				element: '#tour-send-btn',
+				popover: {
+					title: '5/8 — Send to Control Panel',
+					description:
+						'Now execute your prompt live on <strong>NVIDIA Nemotron 3.5 Super 120B</strong>.<div class="tour-action-hint">👇 Click the green "Send" button below</div>',
+					side: 'top',
+					align: 'start',
+					showButtons: ['previous', 'close']
+				}
+			},
+			{
+				element: '#tour-chat-area',
+				popover: {
+					title: '6/8 — Live Execution Trace & Reply',
+					description:
+						'Watch the live pipeline trace and response right here! Safe prompts stream from NVIDIA NIM, while attacks are blocked with <code>HTTP 403</code>.<div class="tour-action-hint">⏳ Watching live response... Click Next → when ready</div>',
 					side: 'bottom',
 					align: 'start',
 					showButtons: ['previous', 'next', 'close']
 				}
 			},
 			{
-				element: '[data-tour="nav-mcp-inspector"]',
-				onHighlightStarted: el => {
-					currentActionTarget = 'nav-inspector';
-					if (el) {
-						el.addEventListener(
-							'click',
-							() => {
-								notifyTourAction('nav-inspector');
-							},
-							{ once: true }
-						);
-					}
-				},
+				element: '#tour-mcp-toggle',
 				popover: {
-					title: 'Step 4/5 — Inspect Raw MCP & Guardrail Rules',
+					title: '7/8 — 6 Connected MCP Servers',
 					description:
-						'Want to test raw protocol payloads? Open <strong>MCP Inspector</strong> to fire JSON-RPC <code>tools/call</code> requests, <strong>A2A Agent Mesh</strong> for agent routing, or <strong>AI Guardrails</strong> to edit security rules.',
-					side: 'right',
-					align: 'center',
+						'Toggle <strong>8 live MCP tools</strong> (<code>memory</code>, <code>sequential-thinking</code>, <code>git</code>, <code>fetch</code>, <code>enterprise-rag</code>, <code>a2a-bridge</code>).',
+					side: 'bottom',
+					align: 'start',
 					showButtons: ['previous', 'next', 'close']
 				}
 			},
 			{
 				element: '[data-tour="nav-logs"]',
 				onHighlightStarted: el => {
-					currentActionTarget = 'nav-logs';
 					if (el) {
 						el.addEventListener(
 							'click',
@@ -135,9 +189,9 @@ export function startGuidedTour(force = false) {
 					}
 				},
 				popover: {
-					title: 'Step 5/5 — Audit Live Trace Logs & Cost Savings',
+					title: '8/8 — Trace Logs & Protocol Inspectors',
 					description:
-						'Every prompt you just ran is recorded in <strong>Live Trace Logs</strong> and <strong>Spend Analytics</strong>. Open <strong>Live Trace Logs</strong> anytime to inspect full JSON payloads, latency, and 60%+ SLM token cost savings!',
+						'Open <strong>Live Trace Logs</strong>, <strong>MCP Inspector</strong>, or <strong>AI Guardrails</strong> in the sidebar to inspect raw JSON payloads and 60%+ SLM cost savings!',
 					side: 'right',
 					align: 'center',
 					showButtons: ['previous', 'next', 'close']

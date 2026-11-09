@@ -504,6 +504,7 @@ export function PlaygroundPage() {
 			setError(err instanceof Error ? err.message : 'Request failed');
 		} finally {
 			setLoading(false);
+			notifyTourAction('response-received');
 		}
 	}
 
@@ -592,25 +593,27 @@ export function PlaygroundPage() {
 					</div>
 					<div className="playground-setup-bar">
 						<div className="playground-control-row">
-							<FieldGroup label="Model">
-								<Dropdown
-									ariaLabel="Model"
-									value={selectedModel}
-									placeholder="No models"
-									searchable
-									options={modelOptions.map(item => ({
-										value: item.value,
-										label: item.kind === 'model' ? modelLabel(item.config) : item.name,
-										description: item.description,
-										icon: item.icon,
-										searchText: item.searchText
-									}))}
-									onChange={value => {
-										setModel(value);
-										setSpecificModel('');
-									}}
-								/>
-							</FieldGroup>
+							<div id="tour-model-selector">
+								<FieldGroup label="Model">
+									<Dropdown
+										ariaLabel="Model"
+										value={selectedModel}
+										placeholder="No models"
+										searchable
+										options={modelOptions.map(item => ({
+											value: item.value,
+											label: item.kind === 'model' ? modelLabel(item.config) : item.name,
+											description: item.description,
+											icon: item.icon,
+											searchText: item.searchText
+										}))}
+										onChange={value => {
+											setModel(value);
+											setSpecificModel('');
+										}}
+									/>
+								</FieldGroup>
+							</div>
 							{selectedModelConfig && isWildcardModelName(selectedModelConfig.name) ? (
 								<Field
 									label="Specific model"
@@ -723,32 +726,39 @@ export function PlaygroundPage() {
 					</details>
 				</Panel>
 				<Panel className="playground-chat-panel">
-					{runSteps.length ? <RunTimeline steps={runSteps} /> : null}
-					<div className="mini-chat">
-						{messages.length === 0 && !loading ? (
-							<div className="chat-empty">No messages yet.</div>
-						) : (
-							messages.map((message, index) => (
-								<ChatMessageView
-									message={message}
-									key={`${message.role}-${
-										// biome-ignore lint/suspicious/noArrayIndexKey: Existing lint violation; remove this suppression when the underlying issue is fixed.
-										index
-									}`}
-								/>
-							))
-						)}
-						{loading ? (
-							<div className="chat-message user pending">
-								<div className="chat-avatar">
-									<User size={16} />
-								</div>
-								<div className="chat-bubble">
-									<Loader2 className="spin" size={15} />
-									Sending
-								</div>
-							</div>
+					<div id="tour-chat-area" style={{ display: 'grid', gap: '12px' }}>
+						{runSteps.length ? <RunTimeline steps={runSteps} /> : null}
+						{error ? (
+							<StatusBanner state="bad" title="Guardrail / Request Alert">
+								{error}
+							</StatusBanner>
 						) : null}
+						<div className="mini-chat">
+							{messages.length === 0 && !loading ? (
+								<div className="chat-empty">No messages yet.</div>
+							) : (
+								messages.map((message, index) => (
+									<ChatMessageView
+										message={message}
+										key={`${message.role}-${
+											// biome-ignore lint/suspicious/noArrayIndexKey: Existing lint violation; remove this suppression when the underlying issue is fixed.
+											index
+										}`}
+									/>
+								))
+							)}
+							{loading ? (
+								<div className="chat-message user pending">
+									<div className="chat-avatar">
+										<User size={16} />
+									</div>
+									<div className="chat-bubble">
+										<Loader2 className="spin" size={15} />
+										Sending
+									</div>
+								</div>
+							) : null}
+						</div>
 					</div>
 					<div
 						id="tour-presets"
@@ -785,6 +795,7 @@ export function PlaygroundPage() {
 							return (
 								<button
 									key={preset.id}
+									id={`tour-preset-${preset.id}`}
 									className="button"
 									type="button"
 									onClick={() => {
@@ -799,25 +810,28 @@ export function PlaygroundPage() {
 							);
 						})}
 					</div>
-					<Field label="User message">
-						<textarea
-							rows={6}
-							value={prompt}
-							onChange={event => setPrompt(event.target.value)}
-							onKeyDown={event => {
-								if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
-									event.preventDefault();
-									if (sendBlockers.length === 0) {
-										notifyTourAction('send');
-										void send();
+					<div id="tour-prompt-box">
+						<Field label="User message">
+							<textarea
+								rows={6}
+								value={prompt}
+								onChange={event => setPrompt(event.target.value)}
+								onKeyDown={event => {
+									if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
+										event.preventDefault();
+										if (sendBlockers.length === 0) {
+											notifyTourAction('send');
+											void send();
+										}
 									}
-								}
-							}}
-							placeholder="Ask a test question..."
-						/>
-					</Field>
+								}}
+								placeholder="Ask a test question..."
+							/>
+						</Field>
+					</div>
 					<div className="button-row" id="tour-send-row">
 						<button
+							id="tour-send-btn"
 							className="button primary"
 							type="button"
 							disabled={sendBlockers.length > 0}
