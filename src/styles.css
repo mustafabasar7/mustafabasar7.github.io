@@ -339,6 +339,18 @@ a {
 	color: #04130e !important;
 }
 
+.driver-popover.cp-tour-popover .tour-action-hint {
+	margin-top: 14px;
+	padding: 10px 14px;
+	border-radius: 10px;
+	background: color-mix(in srgb, var(--primary) 14%, var(--surface-2));
+	border: 1px dashed color-mix(in srgb, var(--primary) 55%, var(--line));
+	color: var(--primary-strong);
+	font-size: 14px;
+	font-weight: 700;
+	line-height: 1.4;
+}
+
 .sidebar-links {
 	display: flex;
 	align-items: center;
