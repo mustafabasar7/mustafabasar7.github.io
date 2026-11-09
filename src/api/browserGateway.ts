@@ -18,18 +18,18 @@ const NVIDIA_DIRECT_URL = 'https://integrate.api.nvidia.com/v1/chat/completions'
 
 export const PLAYGROUND_PRESETS = [
 	{
-		id: 'profile',
-		label: 'Ask About Mustafa Başar',
-		prompt:
-			"Who is Mustafa Başar? Summarize his AI engineering expertise, key multi-agent & MCP architectures, and how I can contact him.",
-		enableMcp: false
-	},
-	{
 		id: 'a2a',
 		label: 'A2A Agent Delegation',
 		prompt:
 			'Coordinate ResearchAgent and FactCheckAgent via A2A AgentCard to verify our Q4 enterprise AI adoption report before publishing.',
 		enableMcp: true
+	},
+	{
+		id: 'profile',
+		label: 'Ask About Mustafa Başar',
+		prompt:
+			"Who is Mustafa Başar? Summarize his AI engineering expertise, key multi-agent & MCP architectures, and how I can contact him.",
+		enableMcp: false
 	},
 	{
 		id: 'mcp',
