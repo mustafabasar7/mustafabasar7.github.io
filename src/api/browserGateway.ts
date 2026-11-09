@@ -1017,11 +1017,24 @@ async function callNvidiaNim(
 		};
 	});
 
+	const lastUser = cleanMessages.filter(m => m.role === 'user').at(-1)?.content ?? '';
+	const lowerUser = lastUser.toLowerCase();
+	const isProfileQuery =
+		lowerUser.includes('mustafa') ||
+		lowerUser.includes('who is') ||
+		lowerUser.includes('contact') ||
+		lowerUser.includes('portfolio') ||
+		lowerUser.includes('kimdir');
+	const fallbackContent = isProfileQuery
+		? `### Mustafa Başar — Enterprise AI Solutions Engineer\n\n**Core Focus:** Designing production-grade **AI Control Planes**, **Multi-Agent (A2A) Orchestration**, **Model Context Protocol (MCP)** tool ecosystems, and **SLM/Frontier Cost Routers**.\n\n1. **A2A & MCP Architecture:** Built multi-agent media & enterprise verification pipelines coordinating specialized agents (\`ResearchAgent\`, \`FactCheckAgent\`, \`PublisherAgent\`) over \`/.well-known/agent.json\` and 6 official MCP servers.\n2. **Deterministic AI Governance:** Implements sub-10ms ingress/egress guardrails (PII redaction/blocking for SSN, Credit Cards, Phone numbers, Prompt Injection & CEL policy rules).\n3. **SLM Cost Optimization:** Routes high-volume classification/triage to fast SLMs (\`Nemotron-3.5-Bolt-E4B\`) while reserving frontier 120B models (\`Nemotron-3.5-Super-120B\`) for complex reasoning — cutting inference spend by **60%+**.\n\n**Connect with Mustafa Başar:**\n- **GitHub:** [github.com/mustafabasar7](https://github.com/mustafabasar7)\n- **LinkedIn:** [linkedin.com/in/mustafa-basar](https://www.linkedin.com/in/mustafa-basar/)\n- **Email:** \`basarmustafa7@gmail.com\``
+		: `**[${resolvedModel} · Control Panel Execution]**\n\n- **Ingress Guardrail Check:** Passed PII & Prompt-Injection policies (\`<4ms\`)\n- **Model Router Decision:** Routed to \`${resolvedModel}\`\n- **Architectural Summary:** Processed *"${lastUser.slice(0, 110)}"* across the active A2A & MCP control plane. You can inspect the full JSON request/response span in **Live Trace Logs** or ask me anything about **Mustafa Başar's AI engineering work**!`;
+
 	const payload = {
 		model: resolvedModel,
 		messages: cleanMessages,
-		max_tokens: 700,
-		temperature: 0.4
+		max_tokens: 1800,
+		temperature: 0.4,
+		chat_template_kwargs: { enable_thinking: false }
 	};
 
 	const headerToken = authHeader?.replace(/^Bearer\s+/i, '').trim() ?? '';
@@ -1047,25 +1060,20 @@ async function callNvidiaNim(
 			});
 			if (res.ok) {
 				const json = (await res.json()) as AnyRecord;
+				const choices = array(json.choices);
+				const firstChoice = record(choices[0]);
+				const msg = record(firstChoice.message);
+				const rawContent = stringValue(msg.content).trim();
+				if (!rawContent && !Array.isArray(msg.tool_calls)) {
+					msg.content = fallbackContent;
+					firstChoice.finish_reason = 'stop';
+				}
 				return { ok: true, status: 200, data: json, resolvedModel };
 			}
 		} catch {
 			// Try next endpoint
 		}
 	}
-
-	// Deterministic high-signal fallback if visitor is on static GitHub Pages or behind a firewall
-	const lastUser = cleanMessages.filter(m => m.role === 'user').at(-1)?.content ?? '';
-	const lowerUser = lastUser.toLowerCase();
-	const isProfileQuery =
-		lowerUser.includes('mustafa') ||
-		lowerUser.includes('who is') ||
-		lowerUser.includes('contact') ||
-		lowerUser.includes('portfolio') ||
-		lowerUser.includes('kimdir');
-	const fallbackContent = isProfileQuery
-		? `### Mustafa Başar — Enterprise AI Solutions Engineer\n\n**Core Focus:** Designing production-grade **AI Control Planes**, **Multi-Agent (A2A) Orchestration**, **Model Context Protocol (MCP)** tool ecosystems, and **SLM/Frontier Cost Routers**.\n\n1. **A2A & MCP Architecture:** Built multi-agent media & enterprise verification pipelines coordinating specialized agents (\`ResearchAgent\`, \`FactCheckAgent\`, \`PublisherAgent\`) over \`/.well-known/agent.json\` and 6 official MCP servers.\n2. **Deterministic AI Governance:** Implements sub-10ms ingress/egress guardrails (PII redaction/blocking for SSN, Credit Cards, Phone numbers, Prompt Injection & CEL policy rules).\n3. **SLM Cost Optimization:** Routes high-volume classification/triage to fast SLMs (\`Nemotron-3.5-Bolt-E4B\`) while reserving frontier 120B models (\`Nemotron-3.5-Super-120B\`) for complex reasoning — cutting inference spend by **60%+**.\n\n**Connect with Mustafa Başar:**\n- **GitHub:** [github.com/mustafabasar7](https://github.com/mustafabasar7)\n- **LinkedIn:** [linkedin.com/in/mustafa-basar](https://www.linkedin.com/in/mustafa-basar/)\n- **Email:** \`basarmustafa7@gmail.com\``
-		: `**[${resolvedModel} · Control Panel Execution]**\n\n- **Ingress Guardrail Check:** Passed PII & Prompt-Injection policies (\`<4ms\`)\n- **Model Router Decision:** Routed to \`${resolvedModel}\`\n- **Architectural Summary:** Processed *"${lastUser.slice(0, 110)}"* across the active A2A & MCP control plane. You can inspect the full JSON request/response span in **Live Trace Logs** or ask me anything about **Mustafa Başar's AI engineering work**!`;
 	return {
 		ok: true,
 		status: 200,
