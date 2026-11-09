@@ -1,7 +1,7 @@
 import { type Driver, driver } from 'driver.js';
 import 'driver.js/dist/driver.css';
 
-const TOUR_STORAGE_KEY = 'mb_control_panel_tour_seen_v6';
+const TOUR_STORAGE_KEY = 'mb_control_panel_tour_seen_v7';
 
 export type TourAction =
 	| 'preset'
@@ -32,7 +32,7 @@ export function notifyTourAction(action: TourAction) {
 				drv.refresh();
 				drv.updatePopover({
 					description:
-						'The Control Panel checked the Guardrails, routed your request and rendered the reply above.<div class="tour-action-hint">✅ Response ready! Read it, then continue to Part 2.</div>'
+						'Guardrails checked your request. Try another scenario, or continue.<div class="tour-action-hint">✅ Done. Tap “Part 2: Explore →”</div>'
 				});
 			}, 150);
 		}
@@ -68,9 +68,9 @@ function startPart1() {
 			{
 				element: '#tour-presets',
 				popover: {
-					title: 'Part 1 · Try it — Pick a scenario',
+					title: '1/3 · Pick a scenario',
 					description:
-						'You are talking to a <strong>real LLM</strong> (NVIDIA Nemotron) — go ahead and use it! Pick any scenario: <strong>Ask About Mustafa Başar</strong>, <strong>A2A delegation</strong>, <strong>MCP tool call</strong> or a <strong>Guardrail attack</strong>.<div class="tour-action-hint">👇 Click any scenario button</div>',
+						'Talk to a <strong>real LLM</strong>. Start with <strong>Ask About Mustafa Başar</strong>.<div class="tour-action-hint">👇 Tap a scenario</div>',
 					side: 'top',
 					align: 'start',
 					showButtons: ['close']
@@ -79,9 +79,9 @@ function startPart1() {
 			{
 				element: '#tour-send-btn',
 				popover: {
-					title: 'Part 1 · Try it — Send it',
+					title: '2/3 · Send it',
 					description:
-						'Your scenario is loaded in the message box (you can edit it). Safe prompts run live on <strong>NVIDIA Nemotron</strong>; attacks are blocked with <code>HTTP 403</code>.<div class="tour-action-hint">👇 Click “Send”</div>',
+						'Safe prompts run live. Attacks get <code>HTTP 403</code>.<div class="tour-action-hint">👇 Tap “Send”</div>',
 					side: 'top',
 					align: 'start',
 					showButtons: ['previous', 'close']
@@ -90,9 +90,9 @@ function startPart1() {
 			{
 				element: '#tour-chat-area',
 				popover: {
-					title: 'Part 1 · Try it — Watch the result',
+					title: '3/3 · Watch the result',
 					description:
-						'The live pipeline trace and the streamed reply appear right here.<div class="tour-action-hint">⏳ Waiting for the response…</div>',
+						'The trace and the streamed reply appear here.<div class="tour-action-hint">⏳ Waiting for the response…</div>',
 					side: 'bottom',
 					align: 'start',
 					showButtons: ['previous', 'next', 'close'],

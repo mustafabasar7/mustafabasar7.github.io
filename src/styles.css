@@ -6915,3 +6915,23 @@ textarea {
 		min-width: 0;
 	}
 }
+
+/* ---- Topbar + recommended preset ---- */
+.topbar-left { flex: 1; min-width: 0; }
+.tour-topbar-button { gap: 6px; height: 34px; padding: 0 12px; font-size: 13px; }
+.breadcrumb, .mobile-nav-trigger span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.button-recommended { border-color: var(--primary); }
+.button-recommended::after {
+	content: 'Recommended';
+	margin-left: 6px;
+	padding: 1px 6px;
+	border-radius: 999px;
+	background: var(--primary);
+	color: #fff;
+	font-size: 10.5px;
+}
+@media (max-width: 620px) {
+	.topbar { height: 56px; padding: env(safe-area-inset-top) 12px 0; }
+	.tour-topbar-text { display: none; }
+	.tour-topbar-button { width: 36px; padding: 0; justify-content: center; }
+}

@@ -227,17 +227,17 @@ export function Shell() {
 					</div>
 					<div className="topbar-controls">
 						<button
-							className="button"
+							className="button tour-topbar-button"
 							type="button"
+							aria-label="Start Guided Tour"
 							onClick={() => startGuidedTour(true)}
-							style={{ gap: '6px', height: '34px', padding: '0 12px', fontSize: '13px' }}
 						>
 							<CompassBigBoldDuotoneIcon
 								size={17}
 								secondaryOpacity={0.45}
 								style={{ color: 'var(--primary)' }}
 							/>
-							Guided Tour
+							<span className="tour-topbar-text">Guided Tour</span>
 						</button>
 						{runtime.data?.user && <UserMenu user={runtime.data.user} />}
 						<Tooltip content="Toggle theme">

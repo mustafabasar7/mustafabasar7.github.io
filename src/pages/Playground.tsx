@@ -841,7 +841,7 @@ export function PlaygroundPage() {
 								<button
 									key={preset.id}
 									id={`tour-preset-${preset.id}`}
-									className="button"
+									className={`button${preset.id === 'profile' ? ' button-recommended' : ''}`}
 									type="button"
 									onClick={() => {
 										setPrompt(preset.prompt);
